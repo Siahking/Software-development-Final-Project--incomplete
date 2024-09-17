@@ -1,0 +1,21 @@
+:root{
+    --button-grey:rgb(191, 191, 191);
+}
+
+body,html{
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+a{
+    text-decoration: none;
+    margin: 5px;
+    border: solid var(--button-grey) 1px;
+    background-color: var(--button-grey);
+    padding:3px 8px;
+    border-radius: 15px;
+    color: white;
+}
