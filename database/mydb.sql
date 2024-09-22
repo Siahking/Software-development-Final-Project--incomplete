@@ -13,7 +13,9 @@ CREATE Table workers(
     gender VARCHAR(6),
     address TEXT NOT NULL,
     contact VARCHAR(15),
-    age INT
+    age INT NOT NULL,
+    location_id INT,
+    FOREIGN KEY (location_id) REFERENCES locations(id)
 );
 
 --@block
@@ -31,6 +33,13 @@ VALUES
     ('Moriah'),
     ('Scarborough'),
     ('Castara');
+
+--@block
+INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age)
+VALUES
+    ('John','Doe',NULL,'Male',"123 Main Street", "1234567890",19),
+    ('Sammy','Smith',"John","Male","123 Frederick Street", "1234567890",29),
+    ('Isiah','Fereton',NULL,"Male","123 King Street", "1234567890",45);
 
 --@block
 SELECT id, location FROM locations WHERE id = 1;

@@ -1,13 +1,12 @@
-import fetch from "node-fetch";
-
 export async function getData() {
-    const results = await fetch("http://localhost:8080/locations")
+    try{
+        const data = await fetch("http://localhost:8080/locations")
         .then((data)=> data.json())
         .then((data) => data);
-
-    for (const result of results){
-        console.log(result);
-    }
+        return data
+    }catch (error){
+        console.error("Error fetching locations:",error);
+    };
 };
 
 export async function newLocaton(locationName) {
@@ -17,7 +16,7 @@ export async function newLocaton(locationName) {
     const result = await fetch("http://localhost:8080/locations",{
         method:"POST",
         headers:{
-            "content-Type":"application/json"
+            "Content-Type":"application/json"
         },
         body: JSON.stringify(data)
     })
@@ -48,4 +47,15 @@ export async function findLocation(name){
     }else{
         console.log(`location id is ${data.id} and location is ${data.location}`)
     }
+}
+
+export async function getWorkers(){
+    try{
+        const workers = await fetch("http://localhost:8080/workers")
+        .then((workers) => workers.json())
+        .then((workers) => workers);
+        return workers
+    }catch(error){
+        console.error("Error in getting the workers:",error)
+    };
 }
