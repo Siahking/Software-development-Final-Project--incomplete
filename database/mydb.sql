@@ -1,10 +1,10 @@
--- @block
+--@block
 CREATE TABLE locations(
     id INT PRIMARY KEY AUTO_INCREMENT,
     location VARCHAR(255) NOT NULL
 );
 
--- @block
+--@block
 CREATE Table workers(
     id INT PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(255) NOT NULL,

@@ -103,7 +103,11 @@ func main(){
 	//worker_routes
 	router.GET("/workers", func(c *gin.Context){
 		getWorkers(c ,db)
-	})
+	});
+
+	router.GET("/find-worker", func(c *gin.Context){
+		findWorker(c ,db)
+	});
 
 	fmt.Println("Starting Gin server on :8080")
 	log.Fatal(router.Run(":8080"))
@@ -195,6 +199,56 @@ func deleteLocation(c *gin.Context, db *sql.DB){
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Location with ID %s deleted", id)})
+}
+
+func findWorker(c *gin.Context, db *sql.DB){
+	firstname := c.Query("first_name")
+	lastname := c.Query("last_name")
+
+	var query string
+	var rows *sql.Rows
+	var err error
+
+	if firstname != "" && lastname != ""{
+		query = "SELECT * FROM workers WHERE first_name = ? AND last_name ?"
+		rows, err = db.Query(query, firstname, lastname)
+	}else if firstname != ""{
+		query = "SELECT * FROM workers WHERE first_name = ?"
+		rows, err = db.Query(query, firstname)
+	}else if lastname != ""{
+		query = "SELECT * FROM workers WHERE last_name = ?"
+		rows, err = db.Query(query, lastname)
+	}else{
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Please provide firstname and the lastname"})
+		return
+	}
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in query execution\n"+err.Error()})
+	}
+	defer rows.Close()
+
+	var workers []Worker
+
+	for rows.Next(){
+		var worker Worker
+		if err := rows.Scan(&worker.ID, &worker.FirstName, &worker.LastName, &worker.MiddleName, 
+            &worker.Gender, &worker.Address, &worker.Contact, &worker.Age, &worker.LocationID); err != nil{
+				c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n" + err.Error()})
+			}
+		workers = append(workers, worker)
+	}
+
+	if err:=rows.Err(); err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error while going through the rows\n"+err.Error()})
+		return
+	}
+
+	if len(workers) == 0{
+		c.JSON(http.StatusNotFound,gin.H{"message":"No Workers found"})
+	}else{
+		c.JSON(http.StatusOK, workers)
+	}
 }
 
 func addLocation(c *gin.Context, db *sql.DB){
