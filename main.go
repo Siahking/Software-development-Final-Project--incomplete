@@ -100,7 +100,10 @@ func main(){
 	})
 	router.GET("/locations/:name", func(c *gin.Context){
 		findLocation(c ,db)
-	});
+	})
+	router.POST("/location",func(c *gin.Context) {
+		addLocation(c,db)
+	})
 
 	//worker_routes
 	router.GET("/workers", func(c *gin.Context){
@@ -157,6 +160,25 @@ func findLocation(c *gin.Context, db *sql.DB){
 	}
 
 	c.JSON(http.StatusOK, loc)
+}
+
+func addLocation(c *gin.Context, db *sql.DB){
+	var newLocation Location
+
+	if err := c.BindJSON(&newLocation); err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid input"})
+		return
+	}
+
+	query := "INSERT INTO locations (location) VALUES (?)"
+	_, err := db.Exec(query, newLocation.Location)
+	if err != nil{
+		fmt.Println("Failed to insert value")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message":"Location added successfully"})
 }
 
 func deleteEntry(c *gin.Context, db *sql.DB){
