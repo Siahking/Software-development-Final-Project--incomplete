@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	// "io"
 	"log"
 	"net/http"
 	"strconv"
@@ -91,8 +92,8 @@ func main(){
 	router.GET("/locations", func(c *gin.Context){
 		getLocations(c, db)
 	})
-	router.POST("/add/:table", func(c *gin.Context){
-		insertValue(c, db)
+	router.POST("/new-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age", func(c *gin.Context){
+		newWorker(c, db)
 	})
 	router.DELETE("/locations/:table/:field/:value",func(c *gin.Context) {
 		deleteEntry(c,db)
@@ -191,92 +192,38 @@ func deleteEntry(c *gin.Context, db *sql.DB){
 	}
 }
 
-func insertValue(c *gin.Context, db *sql.DB){
-	table := c.Param("table")
-
-	switch table{
-	case "worker":
-
-		log.Println("incoming worker data:",c.Request.Body)
-
-		var worker Worker
-		if err := c.BindJSON(&worker); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid worker input"})
-			return
-		}
-
-		query := "INSERT INTO workers (first_name, last_name, middle_name, gender, address, contact, age, location_id) VALUES (?,?,?,?,?,?,?,?)"
-
-		_,err := db.Exec(query, 
-			worker.FirstName, 
-			worker.LastName,
-			nullString(worker.MiddleName),
-			nullString(worker.Gender),
-			worker.Address, 
-			nullString(worker.Contact), 
-			worker.Age, 
-			nullInt64(worker.LocationID))
-
-		if err != nil{
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in inserting values"+err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusCreated, gin.H{"message":"Worker added successfully"})
-
-	case "location":
-		var location Location
-		if err := c.BindJSON(&location); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid location input"})
-			return
-		}
-
-		query := "INSERT INTO locations (location) VALUES (?)"
-		_,err := db.Exec(query,location)
-		if err != nil{
-			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in inserting location"+err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusCreated, gin.H{"message":"Worker added successfully"})
-		
-	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid table name"})
+func setNull(value string) sql.NullString {
+	if value == "null"{
+		return sql.NullString{String:"",Valid:false}
 	}
-	// url for worker:
-	// curl -X POST "http://localhost:8080/add/locations" \
-	// -H "Content-Type: application/json" \
-	// -d '{
-	// 	"location": "New York"
-	// }'
-	//
-	//url: for location:
-	// curl -X POST "http://localhost:8080/add/worker" \
-	// -H "Content-Type: application/json" \
-	// -d '{
-	// 	"first_name": "John",
-	// 	"last_name": "Doe",
-	// 	"middle_name": "A",
-	// 	"gender": "Male",
-	// 	"address": "123 Main St",
-	// 	"contact": "555-1234",
-	// 	"age": 30,
-	// 	"location_id": 1
-	// }'
+	return sql.NullString{String:value, Valid:true}
 }
 
-func nullString(s sql.NullString) interface{} {
-	if s.Valid{
-		return s.String
-	}
-	return nil
-}
+func newWorker(c *gin.Context, db *sql.DB){
 
-func nullInt64 (i sql.NullInt64) interface{} {
-	if i.Valid {
-		return i.Int64
+	var worker Worker
+	worker.FirstName = c.Param("first_name")
+	worker.LastName = c.Param("last_name")
+	worker.MiddleName = setNull(c.Param("middle_name"))
+	worker.Gender = setNull(c.Param("gender"))
+	worker.Address = c.Param("address")
+	worker.Contact = setNull(c.Param("contact"))
+	worker.LocationID = sql.NullInt64{Int64:0,Valid:false}
+
+	value,_ := strconv.Atoi(c.Param("age"))
+	worker.Age = value
+
+	query := "INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age,location_id) VALUES (?,?,?,?,?,?,?,?)"
+
+	_,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName.String,
+		worker.Gender.String,worker.Address,worker.Contact.String,worker.Age,worker.LocationID.Int64)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in adding values to the db"+err.Error()})
+		return
 	}
-	return nil
+
+	c.JSON(http.StatusCreated,gin.H{"message":"Value inserted"})
 }
 
 func findWorker(c *gin.Context, db *sql.DB){

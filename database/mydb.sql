@@ -42,7 +42,7 @@ VALUES
     ('Isiah','Fereton',NULL,"Male","123 King Street", "1234567890",45);
 
 --@block
-SELECT * FROM locations;
+SELECT * FROM workers;
 
 --@block
 SELECT id, location FROM locations WHERE location = "Moriah";
