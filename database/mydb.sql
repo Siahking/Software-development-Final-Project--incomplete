@@ -50,3 +50,7 @@ SELECT id, location FROM locations WHERE location = "Moriah";
 --@block
 DELETE FROM locations;
 ALTER TABLE locations AUTO_INCREMENT = 1;
+
+--@block
+DELETE FROM workers;
+ALTER TABLE workers AUTO_INCREMENT = 1;

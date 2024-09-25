@@ -208,15 +208,14 @@ func newWorker(c *gin.Context, db *sql.DB){
 	worker.Gender = setNull(c.Param("gender"))
 	worker.Address = c.Param("address")
 	worker.Contact = setNull(c.Param("contact"))
-	worker.LocationID = sql.NullInt64{Int64:0,Valid:false}
 
 	value,_ := strconv.Atoi(c.Param("age"))
 	worker.Age = value
 
-	query := "INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age,location_id) VALUES (?,?,?,?,?,?,?,?)"
+	query := "INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age) VALUES (?,?,?,?,?,?,?)"
 
 	_,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName.String,
-		worker.Gender.String,worker.Address,worker.Contact.String,worker.Age,worker.LocationID.Int64)
+		worker.Gender.String,worker.Address,worker.Contact.String,worker.Age)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in adding values to the db"+err.Error()})
