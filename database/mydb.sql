@@ -42,7 +42,11 @@ VALUES
     ('Isiah','Fereton',NULL,"Male","123 King Street", "1234567890",45);
 
 --@block
-SELECT id, location FROM locations WHERE id = 1;
+SELECT * FROM locations;
 
 --@block
 SELECT id, location FROM locations WHERE location = "Moriah";
+
+--@block
+DELETE FROM locations;
+ALTER TABLE locations AUTO_INCREMENT = 1;

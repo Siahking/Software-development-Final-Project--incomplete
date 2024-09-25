@@ -59,3 +59,7 @@ export async function getWorkers(){
         console.error("Error in getting the workers:",error)
     };
 }
+
+export async function findWorker(){
+    
+}

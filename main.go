@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -90,11 +91,11 @@ func main(){
 	router.GET("/locations", func(c *gin.Context){
 		getLocations(c, db)
 	})
-	router.POST("/locations", func(c *gin.Context){
-		addLocation(c, db)
+	router.POST("/add/:table", func(c *gin.Context){
+		insertValue(c, db)
 	})
-	router.DELETE("/locations/:id", func(c *gin.Context){
-		deleteLocation(c ,db)
+	router.DELETE("/locations/:table/:field/:value",func(c *gin.Context) {
+		deleteEntry(c,db)
 	})
 	router.GET("/locations/:name", func(c *gin.Context){
 		findLocation(c ,db)
@@ -104,7 +105,6 @@ func main(){
 	router.GET("/workers", func(c *gin.Context){
 		getWorkers(c ,db)
 	});
-
 	router.GET("/find-worker", func(c *gin.Context){
 		findWorker(c ,db)
 	});
@@ -115,6 +115,7 @@ func main(){
 
 func getLocations(c *gin.Context, db *sql.DB){
 	rows,err := db.Query("SELECT id, location FROM locations")
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,gin.H{"error":err.Error()})
 		return
@@ -140,37 +141,6 @@ func getLocations(c *gin.Context, db *sql.DB){
 	c.IndentedJSON(http.StatusOK, locations)
 };
 
-func getWorkers(c *gin.Context, db *sql.DB){
-	rows,err := db.Query("SELECT * FROM workers")
-	if err != nil{
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error with selecting rows\n"+err.Error()})
-		return
-	}
-	defer rows.Close()
-
-	var employees []Worker
-
-	for rows.Next(){
-		var worker Worker
-		if err := rows.Scan(&worker.ID,
-			&worker.FirstName,&worker.LastName,
-			&worker.MiddleName,&worker.Gender,
-			&worker.Address,&worker.Contact,
-			&worker.Age,&worker.LocationID);
-			err != nil{
-				c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n"+err.Error()})
-				return
-			}
-			employees = append(employees, worker)
-	}
-		if err = rows.Err(); err != nil{
-			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n" + err.Error()})
-			return
-		}
-	
-	c.IndentedJSON(http.StatusOK, employees)
-}
-
 func findLocation(c *gin.Context, db *sql.DB){
 	name := c.Param("name")
 
@@ -188,17 +158,125 @@ func findLocation(c *gin.Context, db *sql.DB){
 	c.JSON(http.StatusOK, loc)
 }
 
-func deleteLocation(c *gin.Context, db *sql.DB){
-	id := c.Param("id")
+func deleteEntry(c *gin.Context, db *sql.DB){
+	table := c.Param("table")
+	field := c.Param("field")
+	value := c.Param("value")
 
-	query := "DELETE FROM locations WHERE id = ?"
-	_, err:= db.Exec(query, id)
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ?",table,field)
+	var result sql.Result
+	var err error
+
+	if field == "id"{
+		id, _ := strconv.Atoi(value)
+		result,err = db.Exec(query,id) 
+	}else{
+		result, err = db.Exec(query,value)
+	}
 	if err != nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Location with ID %s deleted", id)})
+	rowsAffected, err := result.RowsAffected()
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":err.Error()})
+		return
+	}
+
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound,gin.H{"message":"No Entry found"})
+	}else{
+		c.JSON(http.StatusOK, gin.H{"message":"Entry deleted successfully"})
+	}
+}
+
+func insertValue(c *gin.Context, db *sql.DB){
+	table := c.Param("table")
+
+	switch table{
+	case "worker":
+
+		log.Println("incoming worker data:",c.Request.Body)
+
+		var worker Worker
+		if err := c.BindJSON(&worker); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid worker input"})
+			return
+		}
+
+		query := "INSERT INTO workers (first_name, last_name, middle_name, gender, address, contact, age, location_id) VALUES (?,?,?,?,?,?,?,?)"
+
+		_,err := db.Exec(query, 
+			worker.FirstName, 
+			worker.LastName,
+			nullString(worker.MiddleName),
+			nullString(worker.Gender),
+			worker.Address, 
+			nullString(worker.Contact), 
+			worker.Age, 
+			nullInt64(worker.LocationID))
+
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in inserting values"+err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{"message":"Worker added successfully"})
+
+	case "location":
+		var location Location
+		if err := c.BindJSON(&location); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid location input"})
+			return
+		}
+
+		query := "INSERT INTO locations (location) VALUES (?)"
+		_,err := db.Exec(query,location)
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in inserting location"+err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{"message":"Worker added successfully"})
+		
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid table name"})
+	}
+	// url for worker:
+	// curl -X POST "http://localhost:8080/add/locations" \
+	// -H "Content-Type: application/json" \
+	// -d '{
+	// 	"location": "New York"
+	// }'
+	//
+	//url: for location:
+	// curl -X POST "http://localhost:8080/add/worker" \
+	// -H "Content-Type: application/json" \
+	// -d '{
+	// 	"first_name": "John",
+	// 	"last_name": "Doe",
+	// 	"middle_name": "A",
+	// 	"gender": "Male",
+	// 	"address": "123 Main St",
+	// 	"contact": "555-1234",
+	// 	"age": 30,
+	// 	"location_id": 1
+	// }'
+}
+
+func nullString(s sql.NullString) interface{} {
+	if s.Valid{
+		return s.String
+	}
+	return nil
+}
+
+func nullInt64 (i sql.NullInt64) interface{} {
+	if i.Valid {
+		return i.Int64
+	}
+	return nil
 }
 
 func findWorker(c *gin.Context, db *sql.DB){
@@ -210,7 +288,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 	var err error
 
 	if firstname != "" && lastname != ""{
-		query = "SELECT * FROM workers WHERE first_name = ? AND last_name ?"
+		query = "SELECT * FROM workers WHERE first_name = ? AND last_name = ?"
 		rows, err = db.Query(query, firstname, lastname)
 	}else if firstname != ""{
 		query = "SELECT * FROM workers WHERE first_name = ?"
@@ -251,21 +329,34 @@ func findWorker(c *gin.Context, db *sql.DB){
 	}
 }
 
-func addLocation(c *gin.Context, db *sql.DB){
-	var newLocation Location
-
-	if err := c.BindJSON(&newLocation); err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid input"})
-		return
-	}
-
-	query := "INSERT INTO locations (location) VALUES (?)"
-	_, err := db.Exec(query, newLocation.Location)
+func getWorkers(c *gin.Context, db *sql.DB){
+	rows,err := db.Query("SELECT * FROM workers")
+	
 	if err != nil{
-		fmt.Println("Failed to insert value")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error with selecting rows\n"+err.Error()})
 		return
 	}
+	defer rows.Close()
 
-	c.JSON(http.StatusCreated, gin.H{"message":"Location added successfully"})
+	var employees []Worker
+
+	for rows.Next(){
+		var worker Worker
+		if err := rows.Scan(&worker.ID,
+			&worker.FirstName,&worker.LastName,
+			&worker.MiddleName,&worker.Gender,
+			&worker.Address,&worker.Contact,
+			&worker.Age,&worker.LocationID);
+			err != nil{
+				c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n"+err.Error()})
+				return
+			}
+			employees = append(employees, worker)
+	}
+		if err = rows.Err(); err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n" + err.Error()})
+			return
+		}
+	
+	c.IndentedJSON(http.StatusOK, employees)
 }
