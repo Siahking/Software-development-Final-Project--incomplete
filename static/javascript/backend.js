@@ -60,6 +60,23 @@ export async function getWorkers(){
     };
 }
 
-export async function findWorker(){
+export async function findWorker(id=null,firstName=null,lastName=null,middleName=null){
     
+    if (!id && !firstName && !lastName && !middleName){
+        //return error message
+    }
+    let workers;
+
+    const url = new URL("http://localhost:8080/find-worker")
+    if (id) {
+        url.searchParams.append("id",id)
+    }else{
+        if (firstName) url.searchParams.append("first_name", firstName);
+        if (lastName) url.searchParams.append("last_name", lastName);
+        if (middleName) url.searchParams.append("middle_name", middleName);
+    };
+
+    const response = await fetch(url);
+    workers = await response.json();
+    return workers;
 }

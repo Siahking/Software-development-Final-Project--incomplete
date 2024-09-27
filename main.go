@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	// "io"
 	"log"
 	"net/http"
 	"strconv"
@@ -89,11 +88,8 @@ func main(){
 	})
 	
 	//location_routes
-	router.GET("/locations", func(c *gin.Context){
+	router.GET("/locations", func(c *gin.Context){ //
 		getLocations(c, db)
-	})
-	router.POST("/new-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age", func(c *gin.Context){
-		newWorker(c, db)
 	})
 	router.DELETE("/locations/:table/:field/:value",func(c *gin.Context) {
 		deleteEntry(c,db)
@@ -102,7 +98,7 @@ func main(){
 		findLocation(c ,db)
 	})
 	router.POST("/location",func(c *gin.Context) {
-		addLocation(c,db)
+		addLocation(c, db)
 	})
 
 	//worker_routes
@@ -111,6 +107,9 @@ func main(){
 	});
 	router.GET("/find-worker", func(c *gin.Context){
 		findWorker(c ,db)
+	})
+	router.POST("/new-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age", func(c *gin.Context){
+		newWorker(c, db)
 	});
 
 	fmt.Println("Starting Gin server on :8080")
@@ -248,22 +247,37 @@ func newWorker(c *gin.Context, db *sql.DB){
 }
 
 func findWorker(c *gin.Context, db *sql.DB){
+	baseString := "SELECT * FROM workers WHERE "
+	id := c.Query("id")
 	firstname := c.Query("first_name")
 	lastname := c.Query("last_name")
-
+	middlename := c.Query("middle_name")
+	
 	var query string
 	var rows *sql.Rows
 	var err error
 
-	if firstname != "" && lastname != ""{
-		query = "SELECT * FROM workers WHERE first_name = ? AND last_name = ?"
-		rows, err = db.Query(query, firstname, lastname)
+	if id != ""{
+		query = baseString + "id = ?"
+		rows, err = db.Query(query, id)
+	}else if firstname != "" && lastname != "" && middlename != ""{
+		query = baseString + "first_name LIKE ? AND last_name LIKE ? AND middle_name LIKE"
+		rows, err = db.Query(query, firstname, lastname,middlename)
+	}else if firstname != "" && middlename != ""{
+		query = baseString + "first_name LIKE ? AND middle_name LIKE ?"
+		rows, err = db.Query(query, firstname,middlename)
+	}else if lastname != "" && middlename != ""{
+		query = baseString + "last_name LIKE ? AND middle_name LIKE ?"
+		rows, err = db.Query(query, lastname)
 	}else if firstname != ""{
-		query = "SELECT * FROM workers WHERE first_name = ?"
+		query = baseString + "first_name LIKE ?"
 		rows, err = db.Query(query, firstname)
 	}else if lastname != ""{
-		query = "SELECT * FROM workers WHERE last_name = ?"
+		query = baseString + "last_name LIKE ?"
 		rows, err = db.Query(query, lastname)
+	}else if middlename != ""{
+		query = baseString + "middle_name LIKE ?"
+		rows, err = db.Query(query, middlename)
 	}else{
 		c.JSON(http.StatusBadRequest, gin.H{"error":"Please provide firstname and the lastname"})
 		return
@@ -271,6 +285,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 
 	if err != nil{
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in query execution\n"+err.Error()})
+		return
 	}
 	defer rows.Close()
 
@@ -293,7 +308,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 	if len(workers) == 0{
 		c.JSON(http.StatusNotFound,gin.H{"message":"No Workers found"})
 	}else{
-		c.JSON(http.StatusOK, workers)
+		c.IndentedJSON(http.StatusOK, workers)
 	}
 }
 
