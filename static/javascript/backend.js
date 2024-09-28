@@ -60,12 +60,7 @@ export async function getWorkers(){
     };
 }
 
-export async function findWorker(id=null,firstName=null,lastName=null,middleName=null){
-    
-    if (!id && !firstName && !lastName && !middleName){
-        //return error message
-    }
-    let workers;
+export async function findWorker(id,firstName,lastName,middleName){
 
     const url = new URL("http://localhost:8080/find-worker")
     if (id) {
@@ -76,7 +71,21 @@ export async function findWorker(id=null,firstName=null,lastName=null,middleName
         if (middleName) url.searchParams.append("middle_name", middleName);
     };
 
-    const response = await fetch(url);
-    workers = await response.json();
-    return workers;
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} - ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.error("An error occurred while fetching workers:", error.message);
+            if (error.message.includes("404")) {
+                return { error: "Worker not found"};
+            }else if (error.message.includes("500")){
+                return { error: "Server error, please try again later"};
+            }else{
+                return { error: "An unexpected error occurred" };
+            }
+        });
 }

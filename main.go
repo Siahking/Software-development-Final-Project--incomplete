@@ -80,8 +80,8 @@ func main(){
 	router.GET("/get-workers",func(c *gin.Context){
 		c.HTML(http.StatusOK, "get-workers.html",nil)
 	})
-	router.GET("/find-workers",func(c *gin.Context){
-		c.HTML(http.StatusOK, "find-worker.html",nil)
+	router.GET("/worker-details",func(c *gin.Context){
+		c.HTML(http.StatusOK, "worker-details.html",nil)
 	})
 	router.GET("/get-locations", func(c *gin.Context){
 		c.HTML(http.StatusOK, "get-locations.html",nil)

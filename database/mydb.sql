@@ -54,3 +54,8 @@ ALTER TABLE locations AUTO_INCREMENT = 1;
 --@block
 DELETE FROM workers;
 ALTER TABLE workers AUTO_INCREMENT = 1;
+
+--@block
+INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age)
+VALUES
+    ('Mary','Doe','Jasmine','Female',"123 Main Street", "1234567890",19);

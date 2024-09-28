@@ -13,11 +13,11 @@
         <a id="add-worker" href="/add-worker">Add Worker</a>
         <a id="remove-worker" href="/remove-worker">Remove Worker</a>
         <a id="get-workers" href="/get-workers">Get workers</a>
-        <a id="find-worker" href="">Find Worker</a>
+        <button id="find-worker" >Find Worker</button>
         <a id="get-locations" href="/get-locations">Get location</a>
     </div>
 
-    <div id="find-workers">
+    <div id="find-worker-div" class="hidden">
         <form id="workerSearchForm">
             <label for="id">
                 ID
@@ -46,7 +46,10 @@
             </label>
             <br>
             <input type="text" id="middle-name-input" class="hidden" placeholder="Enter the middle name here">
+
+            <button type="submit">Search</button>
         </form>
+        <p id="error-tag" style="color: red;"></p>
     </div>
     
 
