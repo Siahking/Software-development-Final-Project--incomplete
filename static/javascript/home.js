@@ -6,8 +6,11 @@ const findWorkerBtn = document.getElementById("remove-worker")
 const searchBtn = document.getElementById("find-worker")
 const searchDiv = document.getElementById("find-workers")
 
+//array of checkbox ids for later use
 const arr = ["id","first-name","last-name","middle-name"];
 
+// if the id checkbox is clicked then i wont want to search by any other field,
+// therefore this function disables the other fields if the id checkbox is checked
 document.getElementById("id").addEventListener("click",function(){
     const firstnameInput =  document.getElementById("first-name")
     const lastnameInput =  document.getElementById("last-name")
@@ -25,6 +28,7 @@ document.getElementById("id").addEventListener("click",function(){
     };
 });
 
+//toogles between showing the input fields for each checkbox if the checkbox is clicked or not
 arr.forEach((value)=>{
     const element = document.getElementById(value)
     const inputField = document.getElementById(value+"-input")
@@ -38,14 +42,16 @@ arr.forEach((value)=>{
     })
 })
 
-function displaySearch(){
+function displaySearchDiv(){
     [searchBtn,findWorkerBtn].forEach(btn=>{
         btn.addEventListener("click",function (){
+            //checks if both buttons were clicked and hides the search div upon the next click
             if (searchBtnActive && removeWorkerBtnActive){
                 searchBtnActive = false;
                 removeWorkerBtnActive = false;
                 searchDiv.classList.add("hidden")
             }else{
+                // if the "remove worker" button is clicked, handle if the div is shown or not
                 if (this.id === "remove-worker" ){
                     removeWorkerBtnActive = true ? !removeWorkerBtnActive : false;
                     if (removeWorkerBtnActive){
@@ -54,6 +60,7 @@ function displaySearch(){
                         searchDiv.classList.add("hidden")
                     }
                 }else{
+                    // if the "search" button is clicked, handle if the div is shown or not
                     searchBtnActive = true ? !searchBtnActive : false;
                     if (searchBtnActive){
                         searchDiv.classList.remove("hidden")
@@ -66,15 +73,4 @@ function displaySearch(){
     })
 }
 
-displaySearch();
-
-// document.getElementById("find-worker").addEventListener("click",function(){
-    
-//     btnActive = true ? !btnActive : false;
-//     if (btnActive){
-//         searchDiv.classList.remove("hidden")
-//     }else{
-//         searchDiv.classList.add("hidden")
-//     }
-// });
-
+displaySearchDiv();
