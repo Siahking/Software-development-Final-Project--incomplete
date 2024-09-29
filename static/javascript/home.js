@@ -1,5 +1,7 @@
 import { findLocation,getData,deleteLocation,newLocaton } from "./backend.js";
 
+let btnActive = false
+
 const arr = ["id","first-name","last-name","middle-name"];
 
 document.getElementById("id").addEventListener("click",function(){
@@ -30,3 +32,13 @@ arr.forEach((value)=>{
         }
     })
 })
+
+document.getElementById("find-worker").addEventListener("click",function(){
+    const searchDiv = document.getElementById("find-workers")
+    btnActive = true ? !btnActive : false;
+    if (btnActive){
+        searchDiv.classList.remove("hidden")
+    }else{
+        searchDiv.classList.add("hidden")
+    }
+});
