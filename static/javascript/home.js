@@ -1,6 +1,10 @@
 import { findLocation,getData,deleteLocation,newLocaton } from "./backend.js";
 
-let btnActive = false
+let searchBtnActive = false
+let removeWorkerBtnActive = false
+const findWorkerBtn = document.getElementById("remove-worker")
+const searchBtn = document.getElementById("find-worker")
+const searchDiv = document.getElementById("find-workers")
 
 const arr = ["id","first-name","last-name","middle-name"];
 
@@ -33,12 +37,43 @@ arr.forEach((value)=>{
     })
 })
 
-document.getElementById("find-worker").addEventListener("click",function(){
-    const searchDiv = document.getElementById("find-workers")
-    btnActive = true ? !btnActive : false;
-    if (btnActive){
-        searchDiv.classList.remove("hidden")
-    }else{
-        searchDiv.classList.add("hidden")
-    }
-});
+function displaySearch(){
+    [searchBtn,findWorkerBtn].forEach(btn=>{
+        btn.addEventListener("click",function (){
+            if (searchBtnActive && removeWorkerBtnActive){
+                searchBtnActive = false;
+                removeWorkerBtnActive = false;
+                searchDiv.classList.add("hidden")
+            }else{
+                if (this.id === "remove-worker" ){
+                    removeWorkerBtnActive = true ? !removeWorkerBtnActive : false;
+                    if (removeWorkerBtnActive){
+                        searchDiv.classList.remove("hidden")
+                    }else{
+                        searchDiv.classList.add("hidden")
+                    }
+                }else{
+                    searchBtnActive = true ? !searchBtnActive : false;
+                    if (searchBtnActive){
+                        searchDiv.classList.remove("hidden")
+                    }else{
+                        searchDiv.classList.add("hidden")
+                    }
+                }
+            }
+        })
+    })
+}
+
+displaySearch();
+
+// document.getElementById("find-worker").addEventListener("click",function(){
+    
+//     btnActive = true ? !btnActive : false;
+//     if (btnActive){
+//         searchDiv.classList.remove("hidden")
+//     }else{
+//         searchDiv.classList.add("hidden")
+//     }
+// });
+
