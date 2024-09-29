@@ -1,11 +1,31 @@
 import { findWorker,findLocation,getData,deleteLocation,newLocaton } from "./backend.js";
 
-function removeHidden(id){
-    const tag = document.getElementById(id)
-    tag.classList.remove("hidden")
-}
+let searchBtnActive = false
+let removeWorkerBtnActive = false
+const findWorkerBtn = document.getElementById("remove-worker")
+const searchBtn = document.getElementById("find-worker")
+const searchDiv = document.getElementById("find-workers")
 
-["id","first-name","last-name","middle-name"].forEach((value)=>{
+const arr = ["id","first-name","last-name","middle-name"];
+
+document.getElementById("id").addEventListener("click",function(){
+    const firstnameInput =  document.getElementById("first-name")
+    const lastnameInput =  document.getElementById("last-name")
+    const middlenameInput =  document.getElementById("middle-name")
+
+    if (this.checked){
+        [firstnameInput,lastnameInput,middlenameInput].forEach(value=>{
+            value.setAttribute("disabled","true")
+        })
+    }else{
+        [firstnameInput,lastnameInput,middlenameInput].forEach((variable)=>{
+            variable.removeAttribute("disabled");
+            variable.checked = false
+        })
+    };
+});
+
+arr.forEach((value)=>{
     const element = document.getElementById(value)
     const inputField = document.getElementById(value+"-input")
     element.addEventListener("click",function(){
@@ -18,64 +38,43 @@ function removeHidden(id){
     })
 })
 
-document.getElementById("id").addEventListener("click",function(){
-    const firstnamecheckbox =  document.getElementById("first-name")
-    const lastnamecheckbox =  document.getElementById("last-name")
-    const middlenamecheckbox =  document.getElementById("middle-name")
-    const firstnameInput = document.getElementById("first-name-input")
-    const lastnameInput = document.getElementById("last-name-input")
-    const middlenameInput = document.getElementById("middle-name-input")
-
-    if (this.checked){
-        [firstnamecheckbox,lastnamecheckbox,middlenamecheckbox].forEach(value=>{
-            value.setAttribute("disabled","true")
-        })
-        for (const value of [firstnameInput,lastnameInput,middlenameInput]){
-            if (!value.classList.contains("hidden")){
-                value.classList.add("hidden")
+function displaySearch(){
+    [searchBtn,findWorkerBtn].forEach(btn=>{
+        btn.addEventListener("click",function (){
+            if (searchBtnActive && removeWorkerBtnActive){
+                searchBtnActive = false;
+                removeWorkerBtnActive = false;
+                searchDiv.classList.add("hidden")
+            }else{
+                if (this.id === "remove-worker" ){
+                    removeWorkerBtnActive = true ? !removeWorkerBtnActive : false;
+                    if (removeWorkerBtnActive){
+                        searchDiv.classList.remove("hidden")
+                    }else{
+                        searchDiv.classList.add("hidden")
+                    }
+                }else{
+                    searchBtnActive = true ? !searchBtnActive : false;
+                    if (searchBtnActive){
+                        searchDiv.classList.remove("hidden")
+                    }else{
+                        searchDiv.classList.add("hidden")
+                    }
+                }
             }
-        }
-    }else{
-        [firstnamecheckbox,lastnamecheckbox,middlenamecheckbox].forEach((variable)=>{
-            variable.removeAttribute("disabled");
-            variable.checked = false
         })
-    };
-});
+    })
+}
 
-document.getElementById("find-worker").addEventListener("click",()=>{
-    removeHidden("find-worker-div")
-})
+displaySearch();
 
-document.getElementById("workerSearchForm").addEventListener("submit",async function(event){
+// document.getElementById("find-worker").addEventListener("click",function(){
+    
+//     btnActive = true ? !btnActive : false;
+//     if (btnActive){
+//         searchDiv.classList.remove("hidden")
+//     }else{
+//         searchDiv.classList.add("hidden")
+//     }
+// });
 
-    event.preventDefault()
-    const errorTag = document.getElementById("error-tag")
-    const isIdChecked = document.getElementById("id").checked
-    const isFirstNameChecked = document.getElementById("first-name").checked
-    const isLastNameChecked = document.getElementById("last-name").checked
-    const isMiddleNameChecked = document.getElementById("middle-name").checked
-
-    const id = isIdChecked ? document.getElementById("id-input").value : null;
-    const firstName = isFirstNameChecked ? document.getElementById("first-name-input").value : null;
-    const lastName = isLastNameChecked ? document.getElementById("last-name-input").value : null;
-    const middleName = isMiddleNameChecked ? document.getElementById("middle-name-input").value : null;
-
-    const temporaryArray = [id,firstName,lastName,middleName]
-
-    for (let i = 0;i < temporaryArray.length;i++){
-        if (temporaryArray[i])break
-        else if (i === (temporaryArray.length)-1 && !temporaryArray[i]){
-            errorTag.innerHTML = "No Fields clicked or no input provided, please populate the fields for search!"
-            return
-        } 
-    }
-
-    const results = await findWorker(id,firstName,lastName,middleName)
-    if (Object.keys(results).includes("error")){
-        errorTag.innerHTML = results.error+"!"
-    }else{
-        localStorage.setItem("workerData",JSON.stringify(results));
-        window.location.href = "/worker-details"
-    }
-})
