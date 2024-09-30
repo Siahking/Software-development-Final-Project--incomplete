@@ -54,36 +54,24 @@ arr.forEach((element)=>{
     })
 })
 
+//helper function for the displaySearchDiv function
 function toogleValues(currentBtn){
-    //create ternary operator and place this code inside the displaySearchDiv function
-    if (currentBtn){
-        searchDiv.classList.remove("hidden")
-    }else{
-        searchDiv.classList.add("hidden")
-    }
+    [idInput,firstNameInput,lastNameInput,middleNameInput].forEach(input=>input.value = "")
+    currentBtn ? searchDiv.classList.remove("hidden") : searchDiv.classList.add("hidden")
     return currentBtn
 }
 
+// toogles between showing the input tags whether the search button was clicked or the remove worker
+// button was clicked
 function displaySearchDiv(){
     [searchBtn,findWorkerBtn].forEach(btn=>{
         btn.addEventListener("click",function (){
             if (this.id === "remove-worker" ){
-                //fix the ternary operator
-                if (removeWorkerBtnActive){
-                    removeWorkerBtnActive = false
-                }else{
-                    removeWorkerBtnActive = true
-                }
-                // removeWorkerBtnActive = false ? removeWorkerBtnActive : true;
+                removeWorkerBtnActive = !removeWorkerBtnActive
                 searchBtnActive = false
                 toogleValues(removeWorkerBtnActive)
             }else{
-                if (searchBtnActive){
-                    searchBtnActive = false
-                }else{
-                    searchBtnActive = true
-                }
-                // searchBtnActive = false ? !searchBtnActive : true;
+                searchBtnActive = !searchBtnActive
                 removeWorkerBtnActive = false
                 toogleValues(searchBtnActive)
             }
@@ -98,12 +86,6 @@ function assignVariables(input,checkbox){
 }
 
 //checks for empty input fields and unchecked boxes, if no fields are filled returns an error
-function checkForNullValues(){
-    
-    console.log('passed outside')
-    
-    return [id,firstName,lastName,middleName]
-}
 
 displaySearchDiv();
 document.getElementById("workerSearchForm").addEventListener("submit",async function (event){
@@ -118,6 +100,7 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
     const middleName = assignVariables(middleNameInput,middleNameCheckbox)
     const tempArr = [id,firstName,lastName,middleName]
 
+// makes sure that atleast one checkbox and input field is filled and returns an error if not
     for (let i = 0;i < tempArr.length;i++) {
         if (tempArr[i] !== null)break
         else if (i === (tempArr.length - 1) && tempArr[i] === null){
@@ -127,6 +110,18 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
     }
 
     const results = await findWorker(id,firstName,lastName,middleName)
+    if (Object.keys(results).includes("error")){
+        errorTag.innerHTML = results.errorMsg
+        return
+    }
 
-    console.log(results)
+    localStorage.setItem("workerData", JSON.stringify(results));
+
+// redirects the user to the search page or the remove worker page depending on which button is clicked
+    window.location.reload()
+    if (searchBtnActive){
+        window.location.href = "/worker-details";
+    }else{
+        window.location.href = "/remove-worker";
+    }
 })
