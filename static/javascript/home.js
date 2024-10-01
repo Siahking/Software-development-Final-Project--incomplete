@@ -1,4 +1,4 @@
-import { findWorker,findLocation,getData,deleteLocation,newLocaton } from "./backend.js";
+import { findWorker,findLocation,getWorkers,deleteLocation,newLocaton } from "./backend.js";
 
 let searchBtnActive = false
 let removeWorkerBtnActive = false

@@ -110,8 +110,8 @@ func main(){
 	router.GET("/find-worker", func(c *gin.Context){
 		findWorker(c ,db)
 	})
-	router.POST("/new-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age", func(c *gin.Context){
-		newWorker(c, db)
+	router.POST("/add-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age", func(c *gin.Context){
+		addWorker(c, db)
 	});
 
 	fmt.Println("Starting Gin server on :8080")
@@ -217,7 +217,7 @@ func setNull(value string) sql.NullString {
 	return sql.NullString{String:value, Valid:true}
 }
 
-func newWorker(c *gin.Context, db *sql.DB){
+func addWorker(c *gin.Context, db *sql.DB){
 
 	var worker Worker
 	worker.FirstName = c.Param("first_name")

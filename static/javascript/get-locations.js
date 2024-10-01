@@ -1,9 +1,9 @@
-import { getData } from "./backend.js";
+import { getLocations } from "./backend.js";
 
 const list = document.getElementById("list");
 
-async function getLocations(){
-    const locations = await getData();
+async function getData(){
+    const locations = await getLocations();
 
     locations.forEach(data=>{
         const item = document.createElement("li")
@@ -12,4 +12,4 @@ async function getLocations(){
     })
 };
 
-getLocations();
+getData();

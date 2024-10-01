@@ -1,4 +1,4 @@
-export async function getData() {
+export async function getLocations() {
     try{
         const data = await fetch("http://localhost:8080/locations")
         .then((data)=> data.json())
@@ -9,7 +9,7 @@ export async function getData() {
     };
 };
 
-export async function newLocaton(locationName) {
+export async function addLocaton(locationName) {
     const data = {
         location : locationName
     };
@@ -24,6 +24,10 @@ export async function newLocaton(locationName) {
         .then((data) => data);
     console.log(result);
 };
+
+export async function addWorker(firstName,middleName,lastName,gender,address,contact,age){
+    
+}
 
 export async function deleteLocation(id) {
     const data = await fetch(`http://localhost:8080/locations/${id}`,{

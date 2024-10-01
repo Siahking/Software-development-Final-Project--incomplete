@@ -49,7 +49,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
             const results = await removeEntry(id,workers)
             const message = `Field failed to be deleted ${results.error}` ? typeof results === 'object' : results;
             
-            sessionStorage.setItem("Messag",message)
+            sessionStorage.setItem("Message",message)
 
             window.location.href = "/";
         })
