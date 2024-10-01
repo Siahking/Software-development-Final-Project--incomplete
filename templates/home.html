@@ -12,13 +12,26 @@
     <h1>Welcome Message</h1>
     <div class="options">
         <a id="create-roster" href="/create-roster">Create Roster</a>
-        <a id="add-worker" href="/add-worker">Add Worker</a>
+        <button id="add-worker">Add Worker</button>
         <button id="add-location">Add Location</button>
         <button id="remove-worker">Remove Worker</button>
         <button id="remove-location">Remove Location</button>
         <a id="get-workers" href="/get-workers">Get workers</a>
         <button id="find-worker">Find Worker</button>
         <a id="get-locations" href="/get-locations">Get location</a>
+    </div>
+
+    <div class="hidden" id="add-worker-div">
+        <label for="add-worker-input">
+            <input type="text" id="add-worker-input" placeholder="">
+        </label>
+    </div>
+
+    <div class="hidden" id="add-location-div">
+        <label for="add-location-input">
+            <input type="text" id="add-location-input" placeholder="Enter location here">
+        </label>
+        <button id="add-location-submit-btn">Submit</button>
     </div>
 
     <div id="find-workers" class="hidden">
@@ -57,6 +70,5 @@
     
 
     <script type="module" src="/static/javascript/home.js"></script>
-    <script type="module" src="/static/javascript/search-remove-logic.js"></script>
 </body>
 </html>

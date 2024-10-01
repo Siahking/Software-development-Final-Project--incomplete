@@ -9,7 +9,7 @@ export async function getLocations() {
     };
 };
 
-export async function addLocaton(locationName) {
+export async function addLocation(locationName) {
     const data = {
         location : locationName
     };
@@ -29,28 +29,13 @@ export async function addWorker(firstName,middleName,lastName,gender,address,con
     
 }
 
-export async function deleteLocation(id) {
-    const data = await fetch(`http://localhost:8080/locations/${id}`,{
-        method: "DELETE"
-    })
-        .then((data) => data.json())
-        .then((data) => data);
-    console.log(data);
-}
-
 export async function findLocation(name){
     const data = await fetch(`http://localhost:8080/locations/${name}`,{
         method: "GET"
     })
         .then((data) => data.json())
         .then((data) => data);
-    let dataKey;
-    dataKey = Object.keys(data)[0]
-    if (dataKey === 'error'){
-        console.log("location not found")
-    }else{
-        console.log(`location id is ${data.id} and location is ${data.location}`)
-    }
+    return data
 }
 
 export async function getWorkers(){

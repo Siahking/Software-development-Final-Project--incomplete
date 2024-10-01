@@ -1,7 +1,12 @@
-import { findWorker,findLocation,getWorkers,deleteLocation,newLocaton } from "./backend.js";
+import { findWorker,findLocation,getWorkers,addLocation } from "./backend.js";
 
+//sarch and remove workers logic
+let addLocationBtnActive = false
+let addWorkerBtnActive = false
 let searchBtnActive = false
 let removeWorkerBtnActive = false
+const messageContainer = document.getElementById("message")
+const errorTag = document.getElementById("error-tag")
 const findWorkerBtn = document.getElementById("remove-worker")
 const searchBtn = document.getElementById("find-worker")
 const searchDiv = document.getElementById("find-workers")
@@ -13,6 +18,61 @@ const idInput = document.getElementById("id-input")
 const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
+
+//general functions
+function hideOrShowActivity(btnActivity,div,inputElements=null){
+    btnActivity = !btnActivity
+    if (btnActivity){
+        div.classList.remove('hidden')
+        if (inputElements){
+            inputElements.forEach(element=>{
+                if (element.classList.contains('hidden')){
+                    element.classList.remove('hidden')
+                }
+            })
+        };
+    }else{
+        div.classList.add('hidden')
+        if (inputElements){
+            inputElements.forEach(element=>{
+                if (!element.classList.contains('hidden')){
+                    element.classList.add('hidden')
+                }
+            })
+        };
+    }
+    return btnActivity
+};
+
+//add location logic
+document.getElementById('add-location').addEventListener('click',function(){
+    const submitBtn = document.getElementById('add-location-submit-btn')
+    const addLocationDiv = document.getElementById('add-location-div')
+    addLocationBtnActive = hideOrShowActivity(addLocationBtnActive,addLocationDiv)
+
+    submitBtn.addEventListener('click',async function(){
+        const locationInput = document.getElementById('location-input');
+        const location = locationInput.value
+        if (location === ""){
+            errorTag.innerHTML = "Please insert a value into the search tag"
+            return
+        }
+        const result = await findLocation(location)
+        if (!Object.keys(result).keys().includes('error')){
+            errorTag.innerHTML = "This location already exists"
+            return
+        }
+        const message = await addLocation(location)
+        messageContainer.innerHTML = message
+    })
+});
+
+//add worker logic
+document.getElementById('add-worker').addEventListener('click',function(){
+    const submitBtn = document.getElementById('add-worker-submit-btn')
+    const addWorkerDiv = document.getElementById('add-worker-div');
+    addWorkerBtnActive = hideOrShowActivity(addWorkerBtnActive,addWorkerDiv)
+})
 
 //array of checkbox ids for later use
 const arr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox];
@@ -93,7 +153,6 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
     event.preventDefault()
 
     const errorMsg = "Please make sure to check a box and fill out the input field before submitting the form"
-    const errorTag = document.getElementById("error-tag")
     const id = assignVariables(idInput,idCheckbox)
     const firstName = assignVariables(firstNameInput,firstNameCheckbox)
     const lastName = assignVariables(lastNameInput,lastNameCheckbox)
@@ -130,8 +189,6 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
 window.addEventListener("DOMContentLoaded",()=>{
     const message = sessionStorage.getItem("Message")
 
-    if (message){
-        const messageContainer = document.getElementById("message")
+    if (message)
         messageContainer.innerHTML = message
-    }
 })
