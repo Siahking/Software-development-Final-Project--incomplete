@@ -125,3 +125,13 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
         window.location.href = "/remove-worker";
     }
 })
+
+//add message from deleting worker
+window.addEventListener("DOMContentLoaded",()=>{
+    const message = sessionStorage.getItem("Message")
+
+    if (message){
+        const messageContainer = document.getElementById("message")
+        messageContainer.innerHTML = message
+    }
+})

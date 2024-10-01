@@ -89,3 +89,30 @@ export async function findWorker(id,firstName,lastName,middleName){
             }
         });
 }
+
+export async function removeEntry(id,table){
+
+    const url = new URL(`http://localhost:8080/delete/${table}/${id}`)
+
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok){
+            throw new Error(`Error: ${response.statusText}`)
+        }
+
+        const result = await response.json();
+        console.log(result)
+
+        return result;
+    } catch (error){
+        console.error("Failed to delete worker", error);
+        return {error:error.message};
+    }
+}
+

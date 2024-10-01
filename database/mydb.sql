@@ -58,4 +58,4 @@ ALTER TABLE workers AUTO_INCREMENT = 1;
 --@block
 INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age)
 VALUES
-    ('Mary','Doe','Jasmine','Female',"123 Main Street", "1234567890",19);
+    ('Jerry','king','Mason','Male',"123 new yorl", "1234567890",34);

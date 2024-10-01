@@ -34,5 +34,4 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
         table.appendChild(container)
     })
-
 });

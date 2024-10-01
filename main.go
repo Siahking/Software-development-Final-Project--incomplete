@@ -86,13 +86,15 @@ func main(){
 	router.GET("/get-locations", func(c *gin.Context){
 		c.HTML(http.StatusOK, "get-locations.html",nil)
 	})
+
+	//multifunctional routes
+	router.DELETE("delete/:table/:id",func(c *gin.Context) {
+		deleteEntry(c,db)
+	})
 	
 	//location_routes
 	router.GET("/locations", func(c *gin.Context){ //
 		getLocations(c, db)
-	})
-	router.DELETE("/locations/:table/:field/:value",func(c *gin.Context) {
-		deleteEntry(c,db)
 	})
 	router.GET("/locations/:name", func(c *gin.Context){
 		findLocation(c ,db)
@@ -182,27 +184,22 @@ func addLocation(c *gin.Context, db *sql.DB){
 
 func deleteEntry(c *gin.Context, db *sql.DB){
 	table := c.Param("table")
-	field := c.Param("field")
-	value := c.Param("value")
+	id := c.Param("id")
 
-	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ?",table,field)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id = %s",table,id)
 	var result sql.Result
 	var err error
 
-	if field == "id"{
-		id, _ := strconv.Atoi(value)
-		result,err = db.Exec(query,id) 
-	}else{
-		result, err = db.Exec(query,value)
-	}
+	result,err = db.Exec(query) 
+	
 	if err != nil{
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in getting rows "+err.Error()})
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil{
-		c.JSON(http.StatusInternalServerError,gin.H{"error":err.Error()})
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"No rows affected"+err.Error()})
 		return
 	}
 
