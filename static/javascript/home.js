@@ -72,9 +72,28 @@ document.getElementById('add-location').addEventListener('click',function(){
 
 //add worker logic
 document.getElementById('add-worker').addEventListener('click',function(){
-    const submitBtn = document.getElementById('add-worker-submit-btn')
+    const submitBtn = document.getElementById('add-worker-submit-btn');
+    const workerForm = document.getElementById('add-worker-form');
     const addWorkerDiv = document.getElementById('add-worker-div');
     addWorkerBtnActive = hideOrShowActivity(addWorkerBtnActive,addWorkerDiv)
+
+    workerForm.addEventListener("submit",async function(event){
+
+        event.preventDefault()
+
+        const firstName = document.getElementById('add-first-name-input').value
+        const lastName = document.getElementById('add-last-name-input').value
+        const middleName = document.getElementById('add-middle-name-input').value !== "" ? document.getElementById('add-middle-name-input').value : null;
+        const gender = document.getElementById('add-gender-input').value !== "" ? document.getElementById('add-gender-input').value : null;
+        const address = document.getElementById('add-address-input').value
+        const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
+        const age = document.getElementById('add-age-input').value
+
+        const searchResults = await findWorker(null,firstName,lastName,middleName);
+
+
+    })
+
 })
 
 //array of checkbox ids for later use
@@ -173,7 +192,8 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
 
     const results = await findWorker(id,firstName,lastName,middleName)
     if (Object.keys(results).includes("error")){
-        errorTag.innerHTML = results.errorMsg
+        console.log(results)
+        errorTag.innerHTML = results.error
         return
     }
 

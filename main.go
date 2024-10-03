@@ -27,6 +27,7 @@ type Worker struct{
 	Address		string			`json:"address"`
 	Contact		sql.NullString	`json:"contact"`
 	Age			int				`json:"age"`
+	ID_Number	int				`json:"id_number"`
 	LocationID	sql.NullInt64	`json:"location_id"`
 }
 
@@ -234,13 +235,15 @@ func addWorker(c *gin.Context, db *sql.DB){
 	worker.Address = c.Param("address")
 	worker.Contact = setNull(c.Param("contact"))
 
-	value,_ := strconv.Atoi(c.Param("age"))
-	worker.Age = value
+	age,_ := strconv.Atoi(c.Param("age"))
+	id_number,_ := strconv.Atoi(c.Param("id_number"))
+	worker.Age = age
+	worker.ID_Number = id_number
 
-	query := "INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age) VALUES (?,?,?,?,?,?,?)"
+	query := "INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age,id_number) VALUES (?,?,?,?,?,?,?,?)"
 
 	_,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName.String,
-		worker.Gender.String,worker.Address,worker.Contact.String,worker.Age)
+		worker.Gender.String,worker.Address,worker.Contact.String,worker.Age,worker.ID_Number)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in adding values to the db"+err.Error()})
@@ -298,7 +301,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 	for rows.Next(){
 		var worker Worker
 		if err := rows.Scan(&worker.ID, &worker.FirstName, &worker.LastName, &worker.MiddleName, 
-            &worker.Gender, &worker.Address, &worker.Contact, &worker.Age, &worker.LocationID); err != nil{
+            &worker.Gender, &worker.Address, &worker.Contact, &worker.Age,&worker.ID_Number, &worker.LocationID); err != nil{
 				c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n" + err.Error()})
 			}
 		workers = append(workers, worker)
@@ -333,7 +336,7 @@ func getWorkers(c *gin.Context, db *sql.DB){
 			&worker.FirstName,&worker.LastName,
 			&worker.MiddleName,&worker.Gender,
 			&worker.Address,&worker.Contact,
-			&worker.Age,&worker.LocationID);
+			&worker.Age,&worker.ID_Number,&worker.LocationID);
 			err != nil{
 				c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n"+err.Error()})
 				return
