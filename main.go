@@ -99,7 +99,7 @@ func main(){
 	router.GET("/locations/:name", func(c *gin.Context){
 		findLocation(c ,db)
 	})
-	router.POST("/location",func(c *gin.Context) {
+	router.POST("/locations/:location",func(c *gin.Context) {
 		addLocation(c, db)
 	})
 
@@ -149,33 +149,40 @@ func getLocations(c *gin.Context, db *sql.DB){
 func findLocation(c *gin.Context, db *sql.DB){
 	name := c.Param("name")
 
-	var loc Location
-	query := "SELECT id, location FROM locations WHERE LOWER(location) = LOWER(?)"
-	err := db.QueryRow(query, name).Scan(&loc.ID, &loc.Location)
-	if err == sql.ErrNoRows{
-		c.JSON(http.StatusNotFound, gin.H{"error":"Location not found"})
+	var locations []Location
+	query := "SELECT id, location FROM locations WHERE LOWER(location) LIKE LOWER(?)"
+	rows,err := db.Query(query, "%"+name+"%")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error searching for values\n"+err.Error()})
 		return
-	}else if err != nil {
-		c.JSON(http.StatusInternalServerError,gin.H{"error":err.Error()})
+	}
+	defer rows.Close()
+
+	for rows.Next(){
+		var loc Location
+		err:=rows.Scan(&loc.ID, &loc.Location)
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error while scanning location"+err.Error()})
+			return
+		}
+		locations = append(locations,loc)
+	}
+
+	if len(locations) == 0{
+		c.JSON(http.StatusNotFound,gin.H{"error":"Location not found"})
 		return
 	}
 
-	c.JSON(http.StatusOK, loc)
+	c.JSON(http.StatusOK, locations)
 }
 
 func addLocation(c *gin.Context, db *sql.DB){
-	var newLocation Location
-
-	if err := c.BindJSON(&newLocation); err != nil{
-		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid input"})
-		return
-	}
+	newLocation := c.Param("location")
 
 	query := "INSERT INTO locations (location) VALUES (?)"
-	_, err := db.Exec(query, newLocation.Location)
+	_, err := db.Exec(query, newLocation)
 	if err != nil{
-		fmt.Println("Failed to insert value")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert value\n"+err.Error()})
 		return
 	}
 

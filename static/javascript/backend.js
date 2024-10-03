@@ -10,19 +10,15 @@ export async function getLocations() {
 };
 
 export async function addLocation(locationName) {
-    const data = {
-        location : locationName
-    };
-    const result = await fetch("http://localhost:8080/locations",{
+    const result = await fetch(`http://localhost:8080/locations/${locationName}`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
-        },
-        body: JSON.stringify(data)
+        }
     })
-        .then((data)=> data.json())
-        .then((data) => data);
-    console.log(result);
+    .then((data)=> data.json())
+    .then((data) => data)
+    return result
 };
 
 export async function addWorker(firstName,middleName,lastName,gender,address,contact,age){

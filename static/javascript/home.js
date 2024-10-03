@@ -54,16 +54,19 @@ document.getElementById('add-location').addEventListener('click',function(){
         const locationInput = document.getElementById('location-input');
         const location = locationInput.value
         if (location === ""){
+            console.log(errorTag)
             errorTag.innerHTML = "Please insert a value into the search tag"
             return
         }
         const result = await findLocation(location)
-        if (!Object.keys(result).keys().includes('error')){
+        console.log(result)
+        if (!Object.keys(result).includes('error')){
             errorTag.innerHTML = "This location already exists"
             return
         }
         const message = await addLocation(location)
-        messageContainer.innerHTML = message
+
+        window.location.reload()
     })
 });
 
