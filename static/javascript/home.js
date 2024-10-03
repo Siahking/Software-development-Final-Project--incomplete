@@ -44,6 +44,8 @@ function hideOrShowActivity(btnActivity,div,inputElements=null){
     return btnActivity
 };
 
+//TODO FIND ALL WORKER ACTIVITY AND MAKE SURE THE ID_NUMBER IS INCLUDED
+
 //add location logic
 document.getElementById('add-location').addEventListener('click',function(){
     const submitBtn = document.getElementById('add-location-submit-btn')
