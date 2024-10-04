@@ -270,27 +270,27 @@ func findWorker(c *gin.Context, db *sql.DB){
 		rows, err = db.Query(query, id)
 	}else if id_number != ""{
 		query = baseString + "id_number LIKE ?"
-		rows, err = db.Query(query, id_number)
-	}else if firstname != "" && lastname != "" && middlename != ""{
-		query = baseString + "first_name LIKE ? AND last_name LIKE ? AND middle_name LIKE"
-		rows, err = db.Query(query, firstname, lastname,middlename)
+		rows, err = db.Query(query, "%"+id_number+"%")
+	}else if firstname != "" && lastname != "" && middlename != "" {
+		query = baseString + "first_name LIKE ? AND last_name LIKE ? AND middle_name LIKE ?"
+		rows, err = db.Query(query, "%"+firstname+"%", "%"+lastname+"%", "%"+middlename+"%")
 	}else if firstname != "" && middlename != ""{
 		query = baseString + "first_name LIKE ? AND middle_name LIKE ?"
-		rows, err = db.Query(query, firstname,middlename)
+		rows, err = db.Query(query, "%"+firstname+"%","%"+middlename+"%")
 	}else if lastname != "" && middlename != ""{
 		query = baseString + "last_name LIKE ? AND middle_name LIKE ?"
-		rows, err = db.Query(query, lastname)
+		rows, err = db.Query(query, "%"+lastname+"%")
 	}else if firstname != ""{
 		query = baseString + "first_name LIKE ?"
-		rows, err = db.Query(query, firstname)
+		rows, err = db.Query(query, "%"+firstname+"%")
 	}else if lastname != ""{
 		query = baseString + "last_name LIKE ?"
-		rows, err = db.Query(query, lastname)
+		rows, err = db.Query(query, "%"+lastname+"%")
 	}else if middlename != ""{
 		query = baseString + "middle_name LIKE ?"
-		rows, err = db.Query(query, middlename)
+		rows, err = db.Query(query, "%"+middlename+"%")
 	}else{
-		c.JSON(http.StatusBadRequest, gin.H{"error":"Please provide firstname and the lastname"})
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Please provide valid search parameters"})
 		return
 	}
 

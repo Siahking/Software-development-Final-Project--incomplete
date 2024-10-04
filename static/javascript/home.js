@@ -14,12 +14,36 @@ const idCheckbox = document.getElementById("id")
 const firstNameCheckbox = document.getElementById("first-name")
 const lastNameCheckbox = document.getElementById("last-name")
 const middleNameCheckbox = document.getElementById("middle-name")
+const idNumberCheckbox = document.getElementById("id-number")
 const idInput = document.getElementById("id-input")
 const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
+const idNumberInput = document.getElementById("id-number-input")
+const checkboxArr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox]
+const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumberInput]
 
 //general functions
+function disableElements(checkbox,checkboxArr,inputsArr){
+    console.log(checkbox.checked)
+    if(checkbox.checked){
+        checkboxArr.forEach(checkbox=>{
+            checkbox.setAttribute("disabled","true")
+        })
+        inputsArr.forEach(input=>{
+            input.value = ""
+            if (!input.classList.contains("hidden")){
+                input.classList.add("hidden")
+            }
+        })
+    }else{
+        checkboxArr.forEach((checkbox)=>{
+            checkbox.removeAttribute("disabled");
+            checkbox.checked = false
+        })
+    };
+};
+
 function hideOrShowActivity(btnActivity,div,inputElements=null){
     btnActivity = !btnActivity
     if (btnActivity){
@@ -56,12 +80,10 @@ document.getElementById('add-location').addEventListener('click',function(){
         const locationInput = document.getElementById('location-input');
         const location = locationInput.value
         if (location === ""){
-            console.log(errorTag)
             errorTag.innerHTML = "Please insert a value into the search tag"
             return
         }
         const result = await findLocation(location)
-        console.log(result)
         if (!Object.keys(result).includes('error')){
             errorTag.innerHTML = "This location already exists"
             return
@@ -99,31 +121,23 @@ document.getElementById('add-worker').addEventListener('click',function(){
 })
 
 //array of checkbox ids for later use
-const arr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox];
+const arr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox];
 
-// if the id checkbox is clicked then i wont want to search by any other field,
-// therefore this function disables the other fields if the id checkbox is checked
-document.getElementById("id").addEventListener("click",function(){
-    const checkboxArr = [firstNameCheckbox,lastNameCheckbox,middleNameCheckbox]
-    const inputsArr = [firstNameInput,lastNameInput,middleNameInput]
-
-    if (this.checked){
-        checkboxArr.forEach(checkbox=>{
-            checkbox.setAttribute("disabled","true")
-        })
-        inputsArr.forEach(input=>{
-            input.value = ""
-            if (!input.classList.contains("hidden")){
-                input.classList.add("hidden")
-            }
-        })
-    }else{
-        checkboxArr.forEach((checkbox)=>{
-            checkbox.removeAttribute("disabled");
-            checkbox.checked = false
-        })
-    };
-});
+// if the id or id number checkbox is clicked then i wont want to search by any other field,
+// therefore this function disables the other fields if the id or the id number checkbox is checked
+[idCheckbox,idNumberCheckbox].forEach(checkbox=>{
+    checkbox.addEventListener('click',function(){
+        if (this.id === "id"){
+            const tempCheckboxArr = [...checkboxArr].slice(1)
+            const tempInputArr = [...inputsArr].slice(1)
+            disableElements(idCheckbox,tempCheckboxArr,tempInputArr)
+        }else{
+            const tempCheckboxArr = [...checkboxArr].slice(0,-1)
+            const tempInputArr = [...inputsArr].slice(0,-1)
+            disableElements(idNumberCheckbox,tempCheckboxArr,tempInputArr)
+        }
+    })
+})
 
 //toogles between showing the input fields for each checkbox if the checkbox is clicked or not
 arr.forEach((element)=>{
@@ -181,7 +195,8 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
     const firstName = assignVariables(firstNameInput,firstNameCheckbox)
     const lastName = assignVariables(lastNameInput,lastNameCheckbox)
     const middleName = assignVariables(middleNameInput,middleNameCheckbox)
-    const tempArr = [id,firstName,lastName,middleName]
+    const idNumber = assignVariables(idNumberInput,idNumberCheckbox)
+    const tempArr = [id,firstName,lastName,middleName,idNumber]
 
 // makes sure that atleast one checkbox and input field is filled and returns an error if not
     for (let i = 0;i < tempArr.length;i++) {
@@ -192,13 +207,12 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
         }
     }
 
-    const results = await findWorker(id,firstName,lastName,middleName)
+    const results = await findWorker(id,firstName,lastName,middleName,idNumber)
     if (Object.keys(results).includes("error")){
         console.log(results)
         errorTag.innerHTML = results.error
         return
     }
-
     localStorage.setItem("workerData", JSON.stringify(results));
 
 // redirects the user to the search page or the remove worker page depending on which button is clicked
