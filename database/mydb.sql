@@ -64,3 +64,6 @@ VALUES
 --@block
 DROP TABLE IF EXISTS worker_locations;
 DROP TABLE IF EXISTS workers;
+
+--@block
+SELECT * FROM workers WHERE id_number = 1738;

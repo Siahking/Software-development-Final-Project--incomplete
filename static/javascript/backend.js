@@ -22,7 +22,16 @@ export async function addLocation(locationName) {
 };
 
 export async function addWorker(firstName,middleName,lastName,gender,address,contact,age){
-    
+    const result = await fetch(`http://localhost:8080/add-worker/${firstName}/${lastName}/
+        ${middleName}/${gender}/${address}/${contact}/${age}`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            }
+        })
+        .then((data)=>data.json())
+        .then((data)=> data)
+        return result
 }
 
 export async function findLocation(name){

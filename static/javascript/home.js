@@ -1,4 +1,4 @@
-import { findWorker,findLocation,getWorkers,addLocation } from "./backend.js";
+import { findWorker,findLocation,getWorkers,addLocation,addWorker } from "./backend.js";
 
 //sarch and remove workers logic
 let addLocationBtnActive = false
@@ -112,9 +112,19 @@ document.getElementById('add-worker').addEventListener('click',function(){
         const address = document.getElementById('add-address-input').value
         const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
         const age = document.getElementById('add-age-input').value
+        const idNumber = document.getElementById('id-number-input').value
 
-        const searchResults = await findWorker(null,firstName,lastName,middleName);
+        const searchResults = await findWorker(null,null,null,null,idNumber);
+        if (!Object.keys(searchResults).includes('error')){
+            errorTag.innerHTML = 'user already exists'
+            return
+        }
 
+        const result = await addWorker(firstName,middleName,lastName,gender,
+            address,contact,age,idNumber
+        )
+
+        console.log(result)
 
     })
 

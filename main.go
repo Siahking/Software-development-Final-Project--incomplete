@@ -111,7 +111,7 @@ func main(){
 	router.GET("/find-worker", func(c *gin.Context){
 		findWorker(c ,db)
 	})
-	router.POST("/add-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age", func(c *gin.Context){
+	router.POST("/add-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age/:id_number", func(c *gin.Context){
 		addWorker(c, db)
 	});
 
@@ -269,7 +269,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 		query = baseString + "id = ?"
 		rows, err = db.Query(query, id)
 	}else if id_number != ""{
-		query = baseString + "id_number LIKE ?"
+		query = baseString + "id_number = ?"
 		rows, err = db.Query(query, "%"+id_number+"%")
 	}else if firstname != "" && lastname != "" && middlename != "" {
 		query = baseString + "first_name LIKE ? AND last_name LIKE ? AND middle_name LIKE ?"
