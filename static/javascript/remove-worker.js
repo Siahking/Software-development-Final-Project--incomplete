@@ -19,19 +19,21 @@ window.addEventListener("DOMContentLoaded", ()=>{
         const contactRow = document.createElement("td")
         const genderRow = document.createElement("td")
         const addressRow = document.createElement("td")
+        const idNumberRow = document.createElement("td")
         const removeButton = document.createElement("button")
 
         firstNameRow.innerHTML = object.first_name
         lastNameRow.innerHTML = object.last_name
-        middleNameRow.innerHTML = object.middle_name.Valid ? object.middle_name.String : "Null";
+        middleNameRow.innerHTML = object.middle_name ? object.middle_name : "Null";
         ageRow.innerHTML = object.age
-        genderRow.innerHTML = object.gender.Valid ? object.gender.String : "Null";
+        genderRow.innerHTML = object.gender ? object.gender : "Null";
         addressRow.innerHTML = object.address
-        contactRow.innerHTML = object.contact.Valid ? object.contact.String : "Null";
+        contactRow.innerHTML = object.contact ? object.contact : "Null";
+        idNumberRow.innerHTML = object.id_number
 
-        [firstNameRow,lastNameRow,middleNameRow,ageRow,genderRow,addressRow,contactRow].forEach(row =>{
+        for (const row of [firstNameRow,lastNameRow,middleNameRow,ageRow,genderRow,addressRow,contactRow,idNumberRow]){
             container.appendChild(row)
-        })
+        }
 
         removeButton.setAttribute("id",object.id)
         removeButton.innerHTML = "Remove Worker"

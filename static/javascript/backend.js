@@ -21,17 +21,35 @@ export async function addLocation(locationName) {
     return result
 };
 
-export async function addWorker(firstName,middleName,lastName,gender,address,contact,age){
-    const result = await fetch(`http://localhost:8080/add-worker/${firstName}/${lastName}/
-        ${middleName}/${gender}/${address}/${contact}/${age}`,{
-            method:"POST",
-            headers:{
+export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number){
+    try {
+        const response = await fetch("http://localhost:8080/workers/add-worker",{
+            method: "POST",
+            headers: {
                 "Content-Type":"application/json"
-            }
-        })
-        .then((data)=>data.json())
-        .then((data)=> data)
-        return result
+            },
+            body:JSON.stringify({
+                first_name,
+                last_name,
+                middle_name,
+                gender,
+                address,
+                contact,
+                age,
+                id_number
+            })
+        });
+
+        if(!response.ok){
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return result;
+    }catch (error) {    
+        console.error("Error adding worker:", error);
+        return { error: error.message };
+    }
 }
 
 export async function findLocation(name){

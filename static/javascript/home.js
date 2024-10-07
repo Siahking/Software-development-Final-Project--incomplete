@@ -5,7 +5,7 @@ let addLocationBtnActive = false
 let addWorkerBtnActive = false
 let searchBtnActive = false
 let removeWorkerBtnActive = false
-const messageContainer = document.getElementById("message")
+const messageTag = document.getElementById("message")
 const errorTag = document.getElementById("error-tag")
 const findWorkerBtn = document.getElementById("remove-worker")
 const searchBtn = document.getElementById("find-worker")
@@ -90,6 +90,11 @@ document.getElementById('add-location').addEventListener('click',function(){
         }
         const message = await addLocation(location)
 
+        if (Object.keys(message).includes('error')){
+            localStorage.setItem(message.error)
+        }else{
+            localStorage.setItem(message.message)
+        }
         window.location.reload()
     })
 });
@@ -111,8 +116,8 @@ document.getElementById('add-worker').addEventListener('click',function(){
         const gender = document.getElementById('add-gender-input').value !== "" ? document.getElementById('add-gender-input').value : null;
         const address = document.getElementById('add-address-input').value
         const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
-        const age = document.getElementById('add-age-input').value
-        const idNumber = document.getElementById('id-number-input').value
+        const age = Number(document.getElementById('add-age-input').value)
+        const idNumber = Number(document.getElementById('id-number-input').value)
 
         const searchResults = await findWorker(null,null,null,null,idNumber);
         if (!Object.keys(searchResults).includes('error')){
@@ -120,11 +125,17 @@ document.getElementById('add-worker').addEventListener('click',function(){
             return
         }
 
+        console.log([firstName,lastName,middleName,gender,address,contact,age,idNumber])
+
         const result = await addWorker(firstName,middleName,lastName,gender,
             address,contact,age,idNumber
         )
 
-        console.log(result)
+        if (Object.keys(result).includes('error')){
+            messageTag.innerHTML = result.error
+        }else{
+            messageTag.innerHTML = result.message
+        }
 
     })
 
@@ -239,5 +250,5 @@ window.addEventListener("DOMContentLoaded",()=>{
     const message = sessionStorage.getItem("Message")
 
     if (message)
-        messageContainer.innerHTML = message
+        messageTag.innerHTML = message
 })

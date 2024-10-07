@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -22,13 +21,13 @@ type Worker struct{
 	ID			int				`json:"id"`
 	FirstName	string			`json:"first_name"`
 	LastName	string			`json:"last_name"`
-	MiddleName	sql.NullString	`json:"middle_name"`
-	Gender		sql.NullString	`json:"gender"`
+	MiddleName	*string			`json:"middle_name"`
+	Gender		*string			`json:"gender"`
 	Address		string			`json:"address"`
-	Contact		sql.NullString	`json:"contact"`
+	Contact		*string			`json:"contact"`
 	Age			int				`json:"age"`
 	ID_Number	int				`json:"id_number"`
-	LocationID	sql.NullInt64	`json:"location_id"`
+	LocationID	*int64			`json:"location_id"`
 }
 
 func main(){
@@ -111,7 +110,7 @@ func main(){
 	router.GET("/find-worker", func(c *gin.Context){
 		findWorker(c ,db)
 	})
-	router.POST("/add-worker/:first_name/:last_name/:middle_name/:gender/:address/:contact/:age/:id_number", func(c *gin.Context){
+	router.POST("/workers/add-worker", func(c *gin.Context) {
 		addWorker(c, db)
 	});
 
@@ -218,39 +217,33 @@ func deleteEntry(c *gin.Context, db *sql.DB){
 	}
 }
 
-func setNull(value string) sql.NullString {
-	if value == "null"{
-		return sql.NullString{String:"",Valid:false}
-	}
-	return sql.NullString{String:value, Valid:true}
-}
+// func setNull(value string) sql.NullString {
+// 	if value == "null"{
+// 		return sql.NullString{String:"",Valid:false}
+// 	}
+// 	return sql.NullString{String:value, Valid:true}
+// }
 
 func addWorker(c *gin.Context, db *sql.DB){
-
 	var worker Worker
-	worker.FirstName = c.Param("first_name")
-	worker.LastName = c.Param("last_name")
-	worker.MiddleName = setNull(c.Param("middle_name"))
-	worker.Gender = setNull(c.Param("gender"))
-	worker.Address = c.Param("address")
-	worker.Contact = setNull(c.Param("contact"))
-
-	age,_ := strconv.Atoi(c.Param("age"))
-	id_number,_ := strconv.Atoi(c.Param("id_number"))
-	worker.Age = age
-	worker.ID_Number = id_number
-
-	query := "INSERT INTO workers (first_name,last_name,middle_name,gender,address,contact,age,id_number) VALUES (?,?,?,?,?,?,?,?)"
-
-	_,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName.String,
-		worker.Gender.String,worker.Address,worker.Contact.String,worker.Age,worker.ID_Number)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in adding values to the db"+err.Error()})
+	fmt.Println("passed atop")
+	if err := c.ShouldBindJSON(&worker); err != nil {
+		fmt.Printf("Error:\n"+err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid request body"})
 		return
 	}
 
-	c.JSON(http.StatusCreated,gin.H{"message":"Value inserted"})
+	query := "INSERT INTO workers (first_name, last_name, middle_name,gender,address,contact, age, id_number)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)"
+
+	_,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName,
+		worker.Gender,worker.Address,worker.Contact,worker.Age,worker.ID_Number)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in adding values to the db: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message":"Worker added successfully"})
 }
 
 func findWorker(c *gin.Context, db *sql.DB){
@@ -324,6 +317,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 }
 
 func getWorkers(c *gin.Context, db *sql.DB){
+	fmt.Println("\npassed in the get workers function\n")
 	rows,err := db.Query("SELECT * FROM workers")
 	
 	if err != nil{
