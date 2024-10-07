@@ -25,7 +25,6 @@ const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumber
 
 //general functions
 function disableElements(checkbox,checkboxArr,inputsArr){
-    console.log(checkbox.checked)
     if(checkbox.checked){
         checkboxArr.forEach(checkbox=>{
             checkbox.setAttribute("disabled","true")
@@ -68,76 +67,84 @@ function hideOrShowActivity(btnActivity,div,inputElements=null){
     return btnActivity
 };
 
-//TODO FIND ALL WORKER ACTIVITY AND MAKE SURE THE ID_NUMBER IS INCLUDED
+function clearDisplay(){
+    console.log('passed in here')
+    const inputElements = document.querySelectorAll("input")
+    const hiddenDivsArr = ["add-location-div","add-worker-div","find-workers"]
+
+    inputElements.forEach(input=>input.value = "")
+    hiddenDivsArr.forEach(div=>{
+        if (!div.classList.contains("hidden")){
+            div.classList.add('hidden')
+        }
+    })
+}
 
 //add location logic
 document.getElementById('add-location').addEventListener('click',function(){
-    const submitBtn = document.getElementById('add-location-submit-btn')
     const addLocationDiv = document.getElementById('add-location-div')
     addLocationBtnActive = hideOrShowActivity(addLocationBtnActive,addLocationDiv)
-
-    submitBtn.addEventListener('click',async function(){
-        const locationInput = document.getElementById('location-input');
-        const location = locationInput.value
-        if (location === ""){
-            errorTag.innerHTML = "Please insert a value into the search tag"
-            return
-        }
-        const result = await findLocation(location)
-        if (!Object.keys(result).includes('error')){
-            errorTag.innerHTML = "This location already exists"
-            return
-        }
-        const message = await addLocation(location)
-
-        if (Object.keys(message).includes('error')){
-            localStorage.setItem(message.error)
-        }else{
-            localStorage.setItem(message.message)
-        }
-        window.location.reload()
-    })
 });
+
+document.getElementById('add-location-submit-btn').addEventListener('click',async function(){
+    const locationInput = document.getElementById('location-input');
+    const location = locationInput.value
+    if (location === ""){
+        errorTag.innerHTML = "Please insert a value into the search tag"
+        return
+    }
+    const result = await findLocation(location)
+    if (!Object.keys(result).includes('error')){
+        errorTag.innerHTML = "This location already exists"
+        return
+    }
+    // const message = await addLocation(location)
+    const message = {"message":"Success"}
+
+    if (Object.keys(message).includes('error')){
+        localStorage.setItem('Message',message.error)
+    }else{
+        localStorage.setItem("Message",message.message)
+    }
+
+    clearDisplay()
+    window.location.href = window.location.href;
+})
 
 //add worker logic
 document.getElementById('add-worker').addEventListener('click',function(){
-    const submitBtn = document.getElementById('add-worker-submit-btn');
-    const workerForm = document.getElementById('add-worker-form');
     const addWorkerDiv = document.getElementById('add-worker-div');
     addWorkerBtnActive = hideOrShowActivity(addWorkerBtnActive,addWorkerDiv)
+})
 
-    workerForm.addEventListener("submit",async function(event){
+document.getElementById('add-worker-form').addEventListener("submit",async function(event){
 
-        event.preventDefault()
+    event.preventDefault()
 
-        const firstName = document.getElementById('add-first-name-input').value
-        const lastName = document.getElementById('add-last-name-input').value
-        const middleName = document.getElementById('add-middle-name-input').value !== "" ? document.getElementById('add-middle-name-input').value : null;
-        const gender = document.getElementById('add-gender-input').value !== "" ? document.getElementById('add-gender-input').value : null;
-        const address = document.getElementById('add-address-input').value
-        const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
-        const age = Number(document.getElementById('add-age-input').value)
-        const idNumber = Number(document.getElementById('id-number-input').value)
+    const firstName = document.getElementById('add-first-name-input').value
+    const lastName = document.getElementById('add-last-name-input').value
+    const middleName = document.getElementById('add-middle-name-input').value !== "" ? document.getElementById('add-middle-name-input').value : null;
+    const gender = document.getElementById('add-gender-input').value !== "" ? document.getElementById('add-gender-input').value : null;
+    const address = document.getElementById('add-address-input').value
+    const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
+    const age = Number(document.getElementById('add-age-input').value)
+    const idNumber = Number(document.getElementById('id-number-input').value)
 
-        const searchResults = await findWorker(null,null,null,null,idNumber);
-        if (!Object.keys(searchResults).includes('error')){
-            errorTag.innerHTML = 'user already exists'
-            return
-        }
+    const searchResults = await findWorker(null,null,null,null,idNumber);
+    if (!Object.keys(searchResults).includes('error')){
+        errorTag.innerHTML = 'user already exists'
+        return
+    }
 
-        console.log([firstName,lastName,middleName,gender,address,contact,age,idNumber])
+    const result = await addWorker(firstName,middleName,lastName,gender,
+        address,contact,age,idNumber
+    )
 
-        const result = await addWorker(firstName,middleName,lastName,gender,
-            address,contact,age,idNumber
-        )
-
-        if (Object.keys(result).includes('error')){
-            messageTag.innerHTML = result.error
-        }else{
-            messageTag.innerHTML = result.message
-        }
-
-    })
+    if (Object.keys(result).includes('error')){
+        messageTag.innerHTML = result.error
+    }else{
+        messageTag.innerHTML = result.message
+    }
 
 })
 

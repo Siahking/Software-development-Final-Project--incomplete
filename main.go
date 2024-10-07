@@ -317,7 +317,6 @@ func findWorker(c *gin.Context, db *sql.DB){
 }
 
 func getWorkers(c *gin.Context, db *sql.DB){
-	fmt.Println("\npassed in the get workers function\n")
 	rows,err := db.Query("SELECT * FROM workers")
 	
 	if err != nil{
