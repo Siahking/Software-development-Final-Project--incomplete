@@ -1,15 +1,10 @@
 import { findWorker,findLocation,getWorkers,addLocation,addWorker } from "./backend.js";
 
-//sarch and remove workers logic
-let addLocationBtnActive = false
-let addWorkerBtnActive = false
+//search and remove workers logic
 let searchBtnActive = false
-let removeWorkerBtnActive = false
 const messageTag = document.getElementById("message")
 const errorTag = document.getElementById("error-tag")
-const findWorkerBtn = document.getElementById("remove-worker")
-const searchBtn = document.getElementById("find-worker")
-const searchDiv = document.getElementById("find-workers")
+const searchDiv = document.getElementById("find-workers-div")
 const idCheckbox = document.getElementById("id")
 const firstNameCheckbox = document.getElementById("first-name")
 const lastNameCheckbox = document.getElementById("last-name")
@@ -20,6 +15,8 @@ const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const idNumberInput = document.getElementById("id-number-input")
+const hideButtons = ['add-worker','add-location','remove-worker','find-worker']
+const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div']
 const checkboxArr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox]
 const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumberInput]
 
@@ -43,48 +40,36 @@ function disableElements(checkbox,checkboxArr,inputsArr){
     };
 };
 
-function hideOrShowActivity(btnActivity,div,inputElements=null){
-    btnActivity = !btnActivity
-    if (btnActivity){
-        div.classList.remove('hidden')
-        if (inputElements){
-            inputElements.forEach(element=>{
-                if (element.classList.contains('hidden')){
-                    element.classList.remove('hidden')
-                }
-            })
-        };
-    }else{
-        div.classList.add('hidden')
-        if (inputElements){
-            inputElements.forEach(element=>{
-                if (!element.classList.contains('hidden')){
-                    element.classList.add('hidden')
-                }
-            })
-        };
+hideButtons.forEach(id=>{
+    const btn = document.getElementById(id)
+    let divId = id+"-div"
+    if (divId === 'remove-worker-div'){
+        divId = 'find-worker-div'
     }
-    return btnActivity
-};
-
-function clearDisplay(){
-    console.log('passed in here')
-    const inputElements = document.querySelectorAll("input")
-    const hiddenDivsArr = ["add-location-div","add-worker-div","find-workers"]
-
-    inputElements.forEach(input=>input.value = "")
-    hiddenDivsArr.forEach(div=>{
-        if (!div.classList.contains("hidden")){
-            div.classList.add('hidden')
+    const btnDiv = document.getElementById(divId)
+    btn.addEventListener('click',function(){
+        if (btnDiv.classList.contains('hidden')){
+            btnDiv.classList.remove('hidden')
+        }else{
+            btnDiv.classList.add('hidden')
         }
-    })
-}
+        const arr = []
+        for (const arrId of inputDivIdArr){
+            if (arrId !== divId){
+                arr.push(arrId)
+            }
+        }
+        arr.forEach(item=>{
+            const currentDiv = document.getElementById(item)
+            if (!currentDiv.classList.contains('hidden')){
+                currentDiv.classList.add('hidden')
+            }
+        })
 
-//add location logic
-document.getElementById('add-location').addEventListener('click',function(){
-    const addLocationDiv = document.getElementById('add-location-div')
-    addLocationBtnActive = hideOrShowActivity(addLocationBtnActive,addLocationDiv)
-});
+        const textInputs = document.querySelectorAll('input[type="text"]');
+        textInputs.forEach(input=>input.value = "")
+    })
+})
 
 document.getElementById('add-location-submit-btn').addEventListener('click',async function(){
     const locationInput = document.getElementById('location-input');
@@ -106,15 +91,6 @@ document.getElementById('add-location-submit-btn').addEventListener('click',asyn
     }else{
         localStorage.setItem("Message",message.message)
     }
-
-    clearDisplay()
-    window.location.href = window.location.href;
-})
-
-//add worker logic
-document.getElementById('add-worker').addEventListener('click',function(){
-    const addWorkerDiv = document.getElementById('add-worker-div');
-    addWorkerBtnActive = hideOrShowActivity(addWorkerBtnActive,addWorkerDiv)
 })
 
 document.getElementById('add-worker-form').addEventListener("submit",async function(event){
@@ -146,6 +122,7 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
         messageTag.innerHTML = result.message
     }
 
+    clearDisplay()
 })
 
 //array of checkbox ids for later use
@@ -183,26 +160,7 @@ arr.forEach((element)=>{
 //helper function for the displaySearchDiv function
 function toogleValues(currentBtn){
     [idInput,firstNameInput,lastNameInput,middleNameInput].forEach(input=>input.value = "")
-    currentBtn ? searchDiv.classList.remove("hidden") : searchDiv.classList.add("hidden")
-    return currentBtn
-}
-
-// toogles between showing the input tags whether the search button was clicked or the remove worker
-// button was clicked
-function displaySearchDiv(){
-    [searchBtn,findWorkerBtn].forEach(btn=>{
-        btn.addEventListener("click",function (){
-            if (this.id === "remove-worker" ){
-                removeWorkerBtnActive = !removeWorkerBtnActive
-                searchBtnActive = false
-                toogleValues(removeWorkerBtnActive)
-            }else{
-                searchBtnActive = !searchBtnActive
-                removeWorkerBtnActive = false
-                toogleValues(searchBtnActive)
-            }
-        })
-    })
+    currentBtn ? searchDiv.classList.remove("hidden") : searchDiv.classList.add("hidden")   
 }
 
 //Helper function to assign values to the variables based on the input of input fields and if the checkbox is checked
@@ -213,7 +171,7 @@ function assignVariables(input,checkbox){
 
 //checks for empty input fields and unchecked boxes, if no fields are filled returns an error
 
-displaySearchDiv();
+// displaySearchDiv();
 document.getElementById("workerSearchForm").addEventListener("submit",async function (event){
 
     event.preventDefault()
