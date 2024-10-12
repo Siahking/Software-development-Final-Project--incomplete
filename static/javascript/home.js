@@ -1,7 +1,7 @@
-import { findWorker,findLocation,getWorkers,addLocation,addWorker } from "./backend.js";
+import { findWorker,findLocation,addLocation,addWorker } from "./backend.js";
 
 //search and remove workers logic
-let removeWorkerBtnActive,removeLocation = false
+let removeWorkerBtnActive,removeLocationActive = false
 const messageTag = document.getElementById("message")
 const errorTag = document.getElementById("error-tag")
 const searchDiv = document.getElementById("find-workers-div")
@@ -40,6 +40,9 @@ function disableElements(checkbox,checkboxArr,inputsArr){
     };
 };
 
+console.log(removeLocationActive)
+
+// toogle between showing buttons and hiding them in click //
 hideButtons.forEach(id=>{
     const btn = document.getElementById(id)
     let divId;
@@ -47,7 +50,7 @@ hideButtons.forEach(id=>{
         removeWorkerBtnActive = !removeWorkerBtnActive
         divId = 'find-worker-div'
     }else if (id === "remove-location"){
-        removeLocation = !removeLocation
+        removeLocationActive = !removeLocationActive
         divId = 'add-location-div'
     }else{
         divId = id+"-div"
@@ -81,7 +84,7 @@ hideButtons.forEach(id=>{
 })
 
 //ADD OF REMOVE LOCATION//
-document.getElementById('add-location-submit-btn').addEventListener('click',async function(){
+document.getElementById('location-submit-btn').addEventListener('click',async function(){
     const locationInput = document.getElementById('location-input');
     const location = locationInput.value
     if (location === ""){
@@ -90,8 +93,8 @@ document.getElementById('add-location-submit-btn').addEventListener('click',asyn
     }
     const result = await findLocation(location)
 
-    console.log(removeLocation)
-    if (removeLocation){
+    console.log(removeLocationActive)
+    if (removeLocationActive){
         if (Object.keys(result).includes('error')){
             errorTag.innerHTML = "This location does not exist"
             return
