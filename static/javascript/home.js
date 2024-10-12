@@ -1,7 +1,7 @@
 import { findWorker,findLocation,getWorkers,addLocation,addWorker } from "./backend.js";
 
 //search and remove workers logic
-let searchBtnActive = false
+let removeWorkerBtnActive,removeLocation = false
 const messageTag = document.getElementById("message")
 const errorTag = document.getElementById("error-tag")
 const searchDiv = document.getElementById("find-workers-div")
@@ -15,7 +15,7 @@ const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const idNumberInput = document.getElementById("id-number-input")
-const hideButtons = ['add-worker','add-location','remove-worker','find-worker']
+const hideButtons = ['add-worker','add-location','remove-worker','find-worker','remove-location']
 const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div']
 const checkboxArr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox]
 const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumberInput]
@@ -42,9 +42,15 @@ function disableElements(checkbox,checkboxArr,inputsArr){
 
 hideButtons.forEach(id=>{
     const btn = document.getElementById(id)
-    let divId = id+"-div"
-    if (divId === 'remove-worker-div'){
+    let divId;
+    if (id === "remove-worker"){
+        removeWorkerBtnActive = !removeWorkerBtnActive
         divId = 'find-worker-div'
+    }else if (id === "remove-location"){
+        removeLocation = !removeLocation
+        divId = 'add-location-div'
+    }else{
+        divId = id+"-div"
     }
     const btnDiv = document.getElementById(divId)
     btn.addEventListener('click',function(){
@@ -68,9 +74,13 @@ hideButtons.forEach(id=>{
 
         const textInputs = document.querySelectorAll('input[type="text"]');
         textInputs.forEach(input=>input.value = "")
+
+        errorTag.innerHTML = ""
+        messageTag.innerHTML = ""
     })
 })
 
+//ADD OF REMOVE LOCATION//
 document.getElementById('add-location-submit-btn').addEventListener('click',async function(){
     const locationInput = document.getElementById('location-input');
     const location = locationInput.value
@@ -79,18 +89,32 @@ document.getElementById('add-location-submit-btn').addEventListener('click',asyn
         return
     }
     const result = await findLocation(location)
-    if (!Object.keys(result).includes('error')){
-        errorTag.innerHTML = "This location already exists"
-        return
-    }
-    // const message = await addLocation(location)
-    const message = {"message":"Success"}
 
-    if (Object.keys(message).includes('error')){
-        localStorage.setItem('Message',message.error)
+    console.log(removeLocation)
+    if (removeLocation){
+        if (Object.keys(result).includes('error')){
+            errorTag.innerHTML = "This location does not exist"
+            return
+        }else{
+            const filteredLocations = await findLocation(location)
+            localStorage.setItem("Locations",JSON.stringify(filteredLocations))
+            window.location.href = "/remove-location"
+        }
     }else{
-        localStorage.setItem("Message",message.message)
+        if (!Object.keys(result).includes('error')){
+            errorTag.innerHTML = "This location already exists"
+            return
+        }
+
+        const message = await addLocation(location)
+
+        if (Object.keys(message).includes('error')){
+            localStorage.setItem('Message',message.error)
+        }else{
+            localStorage.setItem("Message",message.message)
+        }
     }
+
 })
 
 document.getElementById('add-worker-form').addEventListener("submit",async function(event){
@@ -121,8 +145,6 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
     }else{
         messageTag.innerHTML = result.message
     }
-
-    clearDisplay()
 })
 
 //array of checkbox ids for later use
@@ -157,19 +179,12 @@ arr.forEach((element)=>{
     })
 })
 
-//helper function for the displaySearchDiv function
-function toogleValues(currentBtn){
-    [idInput,firstNameInput,lastNameInput,middleNameInput].forEach(input=>input.value = "")
-    currentBtn ? searchDiv.classList.remove("hidden") : searchDiv.classList.add("hidden")   
-}
-
 //Helper function to assign values to the variables based on the input of input fields and if the checkbox is checked
 function assignVariables(input,checkbox){
     if (input.value !== "" && checkbox.checked) return input.value
     return null
 }
 
-//checks for empty input fields and unchecked boxes, if no fields are filled returns an error
 
 // displaySearchDiv();
 document.getElementById("workerSearchForm").addEventListener("submit",async function (event){
@@ -195,7 +210,6 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
 
     const results = await findWorker(id,firstName,lastName,middleName,idNumber)
     if (Object.keys(results).includes("error")){
-        console.log(results)
         errorTag.innerHTML = results.error
         return
     }
@@ -203,10 +217,10 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
 
 // redirects the user to the search page or the remove worker page depending on which button is clicked
     window.location.reload()
-    if (searchBtnActive){
-        window.location.href = "/worker-details";
-    }else{
+    if (removeWorkerBtnActive){
         window.location.href = "/remove-worker";
+    }else{
+        window.location.href = "/worker-details";
     }
 })
 

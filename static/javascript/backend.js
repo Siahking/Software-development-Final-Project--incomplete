@@ -121,7 +121,6 @@ export async function removeEntry(id,table){
         }
 
         const result = await response.json();
-        console.log(result)
 
         return result;
     } catch (error){

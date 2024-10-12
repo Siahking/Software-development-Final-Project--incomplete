@@ -77,6 +77,9 @@ func main(){
 	router.GET("/remove-worker", func(c *gin.Context){
 		c.HTML(http.StatusOK, "remove-worker.html",nil)
 	})
+	router.GET("/remove-location", func(c *gin.Context){
+		c.HTML(http.StatusOK, "remove-location.html",nil)
+	})
 	router.GET("/get-workers",func(c *gin.Context){
 		c.HTML(http.StatusOK, "get-workers.html",nil)
 	})
@@ -216,13 +219,6 @@ func deleteEntry(c *gin.Context, db *sql.DB){
 		c.JSON(http.StatusOK, gin.H{"message":"Entry deleted successfully"})
 	}
 }
-
-// func setNull(value string) sql.NullString {
-// 	if value == "null"{
-// 		return sql.NullString{String:"",Valid:false}
-// 	}
-// 	return sql.NullString{String:value, Valid:true}
-// }
 
 func addWorker(c *gin.Context, db *sql.DB){
 	var worker Worker
