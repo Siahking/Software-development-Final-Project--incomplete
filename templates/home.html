@@ -45,7 +45,12 @@
             </label>
             <label for="add-gender-input">
                 Gender
-                <input type="text" id="add-gender-input" placeholder="Type here">
+                 <select id="add-gender-input">
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                 </select>
             </label>
             <label for="add-address-input">
                 Address
@@ -57,7 +62,7 @@
             </label>
             <label for="add-age-input">
                 Age
-                <input type="number" id="add-age-input" required placeholder="Type here">
+                <input type="number" id="add-age-input" required placeholder="Type here" min="18">
             </label>
             <label for="add-id-number-input">
                 ID Number

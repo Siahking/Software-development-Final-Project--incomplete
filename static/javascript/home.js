@@ -158,10 +158,12 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
     )
 
     if (Object.keys(result).includes('error')){
-        messageTag.innerHTML = result.error
+        sessionStorage.setItem("Message",result.error)
     }else{
-        messageTag.innerHTML = result.message
+        sessionStorage.setItem("Message",result.message)
     }
+
+    window.location.href = '/'
 })
 
 // if the id or id number checkbox is clicked then i wont want to search by any other field,
