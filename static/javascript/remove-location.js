@@ -2,7 +2,6 @@ import { removeEntry } from "./backend.js";
 
 window.addEventListener("DOMContentLoaded",function(){
     const locationsData = JSON.parse(localStorage.getItem("Locations"))
-    console.log(locationsData)
     const message = document.getElementById("messageTag")
     const list = document.getElementById('list')
 
@@ -32,11 +31,11 @@ window.addEventListener("DOMContentLoaded",function(){
 
             const results = await removeEntry(id,'locations')
             if (Object.keys(results).includes('message')){
-                localStorage.setItem("Message",results.message)
+                sessionStorage.setItem("Message",results.message)
             }else{
-                localStorage.setItem("Message",results.error)
+                sessionStorage.setItem("Message",results.error)
             }
-            window.location.href("/")
+            window.location.href="/"
         })
     })
 })

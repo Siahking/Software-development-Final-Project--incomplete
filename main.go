@@ -259,7 +259,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 		rows, err = db.Query(query, id)
 	}else if id_number != ""{
 		query = baseString + "id_number = ?"
-		rows, err = db.Query(query, "%"+id_number+"%")
+		rows, err = db.Query(query, id_number)
 	}else if firstname != "" && lastname != "" && middlename != "" {
 		query = baseString + "first_name LIKE ? AND last_name LIKE ? AND middle_name LIKE ?"
 		rows, err = db.Query(query, "%"+firstname+"%", "%"+lastname+"%", "%"+middlename+"%")

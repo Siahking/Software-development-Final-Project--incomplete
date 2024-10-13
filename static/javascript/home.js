@@ -40,28 +40,41 @@ function disableElements(checkbox,checkboxArr,inputsArr){
     };
 };
 
-console.log(removeLocationActive)
+//toogles between showing the input fields for each checkbox if the checkbox is clicked or not
+checkboxArr.forEach((element)=>{
+    const inputField = document.getElementById(element.id + "-input")
+    element.addEventListener("click",function(){
+        if (this.checked){
+            inputField.classList.remove("hidden");
+        }else{
+            inputField.classList.add("hidden");
+            inputField.value = ""
+        }
+    })
+})
 
 // toogle between showing buttons and hiding them in click //
 hideButtons.forEach(id=>{
     const btn = document.getElementById(id)
-    let divId;
-    if (id === "remove-worker"){
-        removeWorkerBtnActive = !removeWorkerBtnActive
-        divId = 'find-worker-div'
-    }else if (id === "remove-location"){
-        removeLocationActive = !removeLocationActive
-        divId = 'add-location-div'
-    }else{
-        divId = id+"-div"
-    }
+    const divId = id === "remove-worker" ? "find-worker-div"
+        : id === "remove-location" ? "add-location-div"
+        : id + '-div'
     const btnDiv = document.getElementById(divId)
     btn.addEventListener('click',function(){
+        if (id === "remove-worker"){
+            removeWorkerBtnActive = !removeWorkerBtnActive
+            removeLocationActive = false
+        }else if(id === "remove-location"){
+            removeLocationActive = !removeLocationActive
+            removeWorkerBtnActive = false
+        }
+
         if (btnDiv.classList.contains('hidden')){
             btnDiv.classList.remove('hidden')
         }else{
             btnDiv.classList.add('hidden')
         }
+
         const arr = []
         for (const arrId of inputDivIdArr){
             if (arrId !== divId){
@@ -112,14 +125,15 @@ document.getElementById('location-submit-btn').addEventListener('click',async fu
         const message = await addLocation(location)
 
         if (Object.keys(message).includes('error')){
-            localStorage.setItem('Message',message.error)
+            sessionStorage.setItem('Message',message.error)
         }else{
-            localStorage.setItem("Message",message.message)
+            sessionStorage.setItem("Message",message.message)
         }
+        window.location.reload()
     }
-
 })
 
+//ADD WORKER FUNCTION//
 document.getElementById('add-worker-form').addEventListener("submit",async function(event){
 
     event.preventDefault()
@@ -150,12 +164,9 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
     }
 })
 
-//array of checkbox ids for later use
-const arr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox];
-
 // if the id or id number checkbox is clicked then i wont want to search by any other field,
 // therefore this function disables the other fields if the id or the id number checkbox is checked
-[idCheckbox,idNumberCheckbox].forEach(checkbox=>{
+for (const checkbox of [idCheckbox,idNumberCheckbox]){
     checkbox.addEventListener('click',function(){
         if (this.id === "id"){
             const tempCheckboxArr = [...checkboxArr].slice(1)
@@ -167,20 +178,7 @@ const arr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,id
             disableElements(idNumberCheckbox,tempCheckboxArr,tempInputArr)
         }
     })
-})
-
-//toogles between showing the input fields for each checkbox if the checkbox is clicked or not
-arr.forEach((element)=>{
-    const inputField = document.getElementById(element.id + "-input")
-    element.addEventListener("click",function(){
-        if (this.checked){
-            inputField.classList.remove("hidden")
-        }else{
-            inputField.classList.add("hidden");
-            inputField.value = ""
-        }
-    })
-})
+}
 
 //Helper function to assign values to the variables based on the input of input fields and if the checkbox is checked
 function assignVariables(input,checkbox){
@@ -189,7 +187,7 @@ function assignVariables(input,checkbox){
 }
 
 
-// displaySearchDiv();
+// WORKER SEARCH FUNCTION
 document.getElementById("workerSearchForm").addEventListener("submit",async function (event){
 
     event.preventDefault()
@@ -199,8 +197,8 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
     const firstName = assignVariables(firstNameInput,firstNameCheckbox)
     const lastName = assignVariables(lastNameInput,lastNameCheckbox)
     const middleName = assignVariables(middleNameInput,middleNameCheckbox)
-    const idNumber = assignVariables(idNumberInput,idNumberCheckbox)
-    const tempArr = [id,firstName,lastName,middleName,idNumber]
+    const searchIdNumber = assignVariables(idNumberInput,idNumberCheckbox)
+    const tempArr = [id,firstName,lastName,middleName,searchIdNumber]
 
 // makes sure that atleast one checkbox and input field is filled and returns an error if not
     for (let i = 0;i < tempArr.length;i++) {
@@ -211,7 +209,7 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
         }
     }
 
-    const results = await findWorker(id,firstName,lastName,middleName,idNumber)
+    const results = await findWorker(id,firstName,lastName,middleName,searchIdNumber)
     if (Object.keys(results).includes("error")){
         errorTag.innerHTML = results.error
         return
@@ -219,7 +217,6 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
     localStorage.setItem("workerData", JSON.stringify(results));
 
 // redirects the user to the search page or the remove worker page depending on which button is clicked
-    window.location.reload()
     if (removeWorkerBtnActive){
         window.location.href = "/remove-worker";
     }else{
@@ -227,10 +224,12 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
     }
 })
 
-//add message from deleting worker
+//add message to the main div
 window.addEventListener("DOMContentLoaded",()=>{
     const message = sessionStorage.getItem("Message")
 
     if (message)
         messageTag.innerHTML = message
+        sessionStorage.removeItem("Message")
+        localStorage.removeItem("Message")
 })

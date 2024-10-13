@@ -48,10 +48,9 @@ window.addEventListener("DOMContentLoaded", ()=>{
     Array.from(buttons).forEach(button=>{
         button.addEventListener("click",async function (){
             const id = this.id
-            const results = await removeEntry(id,workers)
-            const message = `Field failed to be deleted ${results.error}` ? typeof results === 'object' : results;
+            const results = await removeEntry(id,"workers")
             
-            sessionStorage.setItem("Message",message)
+            sessionStorage.setItem("Message",results.message)
 
             window.location.href = "/";
         })
