@@ -14,9 +14,7 @@ CREATE Table workers(
     address TEXT NOT NULL,
     contact VARCHAR(15),
     age INT NOT NULL,
-    id_number INT UNIQUE NOT NULL,
-    location_id INT,
-    FOREIGN KEY (location_id) REFERENCES locations(id)
+    id_number INT UNIQUE NOT NULL
 );
 
 --@block
@@ -43,10 +41,10 @@ VALUES
     ('Isiah','Fereton',NULL,"Male","123 King Street", "1234567890",45,232424);
 
 --@block
-SELECT * FROM workers;
+SELECT * FROM locations WHERE id = 2;
 
 --@block
-SELECT id, location FROM locations WHERE location = "Moriah";
+SELECT * FROM workers WHERE id = 1;
 
 --@block
 DELETE FROM locations;

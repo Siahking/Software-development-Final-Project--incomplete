@@ -17,6 +17,11 @@ type Location struct{
 	Location 	string	`json:"location"`
 }
 
+type WorkerLocation struct{
+	WorkerID	int		`json:"worker_id"`
+	LocationID	int		`json:"location_id"`
+}
+
 type Worker struct{
 	ID			int				`json:"id"`
 	FirstName	string			`json:"first_name"`
@@ -27,7 +32,6 @@ type Worker struct{
 	Contact		*string			`json:"contact"`
 	Age			int				`json:"age"`
 	ID_Number	int				`json:"id_number"`
-	LocationID	*int64			`json:"location_id"`
 }
 
 func main(){
@@ -116,6 +120,11 @@ func main(){
 	router.POST("/workers/add-worker", func(c *gin.Context) {
 		addWorker(c, db)
 	});
+
+	//worker_location routes
+	router.POST("/assign_location/:worker_id/:location_id", func(c *gin.Context) {
+		assignWorkerToLocation(c ,db)
+	})
 
 	fmt.Println("Starting Gin server on :8080")
 	log.Fatal(router.Run(":8080"))
@@ -222,7 +231,6 @@ func deleteEntry(c *gin.Context, db *sql.DB){
 
 func addWorker(c *gin.Context, db *sql.DB){
 	var worker Worker
-	fmt.Println("passed atop")
 	if err := c.ShouldBindJSON(&worker); err != nil {
 		fmt.Printf("Error:\n"+err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid request body"})
@@ -294,7 +302,7 @@ func findWorker(c *gin.Context, db *sql.DB){
 	for rows.Next(){
 		var worker Worker
 		if err := rows.Scan(&worker.ID, &worker.FirstName, &worker.LastName, &worker.MiddleName, 
-            &worker.Gender, &worker.Address, &worker.Contact, &worker.Age,&worker.ID_Number, &worker.LocationID); err != nil{
+            &worker.Gender, &worker.Address, &worker.Contact, &worker.Age,&worker.ID_Number); err != nil{
 				c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n" + err.Error()})
 			}
 		workers = append(workers, worker)
@@ -329,7 +337,7 @@ func getWorkers(c *gin.Context, db *sql.DB){
 			&worker.FirstName,&worker.LastName,
 			&worker.MiddleName,&worker.Gender,
 			&worker.Address,&worker.Contact,
-			&worker.Age,&worker.ID_Number,&worker.LocationID);
+			&worker.Age,&worker.ID_Number);
 			err != nil{
 				c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n"+err.Error()})
 				return
@@ -342,4 +350,18 @@ func getWorkers(c *gin.Context, db *sql.DB){
 		}
 	
 	c.IndentedJSON(http.StatusOK, employees)
+}
+
+func assignWorkerToLocation(c *gin.Context,db *sql.DB){
+	workerId := c.Param("worker_id")
+	locationId := c.Param("location_id")
+
+	query := "INSERT  INTO worker_locations (worker_id,location_id) VALUES (?,?)"
+	_, err := db.Exec(query,workerId,locationId)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert value\n"+err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message":"Connection added successfully"})
 }

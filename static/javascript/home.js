@@ -1,6 +1,7 @@
-import { findWorker,findLocation,addLocation,addWorker } from "./backend.js";
+import { findWorker,findLocation,addLocation,addWorker, getLocations,linkWorkerLocations } from "./backend.js";
 
 //search and remove workers logic
+let gotLocations = false
 let removeWorkerBtnActive,removeLocationActive = false
 const messageTag = document.getElementById("message")
 const errorTag = document.getElementById("error-tag")
@@ -19,6 +20,8 @@ const hideButtons = ['add-worker','add-location','remove-worker','find-worker','
 const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div']
 const checkboxArr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox]
 const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumberInput]
+
+const selectedLocations = [];
 
 //general functions
 function disableElements(checkbox,checkboxArr,inputsArr){
@@ -106,7 +109,6 @@ document.getElementById('location-submit-btn').addEventListener('click',async fu
     }
     const result = await findLocation(location)
 
-    console.log(removeLocationActive)
     if (removeLocationActive){
         if (Object.keys(result).includes('error')){
             errorTag.innerHTML = "This location does not exist"
@@ -147,6 +149,13 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
     const age = Number(document.getElementById('add-age-input').value)
     const idNumber = Number(document.getElementById('id-number-input').value)
 
+    const locationsArr = document.querySelectorAll(".location-check")
+    locationsArr.forEach(location=>{
+        if (location.checked){
+            selectedLocations.push({id:location.id,location:location.value})
+        };
+    });
+
     const searchResults = await findWorker(null,null,null,null,idNumber);
     if (!Object.keys(searchResults).includes('error')){
         errorTag.innerHTML = 'user already exists'
@@ -157,6 +166,15 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
         address,contact,age,idNumber
     )
 
+    //duplicate search (TODO) create a function to drecrease repitition
+    if (selectedLocations.length > 0){
+        const newSearch = await findWorker(null,null,null,null,idNumber);
+        const idToJoin = newSearch[0].id
+        selectedLocations.forEach(object=>{
+            linkWorkerLocations(idToJoin,object.id)
+        })
+    }
+
     if (Object.keys(result).includes('error')){
         sessionStorage.setItem("Message",result.error)
     }else{
@@ -165,6 +183,48 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
 
     window.location.href = '/'
 })
+
+//logic for button inside the add-worker div to display existent locations so that a worker can be assigned to locations on assignments
+document.getElementById("toogle-btn").addEventListener('click',async function(event){
+    event.preventDefault()
+
+    const locationsDiv = document.getElementById("locations-input")
+    locationsDiv.classList.contains("hidden")
+    ? locationsDiv.classList.remove("hidden")
+    : locationsDiv.classList.add("hidden")
+
+    if (!gotLocations){
+        console.log("passed")
+        if (!locationsDiv.classList.contains("hidden")){
+            const locations = await getLocations();
+
+            if (!locations){
+                locationsDiv.innerHTML = "No Locations Found"
+                return
+            }
+
+            locations.forEach(location=>{
+                const label = document.createElement("label")
+                const input = document.createElement("input")
+                const span = document.createElement("span")
+
+                span.innerHTML = location.location
+
+                input.id = location.id
+                input.value = location.location
+                input.type = "checkbox"
+                input.className = "location-check"
+
+                label.for = location.id
+                label.appendChild(input)
+                label.appendChild(span)
+
+                locationsDiv.appendChild(label)
+            })
+        }
+        gotLocations = true
+    }
+});
 
 // if the id or id number checkbox is clicked then i wont want to search by any other field,
 // therefore this function disables the other fields if the id or the id number checkbox is checked

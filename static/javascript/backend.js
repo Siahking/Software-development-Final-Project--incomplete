@@ -105,7 +105,6 @@ export async function findWorker(id,firstName,lastName,middleName,idNumber){
 }
 
 export async function removeEntry(id,table){
-
     const url = new URL(`http://localhost:8080/delete/${table}/${id}`)
 
     try {
@@ -127,5 +126,17 @@ export async function removeEntry(id,table){
         console.error("Failed to delete worker", error);
         return {error:error.message};
     }
+}
+
+export async function linkWorkerLocations(workerId,locationId){
+    const result = await fetch(`http://localhost:8080/assign_location/${workerId}/${locationId}`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        }
+    })
+    .then((data)=> data.json())
+    .then((data) => data)
+    return result
 }
 
