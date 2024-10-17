@@ -129,7 +129,7 @@ export async function removeEntry(id,table){
 }
 
 export async function linkWorkerLocations(workerId,locationId){
-    const result = await fetch(`http://localhost:8080/assign_location/${workerId}/${locationId}`,{
+    const result = await fetch(`http://localhost:8080/assign-location/${workerId}/${locationId}`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"

@@ -122,8 +122,11 @@ func main(){
 	});
 
 	//worker_location routes
-	router.POST("/assign_location/:worker_id/:location_id", func(c *gin.Context) {
+	router.POST("/assign-location/:worker_id/:location_id", func(c *gin.Context) {
 		assignWorkerToLocation(c ,db)
+	})
+	router.GET("/get-worker-location-connections/:column/:id", func(c *gin.Context){
+		getWorkerLocationConnections(c, db)
 	})
 
 	fmt.Println("Starting Gin server on :8080")
@@ -356,7 +359,7 @@ func assignWorkerToLocation(c *gin.Context,db *sql.DB){
 	workerId := c.Param("worker_id")
 	locationId := c.Param("location_id")
 
-	query := "INSERT  INTO worker_locations (worker_id,location_id) VALUES (?,?)"
+	query := "INSERT INTO worker_locations (worker_id,location_id) VALUES (?,?)"
 	_, err := db.Exec(query,workerId,locationId)
 	if err != nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert value\n"+err.Error()})
@@ -364,4 +367,31 @@ func assignWorkerToLocation(c *gin.Context,db *sql.DB){
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message":"Connection added successfully"})
+}
+
+func getWorkerLocationConnections(c *gin.Context, db *sql.DB){
+	column := c.Param("column")
+	id := c.Param("id")
+
+	query := fmt.Sprintf("SELECT * FROM worker_locations WHERE %s = ?",column)
+
+	rows,err := db.Query(query,id)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Failed to get values from the database\n"+err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var connections []WorkerLocation
+	for rows.Next(){
+		var connection WorkerLocation
+		err := rows.Scan(&connection.WorkerID, &connection.LocationID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error scanning rows\n"+err.Error()})
+			return
+		}
+		connections = append(connections, connection)
+	}
+
+	c.IndentedJSON(http.StatusOK,connections)
 }

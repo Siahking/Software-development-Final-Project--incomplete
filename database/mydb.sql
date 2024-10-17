@@ -47,6 +47,9 @@ SELECT * FROM locations WHERE id = 2;
 SELECT * FROM workers WHERE id = 1;
 
 --@block
+SELECT * FROM worker_locations
+
+--@block
 DELETE FROM locations;
 ALTER TABLE locations AUTO_INCREMENT = 1;
 
