@@ -107,14 +107,14 @@ document.getElementById('location-submit-btn').addEventListener('click',async fu
         errorTag.innerHTML = "Please insert a value into the search tag"
         return
     }
-    const result = await findLocation(location)
+    const result = await findLocation("location",location)
 
     if (removeLocationActive){
         if (Object.keys(result).includes('error')){
             errorTag.innerHTML = "This location does not exist"
             return
         }else{
-            const filteredLocations = await findLocation(location)
+            const filteredLocations = await findLocation("location",location)
             localStorage.setItem("Locations",JSON.stringify(filteredLocations))
             window.location.href = "/remove-location"
         }
@@ -147,7 +147,7 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
     const address = document.getElementById('add-address-input').value
     const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
     const age = Number(document.getElementById('add-age-input').value)
-    const idNumber = Number(document.getElementById('id-number-input').value)
+    const idNumber = Number(document.getElementById('add-id-number-input').value)
 
     const locationsArr = document.querySelectorAll(".location-check")
     locationsArr.forEach(location=>{
@@ -166,7 +166,7 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
         address,contact,age,idNumber
     )
 
-    //duplicate search (TODO) create a function to drecrease repitition
+    //duplicate search (TODO) create a function to decrease repitition
     if (selectedLocations.length > 0){
         const newSearch = await findWorker(null,null,null,null,idNumber);
         const idToJoin = newSearch[0].id
@@ -194,7 +194,6 @@ document.getElementById("toogle-btn").addEventListener('click',async function(ev
     : locationsDiv.classList.add("hidden")
 
     if (!gotLocations){
-        console.log("passed")
         if (!locationsDiv.classList.contains("hidden")){
             const locations = await getLocations();
 

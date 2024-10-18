@@ -103,7 +103,7 @@ func main(){
 	router.GET("/locations", func(c *gin.Context){ //
 		getLocations(c, db)
 	})
-	router.GET("/locations/:name", func(c *gin.Context){
+	router.GET("/locations/:column/:value", func(c *gin.Context){
 		findLocation(c ,db)
 	})
 	router.POST("/locations/:location",func(c *gin.Context) {
@@ -162,11 +162,22 @@ func getLocations(c *gin.Context, db *sql.DB){
 };
 
 func findLocation(c *gin.Context, db *sql.DB){
-	name := c.Param("name")
-
+	var query string
+	var rows *sql.Rows
+	var err error
 	var locations []Location
-	query := "SELECT id, location FROM locations WHERE LOWER(location) LIKE LOWER(?)"
-	rows,err := db.Query(query, "%"+name+"%")
+
+	column := c.Param("column")
+	value := c.Param("value")
+	baseString := "SELECT id,location FROM locations WHERE "
+
+	if column == "id"{
+		query = baseString + "id = ?"
+		rows,err = db.Query(query, value)
+	}else{
+		query = baseString + "LOWER(location) LIKE LOWER(?)"
+		rows,err = db.Query(query, "%"+value+"%")
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error searching for values\n"+err.Error()})
 		return

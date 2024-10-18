@@ -22,6 +22,7 @@ export async function addLocation(locationName) {
 };
 
 export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number){
+    console.log(first_name,middle_name,last_name,gender,address,contact,age,id_number)
     try {
         const response = await fetch("http://localhost:8080/workers/add-worker",{
             method: "POST",
@@ -52,12 +53,11 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
     }
 }
 
-export async function findLocation(name){
-    const data = await fetch(`http://localhost:8080/locations/${name}`,{
+export async function findLocation(column,value){
+    const result = await fetch(`http://localhost:8080/locations/${column}/${value}`,{
         method: "GET"
     })
-        .then((data) => data.json())
-        .then((data) => data);
+    const data = await result.json()
     return data
 }
 
@@ -84,6 +84,8 @@ export async function findWorker(id,firstName,lastName,middleName,idNumber){
         if (lastName) url.searchParams.append("last_name", lastName);
         if (middleName) url.searchParams.append("middle_name", middleName);
     };
+
+    console.log(url)
 
     return fetch(url)
         .then(response => {
@@ -140,3 +142,17 @@ export async function linkWorkerLocations(workerId,locationId){
     return result
 }
 
+export async function workerLocationSearch(column,id){
+    const result = await fetch(`http://localhost:8080/get-worker-location-connections/${column}/${id}`,{
+        method:"GET"
+    })
+    const data = await result.json();
+    return data
+}
+
+// async function tester() {
+//     const result = await findWorker(null,null,null,null,17382)
+//     console.log(result)
+// }
+
+// tester()
