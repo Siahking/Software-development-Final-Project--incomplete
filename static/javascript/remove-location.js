@@ -1,4 +1,4 @@
-import { removeEntry } from "./backend.js";
+import { removeEntry,removeConnections } from "./backend.js";
 
 window.addEventListener("DOMContentLoaded",function(){
     const locationsData = JSON.parse(localStorage.getItem("Locations"))
@@ -28,6 +28,9 @@ window.addEventListener("DOMContentLoaded",function(){
     buttons.forEach(button=>{
         button.addEventListener('click',async function(){
             const id = this.id
+
+            //remove connection between
+            await removeConnections("location_id",id)
 
             const results = await removeEntry(id,'locations')
             if (Object.keys(results).includes('message')){

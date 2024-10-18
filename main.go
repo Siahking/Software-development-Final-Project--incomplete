@@ -128,6 +128,9 @@ func main(){
 	router.GET("/get-worker-location-connections/:column/:id", func(c *gin.Context){
 		getWorkerLocationConnections(c, db)
 	})
+	router.DELETE("/remove-connection/:column/:id", func(c *gin.Context){
+		removeConnection(c,db)
+	})
 
 	fmt.Println("Starting Gin server on :8080")
 	log.Fatal(router.Run(":8080"))
@@ -405,4 +408,32 @@ func getWorkerLocationConnections(c *gin.Context, db *sql.DB){
 	}
 
 	c.IndentedJSON(http.StatusOK,connections)
+}
+
+func removeConnection(c *gin.Context, db *sql.DB){
+	column := c.Param("column")
+	id := c.Param("id")
+
+	query := fmt.Sprintf("DELETE FROM worker_locations WHERE %s = %s",column,id)
+	var result sql.Result
+	var err error
+
+	result,err = db.Exec(query) 
+	
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in getting rows "+err.Error()})
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"No rows affected"+err.Error()})
+		return
+	}
+
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound,gin.H{"message":"No Entry found"})
+	}else{
+		c.JSON(http.StatusOK, gin.H{"message":"Entry deleted successfully"})
+	}
 }

@@ -22,7 +22,6 @@ export async function addLocation(locationName) {
 };
 
 export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number){
-    console.log(first_name,middle_name,last_name,gender,address,contact,age,id_number)
     try {
         const response = await fetch("http://localhost:8080/workers/add-worker",{
             method: "POST",
@@ -148,6 +147,30 @@ export async function workerLocationSearch(column,id){
     })
     const data = await result.json();
     return data
+}
+
+export async function removeConnections(column,id){
+    const url = new URL(`http://localhost:8080/remove-connection/${column}/${id}`)
+
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok){
+            throw new Error(`Error: ${response.statusText}`)
+        }
+
+        const result = await response.json();
+
+        return result;
+    } catch (error){
+        console.error("Failed to delete connection", error);
+        return {error:error.message};
+    }
 }
 
 // async function tester() {

@@ -1,4 +1,4 @@
-import { removeEntry } from "./backend.js";
+import { removeConnections, removeEntry } from "./backend.js";
 
 window.addEventListener("DOMContentLoaded", ()=>{
     const workerData = JSON.parse(localStorage.getItem("workerData"));
@@ -49,6 +49,8 @@ window.addEventListener("DOMContentLoaded", ()=>{
         button.addEventListener("click",async function (){
             const id = this.id
             const results = await removeEntry(id,"workers")
+
+            await removeConnections("worker_id",id)
             
             sessionStorage.setItem("Message",results.message)
 
