@@ -22,6 +22,7 @@ export async function addLocation(locationName) {
 };
 
 export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number){
+    console.log(first_name,middle_name,last_name,gender,address,contact,age,id_number)
     try {
         const response = await fetch("http://localhost:8080/workers/add-worker",{
             method: "POST",
@@ -72,7 +73,6 @@ export async function getWorkers(){
 }
 
 export async function findWorker(id,firstName,lastName,middleName,idNumber){
-
     const url = new URL("http://localhost:8080/find-worker")
     if (id) {
         url.searchParams.append("id",id)

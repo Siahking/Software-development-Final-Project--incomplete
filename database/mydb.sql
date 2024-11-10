@@ -27,6 +27,24 @@ CREATE TABLE worker_locations(
 );
 
 --@block
+CREATE TABLE days_off(
+    break_id INT PRIMARY KEY AUTO_INCREMENT,
+    worker_id INT NOT NULL,
+    dates JSON NOT NULL,
+    FOREIGN KEY (worker_id) REFERENCES workers(id)
+);
+
+--@block
+CREATE TABLE worker_constraints (
+    constraint_id INT PRIMARY KEY AUTO_INCREMENT,
+    group_id INT NOT NULL,
+    worker_id INT NOT NULL,
+    note TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (worker_id) REFERENCES workers(id)
+);
+
+--@block
 INSERT INTO locations (location)
 VALUES
     ('Moriah'),
