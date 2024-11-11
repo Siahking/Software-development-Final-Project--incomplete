@@ -19,6 +19,7 @@ CREATE Table workers(
 
 --@block
 CREATE TABLE worker_locations(
+    id INT PRIMARY KEY AUTO_INCREMENT,
     worker_id INT,
     location_id INT,
     FOREIGN KEY (worker_id) REFERENCES workers(id),
@@ -36,13 +37,15 @@ CREATE TABLE days_off(
 
 --@block
 CREATE TABLE worker_constraints (
-    constraint_id INT PRIMARY KEY AUTO_INCREMENT,
-    group_id INT NOT NULL,
-    worker_id INT NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    worker1_id INT,
+    worker2_id INT,
     note TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (worker_id) REFERENCES workers(id)
+    UNIQUE (worker1_id, worker2_id),  -- To prevent duplicate constraints
+    FOREIGN KEY (worker1_id) REFERENCES workers(id),
+    FOREIGN KEY (worker2_id) REFERENCES workers(id)
 );
+
 
 --@block
 INSERT INTO locations (location)
@@ -85,4 +88,8 @@ DROP TABLE IF EXISTS worker_locations;
 DROP TABLE IF EXISTS workers;
 
 --@block
-SELECT * FROM workers WHERE id_number = 987890;
+INSERT INTO worker_constraints (worker1_id,worker2_id,note)
+VALUES (1,2,"Hate each other");
+
+--@block
+SELECT * FROM worker_constraints

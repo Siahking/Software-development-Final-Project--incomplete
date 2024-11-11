@@ -13,25 +13,32 @@ import (
 )
 
 type Location struct{
-	ID 			int		`json:"id"`
-	Location 	string	`json:"location"`
+	ID 			int			`json:"id"`
+	Location 	string		`json:"location"`
 }
 
 type WorkerLocation struct{
-	WorkerID	int		`json:"worker_id"`
-	LocationID	int		`json:"location_id"`
+	WorkerID	int			`json:"worker_id"`
+	LocationID	int			`json:"location_id"`
 }
 
 type Worker struct{
-	ID			int				`json:"id"`
-	FirstName	string			`json:"first_name"`
-	LastName	string			`json:"last_name"`
-	MiddleName	*string			`json:"middle_name"`
-	Gender		*string			`json:"gender"`
-	Address		string			`json:"address"`
-	Contact		*string			`json:"contact"`
-	Age			int				`json:"age"`
-	ID_Number	int				`json:"id_number"`
+	ID			int			`json:"id"`
+	FirstName	string		`json:"first_name"`
+	LastName	string		`json:"last_name"`
+	MiddleName	*string		`json:"middle_name"`
+	Gender		*string		`json:"gender"`
+	Address		string		`json:"address"`
+	Contact		*string		`json:"contact"`
+	Age			int			`json:"age"`
+	ID_Number	int			`json:"id_number"`
+}
+
+type Constraint struct{
+	ID			int			`json:"id"`
+	Worker_1	int			`json:"worker-1"`
+	Worker_2	int			`json:"worker-2"`
+	Note		string		`json:"note"`		
 }
 
 func main(){
@@ -132,6 +139,11 @@ func main(){
 		removeConnection(c,db)
 	})
 
+	//constraint routes
+	router.GET("/find-constraints",func(c *gin.Context){
+		findConstraint(c,db)
+	})
+
 	fmt.Println("Starting Gin server on :8080")
 	log.Fatal(router.Run(":8080"))
 };
@@ -191,7 +203,7 @@ func findLocation(c *gin.Context, db *sql.DB){
 		var loc Location
 		err:=rows.Scan(&loc.ID, &loc.Location)
 		if err != nil{
-			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error while scanning location"+err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error while scanning location\n"+err.Error()})
 			return
 		}
 		locations = append(locations,loc)
@@ -437,3 +449,84 @@ func removeConnection(c *gin.Context, db *sql.DB){
 		c.JSON(http.StatusOK, gin.H{"message":"Entry deleted successfully"})
 	}
 }
+
+//code to search for constraint and return if constraint exists or not
+func findConstraint(c *gin.Context,db *sql.DB){
+	var query string
+	var rows *sql.Rows
+	var err error
+	var constraints []Constraint
+
+	fmt.Println("passed in function")
+
+	id := c.Query("id")
+	worker1 := c.Query("worker1")
+	worker2 := c.Query("worker2")
+	baseString := "SELECT * FROM worker_constraints WHERE "
+
+	if id != ""{
+		query = baseString + "id = ?"
+		rows, err = db.Query(query, id)
+	}else if worker1 != "" && worker2 != ""{
+		query = baseString + "worker1_id = ? AND worker2_id = ?"
+		rows,err = db.Query(query,worker1,worker2)
+	}else if worker1 != ""{
+		query = baseString + "worker1_id = ?"
+		rows,err = db.Query(query,worker1)
+	}else if worker2 != ""{
+		query = baseString + "worker2_id = ?"
+		rows, err = db.Query(query,worker2)
+	}else{
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Please provide valid search parameters"})
+		return
+	}
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in searching for constraint\n"+err.Error()})
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next(){
+		var constraint Constraint
+		innerError := rows.Scan(&constraint.ID,&constraint.Worker_1,&constraint.Worker_2,&constraint.Note)
+		if innerError != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error while scanning location\n"+err.Error()})
+		}
+		constraints = append(constraints, constraint)
+	}
+
+	if len(constraints) == 0{
+		c.JSON(http.StatusNotFound,gin.H{"error":"No constraint found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, constraints)
+}
+
+// func editConstraints(c * gin.Context, db *sql.DB){
+// 	var constraint Constraint
+// 	var query string
+// 	changes := c.Param("changes")
+// 	data := c.Param("data")
+
+// 	if changes == "add-constraint"{
+// 		if err := c.ShouldBindJSON(&constraint); err != nil {
+// 			fmt.Print("Error:\n"+err.Error())
+// 			c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid request body\n"+err.Error()})
+// 			return
+// 		}
+// 		query = "INSERT INTO worker_constraints (worker1_id, worker2_id,note) VALUES (?,?,?)"
+// 		_,err := db.Exec(query,constraint.Worker_1,constraint.Worker_2,constraint.Note)
+
+// 		if err != nil {
+// 			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in creating constraint\n"+err.Error()})
+// 		}
+		
+// 		c.JSON(http.StatusCreated, gin.H{"message":"Worker added successfully"})
+// 	}else if changes == "edit-contraint"{
+
+// 	}else{	//code in this else statement would delete the contraint if it exists
+// 	}
+// }
