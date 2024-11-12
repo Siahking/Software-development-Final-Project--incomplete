@@ -36,8 +36,8 @@ type Worker struct{
 
 type Constraint struct{
 	ID			int			`json:"id"`
-	Worker_1	int			`json:"worker-1"`
-	Worker_2	int			`json:"worker-2"`
+	Worker_1	int			`json:"worker1_id"`
+	Worker_2	int			`json:"worker2_id"`
 	Note		string		`json:"note"`		
 }
 
@@ -142,6 +142,12 @@ func main(){
 	//constraint routes
 	router.GET("/find-constraints",func(c *gin.Context){
 		findConstraint(c,db)
+	})
+	router.POST("/edit-constraints/:changes/:id", func(c *gin.Context){
+		editConstraints(c, db)
+	})
+	router.DELETE("/delete-constraint/:id",func(c *gin.Context){
+		deleteContraint(c ,db)
 	})
 
 	fmt.Println("Starting Gin server on :8080")
@@ -457,8 +463,6 @@ func findConstraint(c *gin.Context,db *sql.DB){
 	var err error
 	var constraints []Constraint
 
-	fmt.Println("passed in function")
-
 	id := c.Query("id")
 	worker1 := c.Query("worker1")
 	worker2 := c.Query("worker2")
@@ -505,28 +509,60 @@ func findConstraint(c *gin.Context,db *sql.DB){
 	c.JSON(http.StatusOK, constraints)
 }
 
-// func editConstraints(c * gin.Context, db *sql.DB){
-// 	var constraint Constraint
-// 	var query string
-// 	changes := c.Param("changes")
-// 	data := c.Param("data")
+func editConstraints(c *gin.Context, db *sql.DB){
+	var constraint Constraint
+	var query string
+	changes := c.Param("changes")
+	id := c.Param("id")
 
-// 	if changes == "add-constraint"{
-// 		if err := c.ShouldBindJSON(&constraint); err != nil {
-// 			fmt.Print("Error:\n"+err.Error())
-// 			c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid request body\n"+err.Error()})
-// 			return
-// 		}
-// 		query = "INSERT INTO worker_constraints (worker1_id, worker2_id,note) VALUES (?,?,?)"
-// 		_,err := db.Exec(query,constraint.Worker_1,constraint.Worker_2,constraint.Note)
+	if err := c.ShouldBindJSON(&constraint); err != nil {
+		fmt.Print("Error:\n"+err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid request body\n"+err.Error()})
+		return
+	}
 
-// 		if err != nil {
-// 			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in creating constraint\n"+err.Error()})
-// 		}
-		
-// 		c.JSON(http.StatusCreated, gin.H{"message":"Worker added successfully"})
-// 	}else if changes == "edit-contraint"{
+	if changes == "add"{
+		query = "INSERT INTO worker_constraints (worker1_id, worker2_id,note) VALUES (?,?,?)"
+		fmt.Printf("Constraint Note is %s, worker1 is %d and worker2 is %d",constraint.Note,constraint.Worker_1,constraint.Worker_2)
+		_,err := db.Exec(query,constraint.Worker_1,constraint.Worker_2,constraint.Note)
 
-// 	}else{	//code in this else statement would delete the contraint if it exists
-// 	}
-// }
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in creating constraint\n"+err.Error()})
+			return
+		}
+	}else{
+		query = "UPDATE worker_constraints SET worker1_id = ?, worker2_id = ?, note = ? WHERE id = ?"
+		_,err := db.Exec(query,constraint.Worker_1,constraint.Worker_2,constraint.Note,id)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in modifying constraint\n"+err.Error()})
+			return
+		}
+	}
+	
+	c.JSON(http.StatusCreated, gin.H{"message":"Constraint modified successfully"})
+}
+
+func deleteContraint(c *gin.Context, db *sql.DB){
+	id := c.Param("id")
+
+	query := "DELETE FROM worker_constraints WHERE id = ?"
+	result,err := db.Exec(query,id)
+	
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in deleting constraint\n"+err.Error()})
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"No rows affected\n"+err.Error()})
+		return
+	}
+
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound,gin.H{"message":"No Entry found"})
+	}else{
+		c.JSON(http.StatusOK, gin.H{"message":"Entry deleted successfully"})
+	}
+}

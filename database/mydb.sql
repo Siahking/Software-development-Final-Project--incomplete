@@ -65,10 +65,10 @@ VALUES
 SELECT * FROM locations WHERE id = 2;
 
 --@block
-SELECT * FROM workers WHERE id = 1;
+SELECT * FROM workers WHERE id IN (4,11)
 
 --@block
-SELECT * FROM worker_locations
+SELECT * FROM workers;
 
 --@block
 DELETE FROM locations;
