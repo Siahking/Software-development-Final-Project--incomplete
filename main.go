@@ -161,8 +161,14 @@ func main(){
 	router.POST("/add-days-off",func(c *gin.Context){
 		addDaysOff(c, db)
 	})
-	router.GET("/find-day-off/:parameter/:value",func(c *gin.Context){
-		findDaysOff(c,db)
+	router.GET("/get-days-off/:parameter/:value",func(c *gin.Context){
+		getDaysOff(c,db)
+	})
+	router.GET("/get-days-off",func(c *gin.Context){
+		getDaysOff(c,db)
+	})
+	router.DELETE("remove-days/:id",func(c *gin.Context){
+		removeDaysOff(c,db)
 	})
 
 	fmt.Println("Starting Gin server on :8080")
@@ -606,14 +612,19 @@ func addDaysOff(c *gin.Context,db *sql.DB){
 	c.JSON(http.StatusCreated, gin.H{"message":"Days off set successfully"})
 }
 
-func findDaysOff(c *gin.Context,db *sql.DB){
+func getDaysOff(c *gin.Context,db *sql.DB){
+	var rows *sql.Rows
+	var err error
 	var dayOffs []DaysOff
 	parameter := c.Param("parameter")
 	value := c.Param("value")
 
-	query := fmt.Sprintf("SELECT * FROM days_off WHERE %s = ?",parameter)
-
-	rows,err := db.Query(query,value)
+	if parameter == ""{
+		rows,err = db.Query("SELECT * FROM days_off")
+	}else{
+		query := fmt.Sprintf("SELECT * FROM days_off WHERE %s = ?",parameter)
+		rows,err = db.Query(query,value)
+	}
 
 	if err != nil{
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in extracting values from the table\n"+err.Error()})
@@ -646,14 +657,27 @@ func findDaysOff(c *gin.Context,db *sql.DB){
 	c.IndentedJSON(http.StatusOK, dayOffs)
 }
 
-// func removeDaysOff(c *gin.Context,db *sql.DB){
-// 	id := c.Param("id")
+func removeDaysOff(c *gin.Context,db *sql.DB){
+	id := c.Param("id")
 
-// 	query := "DELETE FROM days_off WHERE id = ?"
+	query := "DELETE FROM days_off WHERE break_id = ?"
 
-// 	_,err := db.Exec(query,id)
+	result,err := db.Exec(query,id)
 
-// 	if err != nil{
-// 		c.JSON()
-// 	}
-// }
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in performing query"+err.Error()})
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"No rows affected\n"+err.Error()})
+		return
+	}
+
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound, gin.H{"message":"No Entry found"})
+	}else{
+		c.JSON(http.StatusOK, gin.H{"message":"Entry deleted successfully"})
+	}
+}
