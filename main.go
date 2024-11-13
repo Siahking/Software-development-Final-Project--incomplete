@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -39,6 +40,12 @@ type Constraint struct{
 	Worker_1	int			`json:"worker1_id"`
 	Worker_2	int			`json:"worker2_id"`
 	Note		string		`json:"note"`		
+}
+
+type DaysOff struct{
+	Break_id	int			`json:"break_id"`
+	Worker_id	int			`json:"worker_id"`
+	Dates		[]string	`json:"dates"`
 }
 
 func main(){
@@ -147,7 +154,15 @@ func main(){
 		editConstraints(c, db)
 	})
 	router.DELETE("/delete-constraint/:id",func(c *gin.Context){
-		deleteContraint(c ,db)
+		deleteConstraint(c ,db)
+	})
+	
+	//days off routes
+	router.POST("/add-days-off",func(c *gin.Context){
+		addDaysOff(c, db)
+	})
+	router.GET("/find-day-off/:parameter/:value",func(c *gin.Context){
+		findDaysOff(c,db)
 	})
 
 	fmt.Println("Starting Gin server on :8080")
@@ -516,14 +531,12 @@ func editConstraints(c *gin.Context, db *sql.DB){
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&constraint); err != nil {
-		fmt.Print("Error:\n"+err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid request body\n"+err.Error()})
 		return
 	}
 
 	if changes == "add"{
 		query = "INSERT INTO worker_constraints (worker1_id, worker2_id,note) VALUES (?,?,?)"
-		fmt.Printf("Constraint Note is %s, worker1 is %d and worker2 is %d",constraint.Note,constraint.Worker_1,constraint.Worker_2)
 		_,err := db.Exec(query,constraint.Worker_1,constraint.Worker_2,constraint.Note)
 
 		if err != nil {
@@ -543,7 +556,7 @@ func editConstraints(c *gin.Context, db *sql.DB){
 	c.JSON(http.StatusCreated, gin.H{"message":"Constraint modified successfully"})
 }
 
-func deleteContraint(c *gin.Context, db *sql.DB){
+func deleteConstraint(c *gin.Context, db *sql.DB){
 	id := c.Param("id")
 
 	query := "DELETE FROM worker_constraints WHERE id = ?"
@@ -566,3 +579,81 @@ func deleteContraint(c *gin.Context, db *sql.DB){
 		c.JSON(http.StatusOK, gin.H{"message":"Entry deleted successfully"})
 	}
 }
+
+func addDaysOff(c *gin.Context,db *sql.DB){
+	var daysOff DaysOff
+
+	if err := c.ShouldBind(&daysOff); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalud request body\n"+err.Error()})
+		return
+	}
+
+	datesJSON,err := json.Marshal(daysOff.Dates)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error turning code into json object\n"+err.Error()})
+		return
+	}
+
+	query := "INSERT INTO days_off (worker_id,dates) VALUES (?,?)"
+
+	_,err = db.Exec(query,daysOff.Worker_id,datesJSON)
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in setting days off\n"+err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message":"Days off set successfully"})
+}
+
+func findDaysOff(c *gin.Context,db *sql.DB){
+	var dayOffs []DaysOff
+	parameter := c.Param("parameter")
+	value := c.Param("value")
+
+	query := fmt.Sprintf("SELECT * FROM days_off WHERE %s = ?",parameter)
+
+	rows,err := db.Query(query,value)
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in extracting values from the table\n"+err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next(){
+		var dates DaysOff
+		var datesJSON []byte
+
+		if err := rows.Scan(&dates.Break_id,&dates.Worker_id,&datesJSON);err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in retrieving values\n"+err.Error()})
+			return
+		}
+
+		if err := json.Unmarshal(datesJSON, &dates.Dates); err != nil{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in parsing dates\n"+err.Error()})
+			return
+		}
+
+		dayOffs = append(dayOffs,dates)
+	}
+
+	if err = rows.Err(); err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"No values found\n"+err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, dayOffs)
+}
+
+// func removeDaysOff(c *gin.Context,db *sql.DB){
+// 	id := c.Param("id")
+
+// 	query := "DELETE FROM days_off WHERE id = ?"
+
+// 	_,err := db.Exec(query,id)
+
+// 	if err != nil{
+// 		c.JSON()
+// 	}
+// }
