@@ -489,7 +489,9 @@ func findConstraint(c *gin.Context,db *sql.DB){
 	worker2 := c.Query("worker2")
 	baseString := "SELECT * FROM worker_constraints WHERE "
 
-	if id != ""{
+	if id == "" && worker1 == "" && worker2 == ""{
+		rows, err = db.Query("SELECT * FROM worker_constraints")
+	}else if id != ""{
 		query = baseString + "id = ?"
 		rows, err = db.Query(query, id)
 	}else if worker1 != "" && worker2 != ""{
@@ -527,7 +529,7 @@ func findConstraint(c *gin.Context,db *sql.DB){
 		return
 	}
 
-	c.JSON(http.StatusOK, constraints)
+	c.IndentedJSON(http.StatusOK, constraints)
 }
 
 func editConstraints(c *gin.Context, db *sql.DB){
