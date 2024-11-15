@@ -92,4 +92,8 @@ INSERT INTO worker_constraints (worker1_id,worker2_id,note)
 VALUES (1,2,"Hate each other");
 
 --@block
+DELETE FROM worker_constraints;
+ALTER TABLE worker_constraints AUTO_INCREMENT = 1;
+
+--@block
 SELECT * FROM worker_constraints

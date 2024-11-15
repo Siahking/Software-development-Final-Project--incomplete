@@ -161,7 +161,7 @@ func main(){
 	router.POST("/add-days-off",func(c *gin.Context){
 		addDaysOff(c, db)
 	})
-	router.GET("/get-days-off/:parameter/:value",func(c *gin.Context){
+	router.GET("/get-days-off/:column/:value",func(c *gin.Context){
 		getDaysOff(c,db)
 	})
 	router.GET("/get-days-off",func(c *gin.Context){
@@ -618,13 +618,13 @@ func getDaysOff(c *gin.Context,db *sql.DB){
 	var rows *sql.Rows
 	var err error
 	var dayOffs []DaysOff
-	parameter := c.Param("parameter")
+	column := c.Param("column")
 	value := c.Param("value")
 
-	if parameter == ""{
+	if column == ""{
 		rows,err = db.Query("SELECT * FROM days_off")
 	}else{
-		query := fmt.Sprintf("SELECT * FROM days_off WHERE %s = ?",parameter)
+		query := fmt.Sprintf("SELECT * FROM days_off WHERE %s = ?",column)
 		rows,err = db.Query(query,value)
 	}
 
