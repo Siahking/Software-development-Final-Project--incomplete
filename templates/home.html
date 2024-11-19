@@ -19,6 +19,10 @@
         <a id="get-workers" href="/get-workers">Get workers</a>
         <button id="find-worker">Find Worker</button>
         <a id="get-locations" href="/get-locations">Get locations</a>
+        <button id="add/edit-constraint">Add/Edit Constraint</button>
+        <button id="remove-constraint">Remove Constraint</button>
+        <button id="add/edit-dayoff">Add/Edit Day Off</button>
+        <button id="remove-dayoff">Remove Day Off</button>
     </div>
 
     <div class="hidden" id="add-location-div">
@@ -118,6 +122,28 @@
 
             <button id="submit-button" >Submit</button>
         </form>
+    </div>
+
+    <div class="hidden" id="add/edit-constraint-div">
+        <label for="worker1">
+            Worker 1
+            <input type="text" id="worker1" placeholder="Type here">
+        </label>
+        <label for="worker2">
+            Worker 2
+            <input type="text" id="worker2" placeholder="Type here">
+        </label>
+        <label for="note" id="note-label" class="hidden">
+            Note
+            <input type="text" id="note" placeholder = "Type here">
+        </label>
+    </div>
+
+    <div class="hidden" id="add/edit-dayoff-div">
+        <label for="worker-id">
+            Worker ID
+            <input type="text" id="worker-id" placeholder="Type here">
+        </label>
     </div>
     <p id="error-tag" style="color: red;"></p>
     

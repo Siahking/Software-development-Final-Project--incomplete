@@ -5,7 +5,6 @@ let gotLocations = false
 let removeWorkerBtnActive,removeLocationActive = false
 const messageTag = document.getElementById("message")
 const errorTag = document.getElementById("error-tag")
-const searchDiv = document.getElementById("find-workers-div")
 const idCheckbox = document.getElementById("id")
 const firstNameCheckbox = document.getElementById("first-name")
 const lastNameCheckbox = document.getElementById("last-name")
@@ -16,8 +15,9 @@ const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const idNumberInput = document.getElementById("id-number-input")
-const hideButtons = ['add-worker','add-location','remove-worker','find-worker','remove-location']
-const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div']
+const noteInput = document.getElementById("note-label")
+const hideButtons = ['add-worker','add-location','remove-worker','find-worker','remove-location','add/edit-constraint','remove-constraint','add/edit-dayoff','remove-dayoff']
+const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div','add/edit-constraint-div','add/edit-dayoff-div']
 const checkboxArr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox]
 const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumberInput]
 
@@ -56,11 +56,13 @@ checkboxArr.forEach((element)=>{
     })
 })
 
-// toogle between showing buttons and hiding them in click //
+// toogle between showing buttons and hiding them on click //
 hideButtons.forEach(id=>{
     const btn = document.getElementById(id)
     const divId = id === "remove-worker" ? "find-worker-div"
         : id === "remove-location" ? "add-location-div"
+        : id === "remove-constraint" ? "add/edit-constraint-div"
+        : id === "remove-dayoff" ? "add/edit-dayoff-div"
         : id + '-div'
     const btnDiv = document.getElementById(divId)
     btn.addEventListener('click',function(){
@@ -74,8 +76,14 @@ hideButtons.forEach(id=>{
 
         if (btnDiv.classList.contains('hidden')){
             btnDiv.classList.remove('hidden')
+            if (id === 'add/edit-constraint'){
+                noteInput.classList.remove("hidden")
+            }
         }else{
             btnDiv.classList.add('hidden')
+            if (id === 'add/edit-constraint'){
+                noteInput.classList.add("hidden")
+            }
         }
 
         const arr = []
@@ -99,7 +107,7 @@ hideButtons.forEach(id=>{
     })
 })
 
-//ADD OF REMOVE LOCATION//
+//ADD OR REMOVE LOCATION//
 document.getElementById('location-submit-btn').addEventListener('click',async function(){
     const locationInput = document.getElementById('location-input');
     const location = locationInput.value
@@ -284,6 +292,9 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
         window.location.href = "/worker-details";
     }
 })
+
+//ADD CONSTRAINT FUNCTION
+
 
 //add message to the main div
 window.addEventListener("DOMContentLoaded",()=>{
