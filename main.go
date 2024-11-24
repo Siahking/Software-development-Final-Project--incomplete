@@ -107,6 +107,9 @@ func main(){
 	router.GET("/get-locations", func(c *gin.Context){
 		c.HTML(http.StatusOK, "get-locations.html",nil)
 	})
+	router.GET("/constraints",func(c *gin.Context){
+		c.HTML(http.StatusOK, "constraints.html",nil)
+	})
 
 	//multifunctional routes
 	router.DELETE("delete/:table/:id",func(c *gin.Context) {

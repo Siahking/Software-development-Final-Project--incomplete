@@ -19,10 +19,8 @@
         <a id="get-workers" href="/get-workers">Get workers</a>
         <button id="find-worker">Find Worker</button>
         <a id="get-locations" href="/get-locations">Get locations</a>
-        <button id="add/edit-constraint">Add/Edit Constraint</button>
-        <button id="remove-constraint">Remove Constraint</button>
-        <button id="add/edit-dayoff">Add/Edit Day Off</button>
-        <button id="remove-dayoff">Remove Day Off</button>
+        <button id="edit-constraints">Edit Constraints</button>
+        <button id="edit-daysoff">Edit Days Off</button>
     </div>
 
     <div class="hidden" id="add-location-div">
@@ -124,26 +122,42 @@
         </form>
     </div>
 
-    <div class="hidden" id="add/edit-constraint-div">
-        <label for="worker1">
-            Worker 1
-            <input type="text" id="worker1" placeholder="Type here">
-        </label>
-        <label for="worker2">
-            Worker 2
-            <input type="text" id="worker2" placeholder="Type here">
-        </label>
-        <label for="note" id="note-label" class="hidden">
-            Note
-            <input type="text" id="note" placeholder = "Type here">
-        </label>
-    </div>
+    <div id="edit-constraint">
+        <form action="" id="constraint-form">
+            <div id="worker1">
+                Worker 1
+                <label for="w1firstname">
+                    First Name
+                    <input id="w1firstname" type="text" placeholder="Type here">
+                </label>
+                <label for="w1lastname">
+                    Last Name
+                    <input type="text" name="" id="w1lastname" placeholder="Type here">
+                </label>
+            </div>
 
-    <div class="hidden" id="add/edit-dayoff-div">
-        <label for="worker-id">
-            Worker ID
-            <input type="text" id="worker-id" placeholder="Type here">
-        </label>
+            <div id="worker2">
+                Worker 1
+                <label for="w2firstname">
+                    First Name
+                    <input id="w2firstname" type="text" placeholder="Type here">
+                </label>
+                <label for="w2lastname">
+                    Last Name
+                    <input type="text" name="" id="w2lastname" placeholder="Type here">
+                </label>
+            </div>
+
+            <label for="notes">
+                Notes
+                <span>*optional</span>
+                <textarea id="notes" placeholder="Add notes here"></textarea>
+            </label>
+            <button id="add-constraint">Add Constraint</button>
+            <button id="edit-constraint">Edit Constraint</button>
+            <button id="delete-constraint">Delete Constraint</button>
+            <button id="find-constraint">Find Constraint</button>
+        </form>
     </div>
     <p id="error-tag" style="color: red;"></p>
     

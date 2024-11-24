@@ -15,9 +15,8 @@ const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const idNumberInput = document.getElementById("id-number-input")
-const noteInput = document.getElementById("note-label")
-const hideButtons = ['add-worker','add-location','remove-worker','find-worker','remove-location','add/edit-constraint','remove-constraint','add/edit-dayoff','remove-dayoff']
-const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div','add/edit-constraint-div','add/edit-dayoff-div']
+const hideButtons = ['add-worker','add-location','remove-worker','find-worker','remove-location']
+const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div']
 const checkboxArr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox]
 const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumberInput]
 
@@ -57,12 +56,10 @@ checkboxArr.forEach((element)=>{
 })
 
 // toogle between showing buttons and hiding them on click //
-hideButtons.forEach(id=>{
+hideButtons.forEach(id => {
     const btn = document.getElementById(id)
     const divId = id === "remove-worker" ? "find-worker-div"
         : id === "remove-location" ? "add-location-div"
-        : id === "remove-constraint" ? "add/edit-constraint-div"
-        : id === "remove-dayoff" ? "add/edit-dayoff-div"
         : id + '-div'
     const btnDiv = document.getElementById(divId)
     btn.addEventListener('click',function(){
@@ -76,14 +73,8 @@ hideButtons.forEach(id=>{
 
         if (btnDiv.classList.contains('hidden')){
             btnDiv.classList.remove('hidden')
-            if (id === 'add/edit-constraint'){
-                noteInput.classList.remove("hidden")
-            }
         }else{
             btnDiv.classList.add('hidden')
-            if (id === 'add/edit-constraint'){
-                noteInput.classList.add("hidden")
-            }
         }
 
         const arr = []
@@ -294,11 +285,44 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
 })
 
 //ADD CONSTRAINT FUNCTION
+document.getElementById("constraint-form").addEventListener("submit",async function(event){
 
+    event.preventDefault()
+
+    const w1FirstName = document.getElementById("w1firstname").value
+    const w1LastName = document.getElementById("w1lastname").value
+    const w2FirstName = document.getElementById("w2firstname").value
+    const w2LastName = document.getElementById("w2lastname").value
+    const notesValue = document.getElementById("notes").value
+
+    const notes = notesValue ? notesValue : "Personal Issues"
+
+    if (!w1FirstName && !w1LastName || !w2FirstName && !w2LastName){
+        errorTag.innerHTML = "Please insert values to search"
+        return
+    }
+
+    const worker1Results = await findWorker(w1FirstName,w1LastName)
+    const worker2Results = await findWorker(w2FirstName,w2LastName)
+    for (const value of [worker1Results,worker2Results]){
+        if (Object.keys(value).includes("error")){
+            errorTag.innerHTML = value.error
+            return
+        }
+    }
+
+    localStorage.setItem("worker1Data",JSON.stringify(worker1Results))
+    localStorage.setItem("worker2Data",JSON.stringify(worker2Results))
+    localStorage.setItem("notes",JSON.stringify(notes))
+
+    window.location.href = "/constraints";
+})
 
 //add message to the main div
 window.addEventListener("DOMContentLoaded",()=>{
     const message = sessionStorage.getItem("Message")
+
+    errorTag.innerHTML = ""
 
     if (message)
         messageTag.innerHTML = message

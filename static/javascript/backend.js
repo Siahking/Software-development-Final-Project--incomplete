@@ -71,7 +71,7 @@ export async function getWorkers(){
     };
 }
 
-export async function findWorker(id,firstName,lastName,middleName,idNumber){
+export async function findWorker(firstName="",lastName="",middleName="",idNumber="",id=null){
     const url = new URL("http://localhost:8080/find-worker")
     if (id) {
         url.searchParams.append("id",id)
@@ -82,9 +82,7 @@ export async function findWorker(id,firstName,lastName,middleName,idNumber){
         if (lastName) url.searchParams.append("last_name", lastName);
         if (middleName) url.searchParams.append("middle_name", middleName);
     };
-
-    console.log(url)
-
+    
     return fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -172,7 +170,7 @@ export async function removeConnections(column,id){
     }
 }
 
-export async function findConstraints(id,worker1,worker2){ //complete
+export async function findConstraints(worker1,worker2,id=null){ //complete
     let result
     const url = new URL("http://localhost:8080/find-constraints")
     if (id || worker1 || worker2){
@@ -199,6 +197,14 @@ export async function editConstraints(worker1Id,worker2Id,note,changes,id=0){ //
         (changes !== "add" && !id))
         {
         return {"error":"Missing parameters"}
+    }
+
+    if (changes === "add"){
+        const result = await findConstraints(worker1Id,worker2Id)
+
+        if (!Object.keys(result).includes("error")){
+            return {'error':"Constraint already exists!"}
+        }
     }
 
     try{
