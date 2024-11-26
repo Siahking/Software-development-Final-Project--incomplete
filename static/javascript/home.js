@@ -295,6 +295,8 @@ document.getElementById("constraint-form").addEventListener("submit",async funct
     const w2LastName = document.getElementById("w2lastname").value
     const notesValue = document.getElementById("notes").value
 
+    const buttonClick = event.submitter.id
+
     const notes = notesValue ? notesValue : "Personal Issues"
 
     if (!w1FirstName && !w1LastName || !w2FirstName && !w2LastName){
@@ -313,7 +315,8 @@ document.getElementById("constraint-form").addEventListener("submit",async funct
 
     localStorage.setItem("worker1Data",JSON.stringify(worker1Results))
     localStorage.setItem("worker2Data",JSON.stringify(worker2Results))
-    localStorage.setItem("notes",JSON.stringify(notes))
+    localStorage.setItem("notes",notes)
+    localStorage.setItem("buttonClicked",buttonClick)
 
     window.location.href = "/constraints";
 })

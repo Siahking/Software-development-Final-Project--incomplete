@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/constraints.css">
     <title>Edit Contraints</title>
 </head>
 <body>
@@ -34,15 +35,66 @@
                 </table>
             </section>
     
+            <br>
+
             <section id="notes-section">
                 <h2>Notes</h2>
-                <label for="notes">
+                <label for="add-notes-textarea">
                     Optional(Notes)
                 </label>
-                <textarea name="" id="notes"></textarea>
+                <textarea name="" id="add-notes-textarea"></textarea>
             </section>
-           
-        <button id="submit-btn">Add Constraint</button>
+
+            <section id="edit-section" class="hidden">
+                <div id="worker1-div">
+                    Worker 1
+                    <label for="worker1-firstname" id="worker1-firstname-label">First Name</label>
+                    <input type="text" placeholder="Type Here" id="worker1-firstname">
+                    <label for="worker1-lastname" id="worker1-lastname-label">Last Name</label>
+                    <input type="text" placeholder="Type Here" id="worker1-lastname">
+                    <form action="" class="hidden">
+                        <div id="worker1-table">
+                            <table id="worker1-table">
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Middle Name</th>
+                                    <th>Last Name</th>
+                                    <th>Location</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                    <p id="worker1-error-tag"></p>
+                </div>
+    
+                <div id="worker2-div">
+                    Worker 2
+                    <label for="worker2-firstname" id="worker2-firstname-label">First Name</label>
+                    <input type="text" placeholder="Type Here" id="worker2-firstname">
+                    <label for="worker2-lastname" id="worker2-lastname-label">Last Name</label>
+                    <input type="text" placeholder="Type Here" id="worker2-lastname">
+                    <form action="">
+                        <div id="worker2-div" class="hidden">
+                            <table id="worker2-table">
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Middle Name</th>
+                                    <th>Last Name</th>
+                                    <th>Location</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                    <p id="worker2-error-tag"></p>
+                </div>
+    
+                <div id="edit-notes">
+                    <label for="edit-notes-textarea">Edit Notes</label>
+                    <textarea name="" id="edit-notes-textarea"></textarea>
+                </div>
+            </section>
+
+        <button id="submit-btn"></button>
         </form>
         <p id="error-tag"></p>
          

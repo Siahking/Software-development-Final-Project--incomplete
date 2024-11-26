@@ -200,9 +200,13 @@ export async function editConstraints(worker1Id,worker2Id,note,changes,id=0){ //
     }
 
     if (changes === "add"){
-        const result = await findConstraints(worker1Id,worker2Id)
+        const result1 = await findConstraints(worker1Id,worker2Id)
+        const result2 = await findConstraints(worker2Id,worker1Id)
 
-        if (!Object.keys(result).includes("error")){
+        const check1 = !Object.keys(result1).includes("error")
+        const check2 = !Object.keys(result2).includes("error")
+
+        if (check1 || check2){
             return {'error':"Constraint already exists!"}
         }
     }
