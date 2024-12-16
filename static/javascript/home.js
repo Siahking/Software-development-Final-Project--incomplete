@@ -1,4 +1,4 @@
-import { findWorker,findLocation,addLocation,addWorker, getLocations,linkWorkerLocations } from "./backend.js";
+import { findWorker,findLocation,addLocation,addWorker, getLocations,linkWorkerLocations, getWorkers } from "./backend.js";
 
 //search and remove workers logic
 let gotLocations = false
@@ -41,6 +41,18 @@ function disableElements(checkbox,checkboxArr,inputsArr){
         })
     };
 };
+
+function checkContraintsInput(worker1Firstname,worker1Lastname,worker2Firstname,worker2Lastname){
+    if ((worker1Firstname || worker1Lastname) && (worker2Firstname || worker2Lastname)){
+        return "both workers"
+    }else if (worker1Firstname || worker1Lastname){
+        return 'worker one'
+    }else if ( worker2Firstname || worker2Lastname ){
+        return 'worker two'
+    }else{
+        return 'all constraints'
+    }
+}
 
 //toogles between showing the input fields for each checkbox if the checkbox is clicked or not
 checkboxArr.forEach((element)=>{
@@ -269,7 +281,9 @@ document.getElementById("workerSearchForm").addEventListener("submit",async func
         }
     }
 
-    const results = await findWorker(id,firstName,lastName,middleName,searchIdNumber)
+    console.log([firstName,lastName,middleName])
+
+    const results = await findWorker(firstName,lastName,middleName,searchIdNumber,id)
     if (Object.keys(results).includes("error")){
         errorTag.innerHTML = results.error
         return
@@ -294,31 +308,80 @@ document.getElementById("constraint-form").addEventListener("submit",async funct
     const w2FirstName = document.getElementById("w2firstname").value
     const w2LastName = document.getElementById("w2lastname").value
     const notesValue = document.getElementById("notes").value
+    let worker1Results,worker2Results
 
     const buttonClick = event.submitter.id
 
     const notes = notesValue ? notesValue : "Personal Issues"
 
-    if (!w1FirstName && !w1LastName || !w2FirstName && !w2LastName){
-        errorTag.innerHTML = "Please insert values to search"
-        return
-    }
+    console.log(buttonClick === 'find-constraint')
 
-    const worker1Results = await findWorker(w1FirstName,w1LastName)
-    const worker2Results = await findWorker(w2FirstName,w2LastName)
-    for (const value of [worker1Results,worker2Results]){
-        if (Object.keys(value).includes("error")){
-            errorTag.innerHTML = value.error
-            return
+    if (buttonClick === 'find-constraint'){
+        const check = checkContraintsInput(w1FirstName,w1LastName,w2FirstName,w2LastName)
+        let worker1Result,worker2Result = ''
+
+        switch (check){
+            case 'both workers':
+                worker1Result = await findWorker(w1FirstName,w1LastName)
+                worker2Result = await findWorker(w2FirstName,w2LastName)
+                break;
+            case 'worker one' || 'worker two':
+                if (check === 'worker one'){
+                    worker1Result = await findWorker(w1FirstName,w1LastName)
+                }else{
+                    worker1Result = await findWorker(w2FirstName,w2LastName)
+                }
+                break;
+            default:
+                worker1Result = await getWorkers()
+                console.log(worker1Result)
+                return
         }
+
+        localStorage.setItem("worker1Data",JSON.stringify(worker1Result))
+        localStorage.setItem("worker2Data",JSON.stringify(worker2Result))
+        localStorage.setItem("notes",notes)
+        localStorage.setItem("buttonClicked",buttonClick)
+
+        window.location.href = "/constraints"
+        return    
     }
 
-    localStorage.setItem("worker1Data",JSON.stringify(worker1Results))
-    localStorage.setItem("worker2Data",JSON.stringify(worker2Results))
-    localStorage.setItem("notes",notes)
-    localStorage.setItem("buttonClicked",buttonClick)
+    console.log(!worker1EntryCheck )
 
-    window.location.href = "/constraints";
+    // if (!worker1EntryCheck && !worker2EntryCheck){
+    //     if (buttonClick === 'find-constraint' || buttonClick === 'delete-constraint'){
+
+    //         console.log('passed here')
+    //         const searchWorker1Firstname = w1FirstName ? w1FirstName : ""
+    //         const searchWorker1Lastname = w1LastName ? w1LastName : ""
+    //         const searchWorker2Firstname = w2FirstName ? w2FirstName : ""
+    //         const searchWorker2Lastname = w2LastName ? w2LastName : ""
+
+    //         worker1Results = findWorker(searchWorker1Firstname,searchWorker1Lastname)
+    //         worker2Results = findWorker(searchWorker2Firstname,searchWorker2Lastname)
+    //     }else{
+    //         errorTag.innerHTML = "Please insert values to search"
+    //         return
+    //     }
+    // }else{
+    //     worker1Results = await findWorker(w1FirstName,w1LastName)
+    //     worker2Results = await findWorker(w2FirstName,w2LastName)
+    // }
+
+    // for (const value of [worker1Results,worker2Results]){
+    //     if (Object.keys(value).includes("error")){
+    //         errorTag.innerHTML = value.error
+    //         return
+    //     }
+    // }
+
+    // localStorage.setItem("worker1Data",JSON.stringify(worker1Results))
+    // localStorage.setItem("worker2Data",JSON.stringify(worker2Results))
+    // localStorage.setItem("notes",notes)
+    // localStorage.setItem("buttonClicked",buttonClick)
+
+    // window.location.href = "/constraints";
 })
 
 //add message to the main div

@@ -1,23 +1,22 @@
 import { editConstraints, findConstraints, findWorker } from "./backend.js"
 
 const errorTag = document.getElementById("error-tag")
-const BTNCLICK = localStorage.getItem("buttonClicked")
-const notesSection = document.getElementById("notes-section")
-const editSection = document.getElementById("edit-section")
+const submitBtn = localStorage.getItem("buttonClicked")
+const editConstraintsSection = document.getElementById("edit-section")
 const worker1Data = JSON.parse(localStorage.getItem("worker1Data"))
 const worker2Data = JSON.parse(localStorage.getItem("worker2Data"))
-const notes = localStorage.getItem("notes")
+const GLOBALNOTES = localStorage.getItem("notes")
 let constraintId,oldNotes
 let PHASE = 1
 
 const btnInnerHtml = 
-    BTNCLICK === "add-constraint" ? "Add Constraint":
-    BTNCLICK === "edit-constraint" ? "Select":
-    BTNCLICK === "delete-constraint" ? "Delete Constraint":
+    submitBtn === "add-constraint" ? "Add Constraint":
+    submitBtn === "edit-constraint" ? "Select":
+    submitBtn === "delete-constraint" ? "Delete Constraint":
     "Find Constraint"
 
-if (BTNCLICK === 'edit-constraint'){
-    notesSection.classList.add('hidden')
+if (submitBtn === 'add-constraint'){
+    document.getElementById("notes-section").classList.remove("hidden")
 }
 
 document.getElementById("submit-btn").innerHTML = btnInnerHtml
@@ -59,7 +58,7 @@ function populateTable(workerObj,workerTable,inputName,idParam,inputClass=""){
 
 window.addEventListener("DOMContentLoaded", async function () {
     const notesTextarea = document.getElementById("add-notes-textarea")
-    notesTextarea.innerHTML = notes
+    notesTextarea.innerHTML = GLOBALNOTES
 
     const worker1Table = document.getElementById("worker1-table")
     const worker2Table = document.getElementById("worker2-table")
@@ -94,15 +93,20 @@ document.getElementById("form").addEventListener("submit",async function(event){
         }
 
         if (worker1Check,worker2Check){
+            if (submitBtn === 'find-constraint'){
+                return constraintsSearch(null,null)
+            }
             errorTag.innerHTML = "Please insert a value for all tags!"
             return
         }
 
-        if (BTNCLICK === 'add-constraint'){
+        if (submitBtn === 'add-constraint'){
             return addConstraint(worker1,worker2,notes)
-        }else if (BTNCLICK === 'edit-constraint'){
+        }else if (submitBtn === 'edit-constraint'){
             PHASE = 2
             modifyConstraint(worker1,worker2,notes)
+        }else if (submitBtn === 'find-constraint'){
+            return constraintsSearch(worker1,worker2)
         }
 
     }else if (PHASE === 2){
@@ -164,7 +168,11 @@ document.getElementById("form").addEventListener("submit",async function(event){
 
         const results = await editConstraints(newWorker1Id,newWorker2Id,newNotes,'edit',constraintId)
 
-        console.log(results)
+        if (Objects.keys(results).includes('error')){
+            errorTag.innerHTML = "Internal error"
+        }else{
+            sessionStorage.setItem('Message',results.message)
+        }
         
     }
 })
@@ -201,15 +209,53 @@ async function modifyConstraint(worker1,worker2,notes){
 
     constraintId = data.id
     textArea.setAttribute("placeholder",notes)
-    editSection.classList.remove("hidden")
+    editConstraintsSection.classList.remove("hidden")
     return
 }
 
-function inputsCheck(inputTags){
-    for (const tag of inputTags){
-        if (tag.value !== ""){
-            return false
+async function constraintsSearch(worker1,worker2){
+    const resultsTable = document.getElementById('found-constraints-table')
+    const resultsSection = document.getElementById('found-constraints')
+    let result
+    if(!worker1 || !worker2){
+        if (!worker1 && !worker2){
+            //find all constraints
+            result = await findConstraints()
+        }else if (worker1){
+            //find for worker1
+            result = await findConstraints(worker1)
+        }else{
+            // find for worker2
+            result = await findConstraints(worker2 = worker2)
         }
-        return true
+    }else{
+        result = await findConstraints(worker1,worker2)
     }
+
+    if (Object.keys(result).includes("error")){
+        errorTag.innerHTML = result.error
+        return
+    }
+
+    for (const data of result){
+        const tableRow = document.createElement('tr')
+
+        const idData = document.createElement('td')
+        const worker1Id = document.createElement('td')
+        const worker2Id = document.createElement('td')
+        const noteData = document.createElement('td')
+
+        idData.innerHTML = data.id
+        worker1Id.innerHTML = data.worker1_id
+        worker2Id.innerHTML = data.worker2_id
+        noteData.innerHTML = data.note
+
+        for (const item of [idData,worker1Id,worker2Id,noteData]){
+            tableRow.appendChild(item)
+        }
+
+        resultsTable.appendChild(tableRow)
+    }
+
+    resultsSection.classList.remove("hidden")
 }
