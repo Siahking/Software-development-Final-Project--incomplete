@@ -1,10 +1,13 @@
 import { findWorker,findLocation,addLocation,addWorker, getLocations,linkWorkerLocations, getWorkers } from "./backend.js";
+import * as interactivity from "./home-file/interactivity.js"
+import * as homeFunctions from "./home-file/functions.js"
+import * as general from "./general-functions.js"
 
 //search and remove workers logic
 let gotLocations = false
-let removeWorkerBtnActive,removeLocationActive = false
+export let removeWorkerBtnActive,removeLocationActive = false
 const messageTag = document.getElementById("message")
-const errorTag = document.getElementById("error-tag")
+export const errorTag = document.getElementById("error-tag")
 const idCheckbox = document.getElementById("id")
 const firstNameCheckbox = document.getElementById("first-name")
 const lastNameCheckbox = document.getElementById("last-name")
@@ -22,50 +25,8 @@ const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumber
 
 const selectedLocations = [];
 
-//general functions
-function disableElements(checkbox,checkboxArr,inputsArr){
-    if(checkbox.checked){
-        checkboxArr.forEach(checkbox=>{
-            checkbox.setAttribute("disabled","true")
-        })
-        inputsArr.forEach(input=>{
-            input.value = ""
-            if (!input.classList.contains("hidden")){
-                input.classList.add("hidden")
-            }
-        })
-    }else{
-        checkboxArr.forEach((checkbox)=>{
-            checkbox.removeAttribute("disabled");
-            checkbox.checked = false
-        })
-    };
-};
-
-function checkContraintsInput(worker1Firstname,worker1Lastname,worker2Firstname,worker2Lastname){
-    if ((worker1Firstname || worker1Lastname) && (worker2Firstname || worker2Lastname)){
-        return "both workers"
-    }else if (worker1Firstname || worker1Lastname){
-        return 'worker one'
-    }else if ( worker2Firstname || worker2Lastname ){
-        return 'worker two'
-    }else{
-        return 'all constraints'
-    }
-}
-
 //toogles between showing the input fields for each checkbox if the checkbox is clicked or not
-checkboxArr.forEach((element)=>{
-    const inputField = document.getElementById(element.id + "-input")
-    element.addEventListener("click",function(){
-        if (this.checked){
-            inputField.classList.remove("hidden");
-        }else{
-            inputField.classList.add("hidden");
-            inputField.value = ""
-        }
-    })
-})
+interactivity.toogleCheckboxes(checkboxArr)
 
 // toogle between showing buttons and hiding them on click //
 hideButtons.forEach(id => {
@@ -74,77 +35,17 @@ hideButtons.forEach(id => {
         : id === "remove-location" ? "add-location-div"
         : id + '-div'
     const btnDiv = document.getElementById(divId)
-    btn.addEventListener('click',function(){
-        if (id === "remove-worker"){
-            removeWorkerBtnActive = !removeWorkerBtnActive
-            removeLocationActive = false
-        }else if(id === "remove-location"){
-            removeLocationActive = !removeLocationActive
-            removeWorkerBtnActive = false
-        }
-
-        if (btnDiv.classList.contains('hidden')){
-            btnDiv.classList.remove('hidden')
-        }else{
-            btnDiv.classList.add('hidden')
-        }
-
-        const arr = []
-        for (const arrId of inputDivIdArr){
-            if (arrId !== divId){
-                arr.push(arrId)
-            }
-        }
-        arr.forEach(item=>{
-            const currentDiv = document.getElementById(item)
-            if (!currentDiv.classList.contains('hidden')){
-                currentDiv.classList.add('hidden')
-            }
-        })
-
-        const textInputs = document.querySelectorAll('input[type="text"]');
-        textInputs.forEach(input=>input.value = "")
-
-        errorTag.innerHTML = ""
-        messageTag.innerHTML = ""
-    })
+    btn.addEventListener('click', () => interactivity
+        .hideShowButton(errorTag,messageTag,id,divId,btnDiv,inputDivIdArr)
+    )
 })
 
 //ADD OR REMOVE LOCATION//
-document.getElementById('location-submit-btn').addEventListener('click',async function(){
-    const locationInput = document.getElementById('location-input');
-    const location = locationInput.value
-    if (location === ""){
-        errorTag.innerHTML = "Please insert a value into the search tag"
-        return
-    }
-    const result = await findLocation("location",location)
-
-    if (removeLocationActive){
-        if (Object.keys(result).includes('error')){
-            errorTag.innerHTML = "This location does not exist"
-            return
-        }else{
-            const filteredLocations = await findLocation("location",location)
-            localStorage.setItem("Locations",JSON.stringify(filteredLocations))
-            window.location.href = "/remove-location"
-        }
-    }else{
-        if (!Object.keys(result).includes('error')){
-            errorTag.innerHTML = "This location already exists"
-            return
-        }
-
-        const message = await addLocation(location)
-
-        if (Object.keys(message).includes('error')){
-            sessionStorage.setItem('Message',message.error)
-        }else{
-            sessionStorage.setItem("Message",message.message)
-        }
-        window.location.reload()
-    }
-})
+document.getElementById('location-submit-btn')
+        .addEventListener(
+            'click',() => homeFunctions.homeLocationHandler(
+                removeLocationActive,errorTag
+            ))
 
 //ADD WORKER FUNCTION//
 document.getElementById('add-worker-form').addEventListener("submit",async function(event){
@@ -243,11 +144,11 @@ for (const checkbox of [idCheckbox,idNumberCheckbox]){
         if (this.id === "id"){
             const tempCheckboxArr = [...checkboxArr].slice(1)
             const tempInputArr = [...inputsArr].slice(1)
-            disableElements(idCheckbox,tempCheckboxArr,tempInputArr)
+            general.disableElements(idCheckbox,tempCheckboxArr,tempInputArr)
         }else{
             const tempCheckboxArr = [...checkboxArr].slice(0,-1)
             const tempInputArr = [...inputsArr].slice(0,-1)
-            disableElements(idNumberCheckbox,tempCheckboxArr,tempInputArr)
+            general.disableElements(idNumberCheckbox,tempCheckboxArr,tempInputArr)
         }
     })
 }
@@ -317,7 +218,7 @@ document.getElementById("constraint-form").addEventListener("submit",async funct
     console.log(buttonClick === 'find-constraint')
 
     if (buttonClick === 'find-constraint'){
-        const check = checkContraintsInput(w1FirstName,w1LastName,w2FirstName,w2LastName)
+        const check = general.checkContraintsInput(w1FirstName,w1LastName,w2FirstName,w2LastName)
         let worker1Result,worker2Result = ''
 
         switch (check){
