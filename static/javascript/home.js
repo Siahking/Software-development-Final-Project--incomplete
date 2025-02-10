@@ -1,5 +1,5 @@
 import { findWorker,findLocation,addLocation,addWorker, getLocations,linkWorkerLocations, getWorkers } from "./backend.js";
-import * as interactivity from "./home-file/interactivity.js"
+import * as interactivity from "../../Views/home/interactivity.js"
 import * as homeFunctions from "./home-file/functions.js"
 import * as general from "./general-functions.js"
 
