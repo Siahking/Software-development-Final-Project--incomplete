@@ -157,7 +157,6 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 func AddWorker(c *gin.Context, db *sql.DB) {
 	var worker Worker
 	if err := c.ShouldBindJSON(&worker); err != nil {
-		fmt.Printf("Error:\n" + err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}

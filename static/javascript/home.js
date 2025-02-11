@@ -1,6 +1,7 @@
 import { findWorker,findLocation,addLocation,addWorker, getLocations,linkWorkerLocations, getWorkers } from "./backend.js";
-import * as interactivity from "../../Views/home/interactivity.js"
-import * as homeFunctions from "./home-file/functions.js"
+import init from "../../views/home/home-init.js"
+import * as interactivity from "../../views/home/home-frontend.js"
+import * as homeFunctions from "../../views/home/home-functions.js"
 import * as general from "./general-functions.js"
 
 //search and remove workers logic
@@ -18,8 +19,6 @@ const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const idNumberInput = document.getElementById("id-number-input")
-const hideButtons = ['add-worker','add-location','remove-worker','find-worker','remove-location']
-const inputDivIdArr = ['add-location-div','add-worker-div','find-worker-div']
 const checkboxArr = [idCheckbox,firstNameCheckbox,lastNameCheckbox,middleNameCheckbox,idNumberCheckbox]
 const inputsArr = [idInput,firstNameInput,lastNameInput,middleNameInput,idNumberInput]
 
@@ -28,24 +27,7 @@ const selectedLocations = [];
 //toogles between showing the input fields for each checkbox if the checkbox is clicked or not
 interactivity.toogleCheckboxes(checkboxArr)
 
-// toogle between showing buttons and hiding them on click //
-hideButtons.forEach(id => {
-    const btn = document.getElementById(id)
-    const divId = id === "remove-worker" ? "find-worker-div"
-        : id === "remove-location" ? "add-location-div"
-        : id + '-div'
-    const btnDiv = document.getElementById(divId)
-    btn.addEventListener('click', () => interactivity
-        .hideShowButton(errorTag,messageTag,id,divId,btnDiv,inputDivIdArr)
-    )
-})
-
-//ADD OR REMOVE LOCATION//
-document.getElementById('location-submit-btn')
-        .addEventListener(
-            'click',() => homeFunctions.homeLocationHandler(
-                removeLocationActive,errorTag
-            ))
+init()
 
 //ADD WORKER FUNCTION//
 document.getElementById('add-worker-form').addEventListener("submit",async function(event){
@@ -93,7 +75,7 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
         sessionStorage.setItem("Message",result.message)
     }
 
-    window.location.href = '/'
+    // window.location.href = '/'
 })
 
 //logic for button inside the add-worker div to display existent locations so that a worker can be assigned to locations on assignments
