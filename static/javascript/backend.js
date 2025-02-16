@@ -22,7 +22,14 @@ export async function addLocation(locationName) {
 };
 
 export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number){
+    const neededValuesArr = [first_name,last_name,gender,address,age,id_number]
+    neededValuesArr.forEach((value)=>{
+        if (!value){
+            throw new Error('Error: Empty required input')
+        }
+    })
     try {
+
         const response = await fetch("http://localhost:8080/workers/add-worker",{
             method: "POST",
             headers: {
@@ -47,7 +54,6 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
         const result = await response.json();
         return result;
     }catch (error) {    
-        console.error("Error adding worker:", error);
         return { error: error.message };
     }
 }

@@ -24,22 +24,23 @@ CREATE TABLE worker_locations(
     location_id INT,
     FOREIGN KEY (worker_id) REFERENCES workers(id),
     FOREIGN KEY (location_id) REFERENCES locations(id),
-    PRIMARY KEY (worker_id, location_id)
+    UNIQUE (worker_id, location_id)
 );
 
 --@block
 CREATE TABLE days_off(
     break_id INT PRIMARY KEY AUTO_INCREMENT,
     worker_id INT NOT NULL,
-    dates JSON NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
     FOREIGN KEY (worker_id) REFERENCES workers(id)
 );
 
 --@block
 CREATE TABLE worker_constraints (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    worker1_id INT,
-    worker2_id INT,
+    worker1_id INT NOT NULL,
+    worker2_id INT NOT NULL,
     note TEXT,
     UNIQUE (worker1_id, worker2_id),  -- To prevent duplicate constraints
     FOREIGN KEY (worker1_id) REFERENCES workers(id),
@@ -92,8 +93,4 @@ INSERT INTO worker_constraints (worker1_id,worker2_id,note)
 VALUES (1,2,"Hate each other");
 
 --@block
-DELETE FROM worker_constraints;
-ALTER TABLE worker_constraints AUTO_INCREMENT = 1;
-
---@block
-SELECT * FROM worker_constraints
+ALTER TABLE days_off ADD CONSTRAINT unique_worker_days UNIQUE (worker_id, start_date,end_date);

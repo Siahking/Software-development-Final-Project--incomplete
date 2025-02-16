@@ -70,6 +70,12 @@ document.getElementById('add-worker-form').addEventListener("submit",async funct
     }
 
     if (Object.keys(result).includes('error')){
+        if (result.error.includes('500')){
+            sessionStorage.setItem("Message","Empty ID Number Input")
+        }
+        else{
+            sessionStorage.setItem("Message","User with the ID Already exists")
+        }
         sessionStorage.setItem("Message",result.error)
     }else{
         sessionStorage.setItem("Message",result.message)
