@@ -94,3 +94,6 @@ VALUES (1,2,"Hate each other");
 
 --@block
 ALTER TABLE days_off ADD CONSTRAINT unique_worker_days UNIQUE (worker_id, start_date,end_date);
+
+--@block
+SELECT * FROM worker_locations;

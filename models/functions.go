@@ -11,6 +11,6 @@ func ConnectionValidator(valueStr string, column string) (string, string, int) {
 	} else if column != "worker_id" && column != "location_id" && column != "id" {
 		return "Error", "column must be either be worker_id,location_id or id", 0
 	} else {
-		return "Success", column, value
+		return "Success", "", value
 	}
 }

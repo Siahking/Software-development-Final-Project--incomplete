@@ -47,11 +47,12 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
             })
         });
 
+        const result = await response.json();
+
         if(!response.ok){
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            throw new Error(result.Error ||`Error: ${response.status} ${response.statusText}`);
         }
 
-        const result = await response.json();
         return result;
     }catch (error) {    
         return { error: error.message };
@@ -119,11 +120,11 @@ export async function removeEntry(id,table){
             }
         });
 
-        if (!response.ok){
-            throw new Error(`Error: ${response.statusText}`)
-        }
-
         const result = await response.json();
+
+        if (!response.ok){
+            throw new Error(result.Error||`Error: ${response.statusText}`)
+        }
 
         return result;
     } catch (error){
@@ -145,11 +146,22 @@ export async function linkWorkerLocations(workerId,locationId){
 }
 
 export async function workerLocationSearch(column,id){
-    const result = await fetch(`http://localhost:8080/get-worker-location-connections/${column}/${id}`,{
-        method:"GET"
-    })
-    const data = await result.json();
-    return data
+    try{
+        const response = await fetch(`http://localhost:8080/get-worker-location-connections/${column}/${id}`,{
+            method:"GET"
+        })
+
+        const data = await response.json();
+
+        if(!response.ok) {
+            throw new Error(data.Error || `Error : ${response.status} ${response.statusText}`)
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error fetching worker locaiton connections:",error.message);
+        return { error: error.message };
+    }
 }
 
 export async function removeConnections(column,id){
@@ -163,11 +175,11 @@ export async function removeConnections(column,id){
             }
         });
 
-        if (!response.ok){
-            throw new Error(`Error: ${response.statusText}`)
-        }
-
         const result = await response.json();
+
+        if (!response.ok){
+            throw new Error(result.Error || `Error : ${response.statusText}`)
+        }
 
         return result;
     } catch (error){
@@ -176,7 +188,43 @@ export async function removeConnections(column,id){
     }
 }
 
-export async function findConstraints(worker1,worker2,id=null){ //complete
+export async function createConstraint(worker1_id,worker2_id,notes=""){
+    if (!worker1_id || !worker2_id){
+        return {"Error":"Empty param, please insert valid values"}
+    }
+    try {
+        const response = await fetch("http://localhost:8080/create-constraint",{
+            method: "POST",
+            headers: {
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                worker1_id,
+                worker2_id,
+                notes
+            })
+        });
+
+        let result;
+        try {
+            result = await response.json();
+        } catch (error) {
+            console.error("JSON Parsing Error:", error.message);
+            result = null;
+        }
+
+        if (!response.ok) {
+            throw new Error(result?.Error || `Error: ${response.status} ${response.statusText}`);
+        }
+
+        return result;
+    }catch (error) { 
+        console.log("Error creating constraint:",error.message)   
+        return { error: error.message };
+    }
+}
+
+export async function findConstraints(id,worker1=null,worker2=null){ //complete
     let result
     const url = new URL("http://localhost:8080/find-constraints")
     if (id || worker1 || worker2){
@@ -197,45 +245,41 @@ export async function findConstraints(worker1,worker2,id=null){ //complete
     return data
 }
 
-export async function editConstraints(worker1Id,worker2Id,note,changes,id=0){ // working
-    if ((!worker1Id || !worker2Id || !note || !changes) 
-        ||
-        (changes !== "add" && !id))
-        {
-        return {"error":"Missing parameters"}
-    }
+export async function editConstraints(id,worker1Id="",worker2Id="",note=""){ // working
 
-    if (changes === "add"){
-        const result1 = await findConstraints(worker1Id,worker2Id)
-        const result2 = await findConstraints(worker2Id,worker1Id)
+    if (!id){
+        return {"Error":"Id required"}
+    }    
+    const jsonValues = {}
+    const inputValues = [
+        {"worker1_id":worker1Id},
+        {"worker2_id":worker2Id},
+        {"note":note}
+    ]
 
-        const check1 = !Object.keys(result1).includes("error")
-        const check2 = !Object.keys(result2).includes("error")
-
-        if (check1 || check2){
-            return {'error':"Constraint already exists!"}
+    for (const param of inputValues){
+        for (const key in param){
+            if (param[key]){
+                jsonValues[key] = param[key]
+            }
         }
     }
 
     try{
-        const response = await fetch(`http://localhost:8080/edit-constraints/${changes}/${id}`,{
-            method: "POST",
+        const response = await fetch(`http://localhost:8080/edit-constraints/${id}`,{
+            method: "PATCH",
             headers: {
                 "Content-Type":"application/json"
             },
-            body:JSON.stringify({
-                "id":id,
-                "worker1_id":worker1Id,
-                "worker2_id":worker2Id,
-                "note":note
-            })
+            body:JSON.stringify(jsonValues)
         });
 
+        const result = await response.json();
+
         if (!response.ok){
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            throw new Error(result.Error || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const result = await response.json();
         return result
     }catch (error){
         console.error("Error in editing constraints: \n",error);
@@ -256,11 +300,13 @@ export async function deleteConstraints(id){ //working
             }
         });
 
+        const result = await response.json()
+
         if (!response.ok){
-            throw new Error(`Error: ${response.statusText}`)
+            console.log("in the if statement")
+            throw new Error(result.Error || `Error: ${response.statusText}`)
         }
 
-        const result = await response.json()
         return result
     }catch(error){
         console.error("Failed to delete worker",error);
@@ -269,7 +315,7 @@ export async function deleteConstraints(id){ //working
     
 }
 
-export async function addDaysOff(worker_id,dates){ //working
+export async function addDaysOff(worker_id,startDate,endDate){ //working
     try{
         const response = await fetch(`http://localhost:8080/add-days-off`,{
             method:'POST',
@@ -277,17 +323,18 @@ export async function addDaysOff(worker_id,dates){ //working
                 "Content-Type":"application/json"
             },
             body:JSON.stringify({
-                "break_id":0,
                 "worker_id":worker_id,
-                "dates":dates
+                "start_date":startDate,
+                "end_date":endDate
             })
         });
 
+        const result = await response.json();
+
         if (!response.ok){
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            throw new Error(result.Error || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const result = await response.json();
         return result
     }catch(error){
         console.error("Error in creating days off: \n",error)
@@ -311,6 +358,10 @@ export async function getDaysOff(column="",value=""){ //working
 
 export async function removeDaysOff(breakId){ //complete
     const url = new URL(`http://localhost:8080/remove-days/${breakId}`)
+
+    if (!breakId){
+        return {"Error":"Id required"}
+    }
     
     try{
         const response = await fetch(url,{
@@ -320,11 +371,12 @@ export async function removeDaysOff(breakId){ //complete
             }
         });
 
+        const result = await response.json()
+
         if (!response.ok){
-            throw new Error(`Error: ${response.statusText}`)
+            throw new Error(result.Error || `Error: ${response.statusText}`)
         }
 
-        const result = await response.json()
         return result
     }catch(error){
         console.error("Failed to delete day off",error);
@@ -335,7 +387,7 @@ export async function removeDaysOff(breakId){ //complete
 // async function tester() {
 //     const column = "worker_id"
 //     const value = 2
-//     const result = await removeDaysOff(value)
+//     const result = await removeDaysOff(10)
 //     console.log(result)
 // }
 

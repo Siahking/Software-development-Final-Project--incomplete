@@ -87,7 +87,7 @@ func FindLocation(c *gin.Context, db *sql.DB) {
 	value := c.Param("value")
 	baseString := "SELECT id,location FROM locations WHERE "
 
-	if value == "0" || (column != "id" && column != "name") {
+	if value == "0" || (column != "id" && column != "location") {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid param entry"})
 		return
 	} else if column == "id" {
@@ -144,7 +144,12 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 	id := strings.TrimSpace(c.Param("id"))
 
 	if table == "" || table == ":" || id == "" || id == ":" {
-		c.JSON(http.StatusBadGateway, gin.H{"error": "Invalid Input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Input"})
+		return
+	}
+
+	if table != "workers" && table != "locations"{
+		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid parameter"})
 		return
 	}
 
@@ -175,13 +180,13 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 func AddWorker(c *gin.Context, db *sql.DB) {
 	var worker Worker
 	if err := c.ShouldBindJSON(&worker); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid request body"})
 		return
 	}
 
 	if worker.FirstName == "" || worker.LastName == "" || worker.Address == "" ||
 		worker.Age == 0 || worker.ID_Number == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing params"})
+		c.JSON(http.StatusBadRequest, gin.H{"Error": "Missing params"})
 		return
 	}
 
@@ -193,11 +198,11 @@ func AddWorker(c *gin.Context, db *sql.DB) {
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				c.JSON(http.StatusConflict, gin.H{"error": "Worker with this ID Number already exists"})
+				c.JSON(http.StatusConflict, gin.H{"Error": "Worker with this ID Number already exists"})
 				return
 			}
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in adding values to the db: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Error in adding values to the db: " + err.Error()})
 		return
 	}
 
@@ -329,6 +334,9 @@ func AssignWorkerToLocation(c *gin.Context, db *sql.DB) {
 			if mysqlErr.Number == 1062 {
 				c.JSON(http.StatusConflict, gin.H{"error": "Worker Location link already exists"})
 				return
+			}else if mysqlErr.Number == 1452 {
+				c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid input"})
+				return
 			}
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert value\n" + err.Error()})
@@ -341,17 +349,28 @@ func AssignWorkerToLocation(c *gin.Context, db *sql.DB) {
 func GetWorkerLocationConnections(c *gin.Context, db *sql.DB) {
 	column := strings.TrimSpace(c.Param("column"))
 	valueStr := c.Param("id")
+	validQueries := map[string]string{
+		"worker_id":   "SELECT * FROM worker_locations WHERE worker_id = ?",
+		"location_id": "SELECT * FROM worker_locations WHERE location_id = ?",
+		"id":          "SELECT * FROM worker_locations WHERE id = ?",
+	}
 
-	response, message, value := ConnectionValidator(valueStr, column)
-	if response == "Error" {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": message})
+	value,conversionErr := strconv.Atoi(valueStr)
+	if conversionErr != nil{
+		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid id parameter"})
 		return
 	}
 
-	query := fmt.Sprintf("SELECT * FROM worker_locations WHERE %s = ?", column)
+	query, exists := validQueries[column]
+	if !exists {
+		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid column parameter"})
+		return
+	}
+
 	rows, err := db.Query(query, value)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get values from the database\n" + err.Error()})
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Failed to get values from the database\n" + err.Error()})
 		return
 	}
 	defer rows.Close()
@@ -361,44 +380,59 @@ func GetWorkerLocationConnections(c *gin.Context, db *sql.DB) {
 		var connection WorkerLocation
 		err := rows.Scan(&connection.ID, &connection.WorkerID, &connection.LocationID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning rows\n" + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"Error": "Error scanning rows\n" + err.Error()})
 			return
 		}
 		connections = append(connections, connection)
 	}
 
-	c.IndentedJSON(http.StatusOK, connections)
+	if len(connections) == 0 {
+		c.JSON(http.StatusNotFound,gin.H{"Error":"No worker location connections found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, connections)
 }
 
 func RemoveConnection(c *gin.Context, db *sql.DB) {
 	column := c.Param("column")
 	valueStr := c.Param("id")
+	validQueries := map[string]string{
+		"worker_id":   "DELETE FROM worker_locations WHERE worker_id = ?",
+		"location_id": "DELTE FROM worker_locations WHERE location_id = ?",
+		"id":          "DELETE FROM worker_locations WHERE id = ?",
+	}
 
-	response, message, value := ConnectionValidator(valueStr, column)
-	if response == "Error" {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": message})
+	value,conversionErr := strconv.Atoi(valueStr)
+	if conversionErr != nil{
+		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid Id"})
 		return
 	}
 
-	query := fmt.Sprintf("DELETE FROM worker_locations WHERE %s = ?", column)
+	query,exists := validQueries[column]
+	if !exists{
+		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid column input"})
+		return
+	}
+
 	var result sql.Result
 	var err error
 
 	result, err = db.Exec(query, value)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in getting rows " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Error in getting rows " + err.Error()})
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "No rows affected" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"Error": "No rows affected" + err.Error()})
 		return
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "No Entry found"})
+		c.JSON(http.StatusNotFound, gin.H{"Error": "No Entry found"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
@@ -418,21 +452,26 @@ func CreateConstrant(c *gin.Context, db *sql.DB) {
 	_, err := db.Exec(query, constraint.Worker1, constraint.Worker2, constraint.Note)
 
 	if err != nil {
+		var errMsg string
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
-			if mysqlErr.Number == 1452 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "Worker with this id does not exist"})
-				return
-			} else if mysqlErr.Number == 1048 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "Null worker cannot exist"})
-				return
-			} else if mysqlErr.Number == 3819 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "Can't use the same worker value for both params"})
-				return
+			switch mysqlErr.Number {
+			case 1452:
+				errMsg = "Worker with this ID does not exist"
+			case 1048:
+				errMsg = "Null worker cannot exist"
+			case 3819:
+				errMsg = "Can't use the same worker value for both params"
+			case 1062:
+				errMsg = "Duplicate constraint entry"
+			default:
+				errMsg = "Database error"
 			}
+		} else {
+			errMsg = "Unknown error occurred"
 		}
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Error \n" + err.Error()})
+		c.JSON(http.StatusConflict, gin.H{"Error": errMsg})
 		return
-	}
+	}	
 
 	c.JSON(http.StatusOK, gin.H{"Message": "Successful entry"})
 }
@@ -536,16 +575,22 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 	_, err := db.Exec(query, constraint.Worker1, constraint.Worker2, constraint.Note, id)
 
 	if err != nil {
+		var errMsg string
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
-			if mysqlErr.Number == 1452 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "Worker with this id does not exist"})
-				return
-			} else if mysqlErr.Number == 3819 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "Can't use the same worker value for both params"})
-				return
+			switch mysqlErr.Number{
+				case 1452:
+					errMsg = "Worker with this ID does not exist"
+				case 3819:
+					errMsg = "Can't use the same worker value for both params"
+				case 1062:
+					errMsg = "Duplicate Entry, a constraint for these workers already exists"
+				default:
+					fmt.Print(err)
 			}
-		}
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Error updating constraint: " + err.Error()})
+		} else {
+			errMsg = "Unknown error occurred"
+		}	
+		c.JSON(http.StatusConflict, gin.H{"Error": errMsg})
 		return
 	}
 
@@ -577,7 +622,7 @@ func DeleteConstraint(c *gin.Context, db *sql.DB) {
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "Constraint does not exist"})
+		c.JSON(http.StatusNotFound, gin.H{"Error": "Constraint does not exist"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
@@ -643,14 +688,11 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 	value := c.Param("value")
 
 	if column == ""  {
-		fmt.Print("Passed in get all section \n")
 		rows, err = db.Query("SELECT * FROM days_off")
 	} else if column == "worker_id" {
-		fmt.Print("Passed in workerid section \n")
 		query := "SELECT * FROM days_off WHERE worker_id = ?"
 		rows, err = db.Query(query, value)
 	} else if column == "id" {
-		fmt.Print("Passed in id section \n")
 		query := "SELECT * FROM days_off WHERE break_id = ?"
 		rows, err = db.Query(query, value)
 	} else {
@@ -709,7 +751,7 @@ func RemoveDaysOff(c *gin.Context, db *sql.DB) {
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "No Entry found"})
+		c.JSON(http.StatusNotFound, gin.H{"Error": "No Entry found"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
