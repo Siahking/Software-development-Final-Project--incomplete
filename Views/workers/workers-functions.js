@@ -1,5 +1,5 @@
 import { 
-    getWorkers, workerLocationSearch,findLocation,getLocations,addWorker,findWorker,linkWorkerLocations
+    getWorkers, workerLocationSearch,findLocation,getLocations,addWorker,findWorker,linkWorkerLocations,removeEntry
 } from "../../static/javascript/backend.js";
 
 const tableHeadArray = ["ID","FirstName","LastName","MiddleName","Gender","Address","Contact","Age","Id Number","Locations"]
@@ -7,6 +7,11 @@ const table = document.getElementById("table");
 const firstRow = document.createElement("tr");
 const showLocationsDiv = document.getElementById('locations-input')
 const errorTag = document.getElementById('error-tag')
+const idInput = document.getElementById("id-input")
+const firstNameInput =  document.getElementById("first-name-input")
+const lastNameInput =  document.getElementById("last-name-input")
+const middleNameInput =  document.getElementById("middle-name-input")
+const idNumberInput = document.getElementById("id-number-input")
 
 tableHeadArray.forEach((item) => {
     const tableHead = document.createElement("th")
@@ -83,9 +88,8 @@ export async function showWorkers (){
         const deleteBtn = document.createElement("button")
         deleteBtn.innerHTML = "Delete"
         deleteBtn.value = worker.id
-        deleteBtn.addEventListener("click",function(){
-            console.log(`Value for this button is ${this.value}`)
-        })
+        deleteBtn.setAttribute("name",`delete_id${worker.id}`)
+        deleteBtn.addEventListener("click",(event)=>deleteWorker(event))
 
         deleteCell.appendChild(deleteBtn)
 
@@ -97,7 +101,6 @@ export async function showWorkers (){
 export async function addWorkerHandler(event){
 
     event.preventDefault()
-    console.log('passed in function')
 
     const firstName = document.getElementById('add-first-name-input').value
     const lastName = document.getElementById('add-last-name-input').value
@@ -134,5 +137,53 @@ export async function addWorkerHandler(event){
     sessionStorage.setItem("Message",result.message)
 
     window.location.href = '/'
+}
+
+export async function findWorkers(event){
+
+    event.preventDefault()
+
+    const id = idInput.value || null
+    const firstName = firstNameInput.value || null
+    const lastName = lastNameInput.value || null
+    const middleName = middleNameInput.value || null
+    const idNumber = idNumberInput.value || null
+    let emptyValues = false
+
+    for (const value of [id,firstName,lastName,middleName,idNumber]){
+        if (value){
+            emptyValues = true
+        }
+    }
+
+    if (!emptyValues){
+        errorTag.innerHTML = "Please Fillout atleast one field to search for workers"
+        return
+    }
+
+    const results = await findWorker(firstName,lastName,middleName,idNumber,id)
+    if (Object.keys(results).includes("error")){
+        errorTag.innerHTML = results.error
+        return
+    }
+
+    localStorage.setItem("workerData",JSON.stringify(results))
+    window.location.href = "/worker-details"
+}
+
+export async function deleteWorker(event){
+    const workerId = event.target.value
+    const worker = await findWorker("","","","",workerId)
+    const firstName = worker[0].first_name
+    const lastName = worker[0].last_name
+    
+    const confirmation = confirm(`Are you sure you want to delete ${firstName} ${lastName} ?`)
+    if (confirmation){
+        const result = await removeEntry(workerId,"workers")
+        sessionStorage.setItem("Message",result.message)
+        window.location.href = '/'
+    }else{
+        errorTag.innerHTML = "Failed to delete worker"
+    }
 }
 

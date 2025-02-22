@@ -15,6 +15,7 @@
     </table>
 
     <button id="add-worker">Add Worker</button>
+    <button id="find-worker">Find Worker</button>
 
     <div class="hidden" id="add-worker-div">
         <form id="add-worker-form">
@@ -63,6 +64,46 @@
             <button type="submit" id="add-worker-submit-btn">
                 Add Worker
             </button>
+        </form>
+    </div>
+    <div id="find-worker-div" class="hidden">
+        <form id="workerSearchForm">
+            <label for="id">
+                ID
+                <input type="checkbox" id="id" name="id">
+            </label>
+            <br>
+            <input autocomplete="off" type="number" id="id-input" class="hidden" placeholder="Enter the id here">
+    
+            <label for="first-name">
+                First Name
+                <input type="checkbox" id="first-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="first-name-input" class="hidden" placeholder="Enter the first name here">
+    
+            <label for="last-name">
+                Last Name
+                <input type="checkbox" id="last-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="last-name-input" class="hidden" placeholder="Enter the last name here">
+    
+            <label for="middle-name">
+                Middle Name
+                <input type="checkbox" id="middle-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="middle-name-input" class="hidden" placeholder="Enter the middle name here">
+
+            <label for="id-number">
+                ID Number
+                <input type="checkbox" id="id-number">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="id-number-input" class="hidden" placeholder="Enter the id number here">
+
+            <button id="search-button" >Search</button>
         </form>
     </div>
     <p id="error-tag" style="color: red;"></p>

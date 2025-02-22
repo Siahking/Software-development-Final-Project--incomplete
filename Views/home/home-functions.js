@@ -2,14 +2,6 @@ import { findLocation, addLocation, findWorker, addWorker, linkWorkerLocations, 
 import {toogleStates} from "./home-frontend.js";
 const errorTag = document.getElementById("error-tag")
 
-async function workerSearchFunction(idNumber){
-    const result = await findWorker(null,null,null,null,idNumber)
-    if (Object.keys(result).includes('error')){
-        return false
-    }
-    return true
-}
-
 export async function editLocations() {
     const locationInput = document.getElementById('location-input');
     const rawLocation = locationInput.value

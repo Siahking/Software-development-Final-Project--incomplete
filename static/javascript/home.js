@@ -29,7 +29,6 @@ interactivity.toogleCheckboxes(checkboxArr)
 
 init()
 
-
 //logic for button inside the add-worker div to display existent locations so that a worker can be assigned to locations on assignments
 document.getElementById("toogle-btn").addEventListener('click',async function(event){
     event.preventDefault()
@@ -183,40 +182,6 @@ document.getElementById("constraint-form").addEventListener("submit",async funct
     }
 
     console.log(!worker1EntryCheck )
-
-    // if (!worker1EntryCheck && !worker2EntryCheck){
-    //     if (buttonClick === 'find-constraint' || buttonClick === 'delete-constraint'){
-
-    //         console.log('passed here')
-    //         const searchWorker1Firstname = w1FirstName ? w1FirstName : ""
-    //         const searchWorker1Lastname = w1LastName ? w1LastName : ""
-    //         const searchWorker2Firstname = w2FirstName ? w2FirstName : ""
-    //         const searchWorker2Lastname = w2LastName ? w2LastName : ""
-
-    //         worker1Results = findWorker(searchWorker1Firstname,searchWorker1Lastname)
-    //         worker2Results = findWorker(searchWorker2Firstname,searchWorker2Lastname)
-    //     }else{
-    //         errorTag.innerHTML = "Please insert values to search"
-    //         return
-    //     }
-    // }else{
-    //     worker1Results = await findWorker(w1FirstName,w1LastName)
-    //     worker2Results = await findWorker(w2FirstName,w2LastName)
-    // }
-
-    // for (const value of [worker1Results,worker2Results]){
-    //     if (Object.keys(value).includes("error")){
-    //         errorTag.innerHTML = value.error
-    //         return
-    //     }
-    // }
-
-    // localStorage.setItem("worker1Data",JSON.stringify(worker1Results))
-    // localStorage.setItem("worker2Data",JSON.stringify(worker2Results))
-    // localStorage.setItem("notes",notes)
-    // localStorage.setItem("buttonClicked",buttonClick)
-
-    // window.location.href = "/constraints";
 })
 
 //add message to the main div
