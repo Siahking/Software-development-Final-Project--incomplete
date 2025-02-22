@@ -10,24 +10,33 @@ export async function getLocations() {
 };
 
 export async function addLocation(locationName) {
-    const result = await fetch(`http://localhost:8080/locations/${locationName}`,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
+    try{
+        const response = await fetch(`http://localhost:8080/locations/${locationName}`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            }
+        })
+
+        const result = await response.json()
+
+        if (!response.ok){
+            throw new Error(result.Error || `Error: ${response.status} ${response.statusText}`)
         }
-    })
-    .then((data)=> data.json())
-    .then((data) => data)
-    return result
+
+        return result
+    }catch(error){
+        return {"error":error.message}
+    }
 };
 
 export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number){
     const neededValuesArr = [first_name,last_name,gender,address,age,id_number]
-    neededValuesArr.forEach((value)=>{
+    for (const value of neededValuesArr){
         if (!value){
-            throw new Error('Error: Empty required input')
+            return {"error":"Vacant input for required field"}
         }
-    })
+    }
     try {
 
         const response = await fetch("http://localhost:8080/workers/add-worker",{
@@ -154,12 +163,12 @@ export async function workerLocationSearch(column,id){
         const data = await response.json();
 
         if(!response.ok) {
-            throw new Error(data.Error || `Error : ${response.status} ${response.statusText}`)
+            return data || `Error : ${response.status} ${response.statusText}`
         }
 
         return data;
     } catch (error) {
-        console.error("Error fetching worker locaiton connections:",error.message);
+        console.error("Error fetching worker location connections:",error.message);
         return { error: error.message };
     }
 }

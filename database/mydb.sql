@@ -1,7 +1,7 @@
 --@block
 CREATE TABLE locations(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    location VARCHAR(255) NOT NULL
+    location VARCHAR(255) NOT NULL UNIQUE
 );
 
 --@block
@@ -22,8 +22,8 @@ CREATE TABLE worker_locations(
     id INT PRIMARY KEY AUTO_INCREMENT,
     worker_id INT,
     location_id INT,
-    FOREIGN KEY (worker_id) REFERENCES workers(id),
-    FOREIGN KEY (location_id) REFERENCES locations(id),
+    FOREIGN KEY (worker_id) REFERENCES workers(id) ON DELETE CASCADE,
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
     UNIQUE (worker_id, location_id)
 );
 
@@ -63,10 +63,7 @@ VALUES
     ('Isiah','Fereton',NULL,"Male","123 King Street", "1234567890",45,232424);
 
 --@block
-SELECT * FROM locations WHERE id = 2;
-
---@block
-SELECT * FROM workers WHERE id IN (4,11)
+SELECT * FROM locations;
 
 --@block
 SELECT * FROM workers;
@@ -96,4 +93,8 @@ VALUES (1,2,"Hate each other");
 ALTER TABLE days_off ADD CONSTRAINT unique_worker_days UNIQUE (worker_id, start_date,end_date);
 
 --@block
-SELECT * FROM worker_locations;
+DELETE FROM workers WHERE id_number = 	13579;
+
+--@block
+ALTER TABLE locations
+ADD CONSTRAINT unique_location UNIQUE (location);

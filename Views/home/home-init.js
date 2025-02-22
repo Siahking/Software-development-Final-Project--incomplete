@@ -24,9 +24,11 @@ export default function homeInit(){
     //ADD OR REMOVE LOCATION//
     document.getElementById('location-submit-btn')
             .addEventListener(
-                'click',() => funcs.homeLocationHandler( errorTag,removeLocationActive)
+                'click',() => funcs.editLocations()
     )
 
+    //ADD WORKER FUNCTION//
+    document.getElementById('add-worker-form').addEventListener("submit",funcs.addWorkerHandler)
     
 
 }

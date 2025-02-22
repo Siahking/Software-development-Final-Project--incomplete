@@ -14,6 +14,61 @@
 
     </table>
 
-    <script type="module" src="/static/javascript/get-workers.js"></script>
+    <button id="add-worker">Add Worker</button>
+
+    <div class="hidden" id="add-worker-div">
+        <form id="add-worker-form">
+            <label for="add-first-name-input">
+                First  Name
+                <input type="text" id="add-first-name-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <label for="add-last-name-input">
+                Last  Name
+                <input type="text" id="add-last-name-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <label for="add-middle-name-input">
+                Middle  Name
+                <input type="text" id="add-middle-name-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <label for="add-gender-input">
+                Gender
+                 <select id="add-gender-input">
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                 </select>
+            </label>
+            <label for="add-address-input">
+                Address
+                <input type="text" id="add-address-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <label for="add-contact-input">
+                Contact
+                <input type="text" id="add-contact-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <label for="add-age-input">
+                Age
+                <input type="number" id="add-age-input" placeholder="Type here" min="18">
+            </label>
+            <label for="add-id-number-input">
+                ID Number
+                <input type="number" id="add-id-number-input" placeholder="Type here">
+            </label>
+            <button type="button" id="toogle-btn">Add Location</button>
+            <div id="locations-input" class="hidden">
+                
+            </div>
+
+            <button type="submit" id="add-worker-submit-btn">
+                Add Worker
+            </button>
+        </form>
+    </div>
+    <p id="error-tag" style="color: red;"></p>
+    
+    <script type="module" src="../views/workers/main.js"></script>
+    <script type="module" src="../views/workers/workers-frontend.js"></script>
+    <script type="module" src="../views/workers/workers-functions.js"></script>
 </body>
 </html>

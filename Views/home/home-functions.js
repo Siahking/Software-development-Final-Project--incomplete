@@ -1,5 +1,6 @@
-import { findLocation, addLocation, findWorker, addWorker } from "../../static/javascript/backend.js";
-import { errorTag, removeLocationActive } from "../../static/javascript/home.js";
+import { findLocation, addLocation, findWorker, addWorker, linkWorkerLocations, removeEntry } from "../../static/javascript/backend.js";
+import {toogleStates} from "./home-frontend.js";
+const errorTag = document.getElementById("error-tag")
 
 async function workerSearchFunction(idNumber){
     const result = await findWorker(null,null,null,null,idNumber)
@@ -9,72 +10,38 @@ async function workerSearchFunction(idNumber){
     return true
 }
 
-export async function editLocations( errorTag, removeLocationActive ) {
+export async function editLocations() {
     const locationInput = document.getElementById('location-input');
-    const location = locationInput.value
+    const rawLocation = locationInput.value
+    let location
+    try{
+        location = rawLocation.toLowerCase()
+    }catch{
+        errorTag.innerHTML = "Invalid input"
+        return
+    }
+    let returnMessage
     if (location === ""){
         errorTag.innerHTML = "Please insert a value into the search tag"
         return
     }
-    const result = await findLocation("location",location)
-
-    if (removeLocationActive){
+    if (toogleStates.removeLocationState){
+        const result = await findLocation("location",location)
         if (Object.keys(result).includes('error')){
             errorTag.innerHTML = "This location does not exist"
             return
-        }else{
-            const filteredLocations = await findLocation("location",location)
-            localStorage.setItem("Locations",JSON.stringify(filteredLocations))
-            window.location.href = "/remove-location"
         }
-    }else{
-        if (!Object.keys(result).includes('error')){
-            errorTag.innerHTML = "This location already exists"
-            return
-        }
+        const locationId = result[0].id
+        returnMessage = await removeEntry(locationId,'locations')
 
-        const message = await addLocation(location)
-
-        if (Object.keys(message).includes('error')){
-            sessionStorage.setItem('Message',message.error)
-        }else{
-            sessionStorage.setItem("Message",message.message)
-        }
-        window.location.reload()
+    }else if (toogleStates.addLocationState){
+        returnMessage = await addLocation(location)
     }
-}
 
-export async function homeLocationHandler(removeLocationActive,errorTag){
-    const locationInput = document.getElementById('location-input');
-    const location = locationInput.value
-    if (location === ""){
-        errorTag.innerHTML = "Please insert a value into the search tag"
-        return
-    }
-    const result = await findLocation("location",location)
-
-    if (removeLocationActive){
-        if (Object.keys(result).includes('error')){
-            errorTag.innerHTML = "This location does not exist"
-            return
-        }else{
-            const filteredLocations = await findLocation("location",location)
-            localStorage.setItem("Locations",JSON.stringify(filteredLocations))
-            window.location.href = "/remove-location"
-        }
+    if (Object.keys(returnMessage).includes('error')){
+        errorTag.innerHTML = returnMessage.error
     }else{
-        if (!Object.keys(result).includes('error')){
-            errorTag.innerHTML = "This location already exists"
-            return
-        }
-
-        const message = await addLocation(location)
-
-        if (Object.keys(message).includes('error')){
-            sessionStorage.setItem('Message',message.error)
-        }else{
-            sessionStorage.setItem("Message",message.message)
-        }
+        sessionStorage.setItem("Message",returnMessage.message)
         window.location.reload()
     }
 }
@@ -92,9 +59,10 @@ export async function addWorkerHandler(event){
     const age = Number(document.getElementById('add-age-input').value)
     const idNumber = Number(document.getElementById('add-id-number-input').value)
     const result = await addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber)
+    const selectedLocations = []
 
-    if (workerSearchFunction(idNumber)){
-        errorTag.innerHTML = 'User already exists'
+    if (Object.keys(result).includes("error")){
+        errorTag.innerHTML = result.error
         return
     }
 
@@ -105,7 +73,17 @@ export async function addWorkerHandler(event){
         };
     });
 
-    
+    if (selectedLocations.length>0) {
+        //find the worker using the idNumber then assign the worker to a location using worker and location id
+        const newWorker = await findWorker("","","",idNumber)
+        const newWorkerId = newWorker[0].id
+        console.log(newWorker)
+        selectedLocations.forEach((location)=>{
+            linkWorkerLocations(newWorkerId,location.id)
+        })
+    }    
 
+    sessionStorage.setItem("Message",result.message)
 
+    window.location.href = '/'
 }  

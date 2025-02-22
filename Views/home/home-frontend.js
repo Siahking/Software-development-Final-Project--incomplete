@@ -1,10 +1,25 @@
-let removeWorkerBtnActive,removeLocationActive = false
+export const toogleStates = {
+    addWorkerState:false,
+    addLocationState:false,
+    removeWorkerState:false,
+    removeLocationState:false
+}
+
+function toogleStateFunc(value){
+    const keys = Object.keys(toogleStates)
+    keys.forEach((key)=>{
+        if (key === value){
+            toogleStates[key] = !toogleStates[key]
+        }else{
+            toogleStates[key] = false
+        }
+    })
+}
 
 export function toogleCheckboxes(array){
     array.forEach((element)=>{
         const inputField = document.getElementById(element.id + "-input")
         element.addEventListener("click",function(){
-            console.log('passed here')
             if (this.checked){
                 inputField.classList.remove("hidden");
             }else{
@@ -16,12 +31,21 @@ export function toogleCheckboxes(array){
 }
 
 export function hideShowButton(errorTag,messageTag,id,divId,btnDiv,inputDivIdArr){
-    if (id === "remove-worker"){
-        removeWorkerBtnActive = !removeWorkerBtnActive
-        removeLocationActive = false
-    }else if(id === "remove-location"){
-        removeLocationActive = !removeLocationActive
-        removeWorkerBtnActive = false
+    switch (id){
+        case "remove-worker":
+            toogleStateFunc("removeWorkerState")
+            break
+        case "remove-location":
+            toogleStateFunc("removeLocationState")
+            break
+        case "add-location":
+            toogleStateFunc("addLocationState")
+            break
+        case "add-worker":
+            toogleStateFunc("addWorkerState")
+            break
+        default:
+            console.log("Unknown id")
     }
 
     if (btnDiv.classList.contains('hidden')){

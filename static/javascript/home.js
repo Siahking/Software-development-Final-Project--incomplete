@@ -29,60 +29,6 @@ interactivity.toogleCheckboxes(checkboxArr)
 
 init()
 
-//ADD WORKER FUNCTION//
-document.getElementById('add-worker-form').addEventListener("submit",async function(event){
-
-    event.preventDefault()
-
-    const firstName = document.getElementById('add-first-name-input').value
-    const lastName = document.getElementById('add-last-name-input').value
-    const middleName = document.getElementById('add-middle-name-input').value !== "" ? document.getElementById('add-middle-name-input').value : null;
-    const gender = document.getElementById('add-gender-input').value !== "" ? document.getElementById('add-gender-input').value : null;
-    const address = document.getElementById('add-address-input').value
-    const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
-    const age = Number(document.getElementById('add-age-input').value)
-    const idNumber = Number(document.getElementById('add-id-number-input').value)
-
-    const locationsArr = document.querySelectorAll(".location-check")
-    locationsArr.forEach(location=>{
-        if (location.checked){
-            selectedLocations.push({id:location.id,location:location.value})
-        };
-    });
-
-    const searchResults = await findWorker(null,null,null,null,idNumber);
-    if (!Object.keys(searchResults).includes('error')){
-        errorTag.innerHTML = 'user already exists'
-        return
-    }
-
-    const result = await addWorker(firstName,middleName,lastName,gender,
-        address,contact,age,idNumber
-    )
-
-    //duplicate search (TODO) create a function to decrease repitition
-    if (selectedLocations.length > 0){
-        const newSearch = await findWorker(null,null,null,null,idNumber);
-        const idToJoin = newSearch[0].id
-        selectedLocations.forEach(object=>{
-            linkWorkerLocations(idToJoin,object.id)
-        })
-    }
-
-    if (Object.keys(result).includes('error')){
-        if (result.error.includes('500')){
-            sessionStorage.setItem("Message","Empty ID Number Input")
-        }
-        else{
-            sessionStorage.setItem("Message","User with the ID Already exists")
-        }
-        sessionStorage.setItem("Message",result.error)
-    }else{
-        sessionStorage.setItem("Message",result.message)
-    }
-
-    // window.location.href = '/'
-})
 
 //logic for button inside the add-worker div to display existent locations so that a worker can be assigned to locations on assignments
 document.getElementById("toogle-btn").addEventListener('click',async function(event){

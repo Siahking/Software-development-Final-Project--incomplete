@@ -132,6 +132,12 @@ func AddLocation(c *gin.Context, db *sql.DB) {
 	query := "INSERT INTO locations (location) VALUES (?)"
 	_, err := db.Exec(query, newLocation)
 	if err != nil {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == 1062 {
+				c.JSON(http.StatusConflict, gin.H{"Error": "This location already exists"})
+				return
+			}
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert value\n" + err.Error()})
 		return
 	}
