@@ -168,7 +168,7 @@ export async function findWorkers(event){
     }
 
     localStorage.setItem("workerData",JSON.stringify(results))
-    window.location.href = "/worker-details"
+    window.location.href = "/find-workers"
 }
 
 export async function deleteWorker(event){

@@ -13,6 +13,22 @@
     <ul id="list"></ul>
         
     </ul>
-    <script type="module" src="/static/javascript/get-locations.js"></script>
+
+    <button id="add-location">Add Location</button>
+    <button id="find-location">Find Location</button>
+
+    <div class="hidden" id="add-location-div">
+        <label for="location-input">
+            Location Name
+            <input type="text" id="location-input" placeholder="Type here" autocomplete="off">
+        </label>
+        <button id="location-submit-btn">Submit</button>
+    </div>
+
+    <p id="error-tag" style="color: red;"></p>
+
+    <script type="module" src="../views/locations/locations-frontend.js"></script>
+    <script type="module" src="../views/locations/locations-functions.js"></script>
+    <script type="module" src="../views/locations/main.js"></script>
 </body>
 </html>

@@ -12,9 +12,12 @@
     <h1>Welcome Message</h1>
     <div class="options">
         <a id="create-roster" href="/create-roster">Create Roster</a>
+        <button id="add-worker">Add Worker</button>
         <button id="add-location">Add Location</button>
+        <button id="remove-worker">Remove Worker</button>
         <button id="remove-location">Remove Location</button>
         <a id="get-workers" href="/get-workers">Get workers</a>
+        <button id="find-worker">Find Worker</button>
         <a id="get-locations" href="/get-locations">Get locations</a>
         <button id="edit-constraints">Edit Constraints</button>
         <button id="edit-daysoff">Edit Days Off</button>
@@ -75,6 +78,47 @@
             <button type="submit" id="add-worker-submit-btn">
                 Add Worker
             </button>
+        </form>
+    </div>
+
+    <div id="find-worker-div" class="hidden">
+        <form id="workerSearchForm">
+            <label for="id">
+                ID
+                <input type="checkbox" id="id" name="id">
+            </label>
+            <br>
+            <input autocomplete="off" type="number" id="id-input" class="hidden" placeholder="Enter the id here">
+    
+            <label for="first-name">
+                First Name
+                <input type="checkbox" id="first-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="first-name-input" class="hidden" placeholder="Enter the first name here">
+    
+            <label for="last-name">
+                Last Name
+                <input type="checkbox" id="last-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="last-name-input" class="hidden" placeholder="Enter the last name here">
+    
+            <label for="middle-name">
+                Middle Name
+                <input type="checkbox" id="middle-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="middle-name-input" class="hidden" placeholder="Enter the middle name here">
+
+            <label for="id-number">
+                ID Number
+                <input type="checkbox" id="id-number">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="id-number-input" class="hidden" placeholder="Enter the id number here">
+
+            <button id="submit-button" >Submit</button>
         </form>
     </div>
 
