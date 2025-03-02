@@ -7,100 +7,79 @@
     <title>Edit Contraints</title>
 </head>
 <body>
+    <a href="/">Home</a>
+
     <div>
-        <h1>Edit Constraints</h1>
+        <h1>Constraints</h1>
+        <table id="table">
+            <tr>
+                <th>Constraint ID</th>
+                <th>Worker One</th>
+                <th>Worker Two</th>
+                <th>Summary</th>
+            </tr>
 
-        <form action="" id="form">
-            <section id="worker1">
-                <h2>Worker1 results</h2>
-                <table id="worker1-table">
-                    <tr>
-                        <th>First Name</th>
-                        <th>Middle Name</th>
-                        <th>Last Name</th>
-                        <th>Location</th>
-                    </tr>
-                </table>
-            </section>
-    
-            <section id="worker2">
-                <h2>Worker2 results</h2>
-                <table id="worker2-table">
-                    <tr>
-                        <th>First Name</th>
-                        <th>Middle Name</th>
-                        <th>Last Name</th>
-                        <th>Location</th>
-                    </tr>
-                </table>
-            </section>
-    
-            <br>
+        </table>
 
-            <section id="notes-section" class="hidden">
-                <h2>Notes</h2>
-                <label for="add-notes-textarea">
-                    Optional(Notes)
-                </label>
-                <textarea name="" id="add-notes-textarea"></textarea>
-            </section>
+        <button id="add-constraint-btn">Add Constraint</button>
+        <button id="find-constraint-btn">Find Constraint</button>
+        <button id="edit-constraint">Edit Constraint</button>
 
-            <section id="edit-section" class="hidden">
-                <div id="worker1-div">
+        <div id="add-constraint-div" class="hidden">
+            <form id="add-constraint-form">
+                <label for="worker1">
                     Worker 1
-                    <label for="worker1-firstname" id="worker1-firstname-label">First Name</label>
-                    <input type="text" placeholder="Type Here" id="worker1-firstname">
-                    <label for="worker1-lastname" id="worker1-lastname-label">Last Name</label>
-                    <input type="text" placeholder="Type Here" id="worker1-lastname">
-                            <table id="worker1-result-table" class="hidden">
-                                <tr>
-                                    <th>First Name</th>
-                                    <th>Middle Name</th>
-                                    <th>Last Name</th>
-                                    <th>Location</th>
-                                </tr>
-                            </table>
-                    <p id="worker1-error-tag"></p>
-                </div>
-    
-                <div id="worker2-div">
+                </label>
+                <input type="text" id="worker1" placeholder="Type here">
+                <label for="worker2">
                     Worker 2
-                    <label for="worker2-firstname" id="worker2-firstname-label">First Name</label>
-                    <input type="text" placeholder="Type Here" id="worker2-firstname">
-                    <label for="worker2-lastname" id="worker2-lastname-label">Last Name</label>
-                    <input type="text" placeholder="Type Here" id="worker2-lastname">
-                            <table id="worker2-result-table" class="hidden">
-                                <tr>
-                                    <th>First Name</th>
-                                    <th>Middle Name</th>
-                                    <th>Last Name</th>
-                                    <th>Location</th>
-                                </tr>
-                            </table>
-                    <p id="worker2-error-tag"></p>
-                </div>
-    
-                <div id="edit-notes">
-                    <label for="edit-notes-textarea">Edit Notes</label>
-                    <textarea name="" id="edit-notes-textarea"></textarea>
-                </div>
-            </section>
+                </label>
+                <input type="text" id="worker2" placeholder="Type here">
+                <label for="summary">
+                    Summary
+                </label>
+                <input type="text" id="summary" placeholder="Type here">
 
-            <section id="found-constraints" class="hidden">
-                <table id="found-constraints-table">
-                    <tr>
-                        <th>ID</th>
-                        <th>Worker1 ID</th>
-                        <th>Worker2 ID</th>
-                        <th>Notes</th>
-                    </tr>
-                </table>
-            </section>
+                <button type="submit">Add</button>
+            </form>
+        </div>
 
-            <button id="submit-btn"></button>
-        </form>
-        <p id="error-tag"></p>
+        <div id="find-constraint-div" class="hidden">
+            <form id="find-constraint-form">
+                <label for="worker1-id">
+                    Worker 1 ID
+                </label>
+                <input type="text" id="worker1-id" placeholder="Type here">
+                <label for="worker2-id">
+                    Worker 2 ID
+                </label>
+                <input type="text" id="worker2-id" placeholder="Type here">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div id="edit-constraint-div" class="hidden">
+            <form id="edit-constraint-form">
+                <label for="constraint-id">Constraint ID</label>
+                <input type="number" id="constraint-id" placeholder="Type Here">
+                <p>Change:</p>
+                <label for="worker1-checkbox">Worker1 ID</label>
+                <input type="checkbox" id="worker1-checkbox">
+                <input type="number" id="worker1Id-input" class="hidden" placeholder="Type Here">
+                <label for="worker2-checkbox">Worker2 Id</label>
+                <input type="checkbox" id="worker2-checkbox">
+                <input type="number" class="hidden" id="worker2Id-input" placeholder="Type Here">
+                <label for="summary-checkbox">Summary</label>
+                <input type="checkbox" id="summary-checkbox">
+                <input type="text" class="hidden" id="summary-input" placeholder="Type Here">
+
+                <button type="submit">Change Constraint</button>
+            </form>
+        </div>
+
+        <p id="error-tag" style="color: red;"></p>
          
-    <script src="/static/javascript/constraints.js" type="module"></script>
+    <script type="module" src="../views/constraints/constraints-frontend.js"></script>
+    <script type="module" src="../views/constraints/constraints-functions.js"></script>
+    <script type="module" src="../views/constraints/main.js"></script>
 </body>
 </html>

@@ -468,18 +468,18 @@ func CreateConstrant(c *gin.Context, db *sql.DB) {
 			case 3819:
 				errMsg = "Can't use the same worker value for both params"
 			case 1062:
-				errMsg = "Duplicate constraint entry"
+				errMsg = "Duplicate constraint entry,Constraint already exists"
 			default:
 				errMsg = "Database error"
 			}
 		} else {
 			errMsg = "Unknown error occurred"
 		}
-		c.JSON(http.StatusConflict, gin.H{"Error": errMsg})
+		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
 		return
 	}	
 
-	c.JSON(http.StatusOK, gin.H{"Message": "Successful entry"})
+	c.JSON(http.StatusOK, gin.H{"message": "Successful entry"})
 }
 
 // code to search for constraint and return if constraint exists or not
@@ -637,6 +637,8 @@ func DeleteConstraint(c *gin.Context, db *sql.DB) {
 func AddDaysOff(c *gin.Context, db *sql.DB) {
 	var daysOff DaysOff
 
+	fmt.Print("In the function")
+
 	if err := c.ShouldBind(&daysOff); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalud request body\n" + err.Error()})
 		return
@@ -648,6 +650,9 @@ func AddDaysOff(c *gin.Context, db *sql.DB) {
 	}
 
 	layout := "2006-01-02"
+
+	fmt.Printf("start date is %s",*daysOff.StartDate)
+	fmt.Printf("end date is %s",*daysOff.EndDate)
 
 	startDate, startDateErr := time.Parse(layout,*daysOff.StartDate)
 	endDate, endDateErr := time.Parse(layout,*daysOff.EndDate)
@@ -698,7 +703,7 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 	} else if column == "worker_id" {
 		query := "SELECT * FROM days_off WHERE worker_id = ?"
 		rows, err = db.Query(query, value)
-	} else if column == "id" {
+	} else if column == "break_id" {
 		query := "SELECT * FROM days_off WHERE break_id = ?"
 		rows, err = db.Query(query, value)
 	} else {
@@ -724,7 +729,7 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 	}
 
 	if len(dayOffs) == 0 {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "No values found for given criteria"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "No values found"})
 		return
 	}
 

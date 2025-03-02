@@ -33,7 +33,7 @@ CREATE TABLE days_off(
     worker_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    FOREIGN KEY (worker_id) REFERENCES workers(id)
+    FOREIGN KEY (worker_id) REFERENCES workers(id) ON DELETE CASCADE
 );
 
 --@block
@@ -66,7 +66,7 @@ VALUES
 SELECT * FROM locations;
 
 --@block
-SELECT * FROM workers;
+SELECT * FROM days_off;
 
 --@block
 DELETE FROM locations;
@@ -93,7 +93,7 @@ VALUES (1,2,"Hate each other");
 ALTER TABLE days_off ADD CONSTRAINT unique_worker_days UNIQUE (worker_id, start_date,end_date);
 
 --@block
-DELETE FROM workers WHERE id_number = 	13579;
+DROP TABLE days_off;
 
 --@block
 ALTER TABLE locations

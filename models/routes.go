@@ -51,6 +51,15 @@ func htmlRoutes(router *gin.Engine) {
 	router.GET("/constraints", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "constraints.html", nil)
 	})
+	router.GET("/find-contraints",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "find-constraints.html",nil)
+	})
+	router.GET("/days-off",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "days-off.html",nil)
+	})
+	router.GET("/find-days-off",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "find-days-off.html",nil)
+	})
 }
 
 func apiRouter(router *gin.Engine, db *sql.DB) {

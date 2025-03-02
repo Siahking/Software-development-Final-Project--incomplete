@@ -197,10 +197,15 @@ export async function removeConnections(column,id){
     }
 }
 
-export async function createConstraint(worker1_id,worker2_id,notes=""){
-    if (!worker1_id || !worker2_id){
-        return {"Error":"Empty param, please insert valid values"}
+export async function createConstraint(worker1IdStr,worker2IdStr,notes=""){
+    let worker1_id,worker2_id
+    try{
+        worker1_id = parseInt(worker1IdStr)
+        worker2_id = parseInt(worker2IdStr)
+    }catch{
+        return "Please Insert Valid Values" 
     }
+    
     try {
         const response = await fetch("http://localhost:8080/create-constraint",{
             method: "POST",
@@ -233,19 +238,19 @@ export async function createConstraint(worker1_id,worker2_id,notes=""){
     }
 }
 
-export async function findConstraints(id,worker1=null,worker2=null){ //complete
+export async function getConstraints(id=null,worker1=null,worker2=null){ //complete
     let result
     const url = new URL("http://localhost:8080/find-constraints")
     if (id || worker1 || worker2){
         if (id){
             url.searchParams.append("id",id)
-        }else if (worker1 && worker2){
-            url.searchParams.append("worker1",worker1)
-            url.searchParams.append("worker2",worker2)
-        }else if (worker1){
-            url.searchParams.append("worker1",worker1)
-        }else{
-            url.searchParams.append("worker2",worker2)
+        }else {
+            if (worker1){
+                url.searchParams.append("worker1",worker1)
+            }
+            if (worker2){
+                url.searchParams.append("worker2",worker2)
+            }
         }
     }
     result = await fetch(url)
@@ -254,11 +259,21 @@ export async function findConstraints(id,worker1=null,worker2=null){ //complete
     return data
 }
 
-export async function editConstraints(id,worker1Id="",worker2Id="",note=""){ // working
+export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""){ // working
+    let worker1Id,worker2Id
 
     if (!id){
         return {"Error":"Id required"}
     }    
+
+    try{
+        worker1Id = parseInt(worker1IdStr)
+        worker2Id = parseInt(worker2IdStr)
+    }catch{
+        errorTag.innerHTML = "Invalid insertion values for input areas"
+        return
+    }
+
     const jsonValues = {}
     const inputValues = [
         {"worker1_id":worker1Id},
@@ -324,8 +339,9 @@ export async function deleteConstraints(id){ //working
     
 }
 
-export async function addDaysOff(worker_id,startDate,endDate){ //working
+export async function addDaysOff(workerIdStr,startDate,endDate){ //working
     try{
+        const worker_id = parseInt(workerIdStr)
         const response = await fetch(`http://localhost:8080/add-days-off`,{
             method:'POST',
             headers: {
@@ -394,9 +410,7 @@ export async function removeDaysOff(breakId){ //complete
 }
 
 // async function tester() {
-//     const column = "worker_id"
-//     const value = 2
-//     const result = await removeDaysOff(10)
+//     const result = await addDaysOff(2,"2025-12-02","2025-12-02")
 //     console.log(result)
 // }
 
