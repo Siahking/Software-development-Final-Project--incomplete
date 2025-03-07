@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -24,15 +25,17 @@ type WorkerLocation struct {
 }
 
 type Worker struct {
-	ID         int     `json:"id"`
-	FirstName  string  `json:"first_name"`
-	LastName   string  `json:"last_name"`
-	MiddleName *string `json:"middle_name"`
-	Gender     *string `json:"gender"`
-	Address    string  `json:"address"`
-	Contact    *string `json:"contact"`
-	Age        int     `json:"age"`
-	ID_Number  int     `json:"id_number"`
+	ID           int      `json:"id"`
+	FirstName    string   `json:"first_name"`
+	LastName     string   `json:"last_name"`
+	MiddleName   *string  `json:"middle_name"`
+	Gender       *string  `json:"gender"`
+	Address      string   `json:"address"`
+	Contact      *string  `json:"contact"`
+	Age          int      `json:"age"`
+	ID_Number    int      `json:"id_number"`
+	Availability *string  `json:"availability"`
+	Hours        []string `json:"hours"`
 }
 
 type Constraint struct {
@@ -47,6 +50,14 @@ type DaysOff struct {
 	WorkerId  int     `json:"worker_id"`
 	StartDate *string `json:"start_date"`
 	EndDate   *string `json:"end_date"`
+}
+
+type PermanentRestriction struct {
+	ID        int     `json:"id"`
+	WorkerId  int     `json:"worker_id"`
+	DayOfWeek *string `json:"day_of_week"`
+	StartTime *string `json:"start_time"`
+	EndTime   *string `json:"end_time"`
 }
 
 func GetLocations(c *gin.Context, db *sql.DB) {
@@ -69,9 +80,8 @@ func GetLocations(c *gin.Context, db *sql.DB) {
 		locations = append(locations, loc)
 	}
 
-	if err = rows.Err(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if len(locations) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No locations found"})
 	}
 
 	c.IndentedJSON(http.StatusOK, locations)
@@ -134,7 +144,7 @@ func AddLocation(c *gin.Context, db *sql.DB) {
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "This location already exists"})
+				c.JSON(http.StatusConflict, gin.H{"error": "This location already exists"})
 				return
 			}
 		}
@@ -154,8 +164,8 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	if table != "workers" && table != "locations"{
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid parameter"})
+	if table != "workers" && table != "locations" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
 		return
 	}
 
@@ -186,29 +196,35 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 func AddWorker(c *gin.Context, db *sql.DB) {
 	var worker Worker
 	if err := c.ShouldBindJSON(&worker); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
 	if worker.FirstName == "" || worker.LastName == "" || worker.Address == "" ||
 		worker.Age == 0 || worker.ID_Number == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Missing params"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing params"})
 		return
 	}
 
-	query := "INSERT INTO workers (first_name, last_name, middle_name,gender,address,contact, age, id_number)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)"
-
-	_, err := db.Exec(query, worker.FirstName, worker.LastName, worker.MiddleName,
-		worker.Gender, worker.Address, worker.Contact, worker.Age, worker.ID_Number)
-
+	hoursJSON, err := json.Marshal(worker.Hours)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to convert hours to JSON: \n" + err.Error()})
+		return
+	}
+
+	query := "INSERT INTO workers (first_name, last_name, middle_name,gender,address,contact, age, id_number,availability,hours)VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+
+	_, insertionErr := db.Exec(query, worker.FirstName, worker.LastName, worker.MiddleName,
+		worker.Gender, worker.Address, worker.Contact, worker.Age, worker.ID_Number, worker.Availability, string(hoursJSON))
+
+	if insertionErr != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "Worker with this ID Number already exists"})
+				c.JSON(http.StatusConflict, gin.H{"error": "Worker with this ID Number already exists"})
 				return
 			}
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Error in adding values to the db: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in adding values to the db: " + insertionErr.Error()})
 		return
 	}
 
@@ -266,9 +282,24 @@ func FindWorker(c *gin.Context, db *sql.DB) {
 
 	for rows.Next() {
 		var worker Worker
-		if err := rows.Scan(&worker.ID, &worker.FirstName, &worker.LastName, &worker.MiddleName,
-			&worker.Gender, &worker.Address, &worker.Contact, &worker.Age, &worker.ID_Number); err != nil {
+		var hoursJSON string
+
+		err := rows.Scan(&worker.ID, &worker.FirstName, &worker.LastName, &worker.MiddleName,
+			&worker.Gender, &worker.Address, &worker.Contact, &worker.Age, &worker.ID_Number, &worker.Availability, &hoursJSON)
+
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning rows\n" + err.Error()})
+			return
+		}
+
+		if hoursJSON != "" {
+			err = json.Unmarshal([]byte(hoursJSON), &worker.Hours)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error decoding hours JSON\n" + err.Error()})
+				return
+			}
+		} else {
+			worker.Hours = []string{}
 		}
 		workers = append(workers, worker)
 	}
@@ -298,22 +329,35 @@ func GetWorkers(c *gin.Context, db *sql.DB) {
 
 	for rows.Next() {
 		var worker Worker
+		var hoursJSON []byte
+
 		if err := rows.Scan(&worker.ID,
 			&worker.FirstName, &worker.LastName,
 			&worker.MiddleName, &worker.Gender,
 			&worker.Address, &worker.Contact,
-			&worker.Age, &worker.ID_Number); err != nil {
+			&worker.Age, &worker.ID_Number, &worker.Availability, &hoursJSON); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning rows\n" + err.Error()})
 			return
 		}
+
+		if err := json.Unmarshal(hoursJSON, &worker.Hours); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while parsing JSON hours\n" + err.Error()})
+			return
+		}
+
 		employees = append(employees, worker)
 	}
+
 	if err = rows.Err(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning rows\n" + err.Error()})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, employees)
+	if len(employees) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Employees found"})
+	} else {
+		c.IndentedJSON(http.StatusOK, employees)
+	}
 }
 
 func AssignWorkerToLocation(c *gin.Context, db *sql.DB) {
@@ -321,7 +365,7 @@ func AssignWorkerToLocation(c *gin.Context, db *sql.DB) {
 	locationIdStr := c.Param("location_id")
 
 	if workerIdStr == "" || locationIdStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
@@ -340,8 +384,8 @@ func AssignWorkerToLocation(c *gin.Context, db *sql.DB) {
 			if mysqlErr.Number == 1062 {
 				c.JSON(http.StatusConflict, gin.H{"error": "Worker Location link already exists"})
 				return
-			}else if mysqlErr.Number == 1452 {
-				c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid input"})
+			} else if mysqlErr.Number == 1452 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 				return
 			}
 		}
@@ -361,22 +405,22 @@ func GetWorkerLocationConnections(c *gin.Context, db *sql.DB) {
 		"id":          "SELECT * FROM worker_locations WHERE id = ?",
 	}
 
-	value,conversionErr := strconv.Atoi(valueStr)
-	if conversionErr != nil{
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid id parameter"})
+	value, conversionErr := strconv.Atoi(valueStr)
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id parameter"})
 		return
 	}
 
 	query, exists := validQueries[column]
 	if !exists {
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid column parameter"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid column parameter"})
 		return
 	}
 
 	rows, err := db.Query(query, value)
 	if err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Failed to get values from the database\n" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get values from the database\n" + err.Error()})
 		return
 	}
 	defer rows.Close()
@@ -386,14 +430,14 @@ func GetWorkerLocationConnections(c *gin.Context, db *sql.DB) {
 		var connection WorkerLocation
 		err := rows.Scan(&connection.ID, &connection.WorkerID, &connection.LocationID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"Error": "Error scanning rows\n" + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning rows\n" + err.Error()})
 			return
 		}
 		connections = append(connections, connection)
 	}
 
 	if len(connections) == 0 {
-		c.JSON(http.StatusNotFound,gin.H{"Error":"No worker location connections found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "No worker location connections found"})
 		return
 	}
 
@@ -409,15 +453,15 @@ func RemoveConnection(c *gin.Context, db *sql.DB) {
 		"id":          "DELETE FROM worker_locations WHERE id = ?",
 	}
 
-	value,conversionErr := strconv.Atoi(valueStr)
-	if conversionErr != nil{
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid Id"})
+	value, conversionErr := strconv.Atoi(valueStr)
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Id"})
 		return
 	}
 
-	query,exists := validQueries[column]
-	if !exists{
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid column input"})
+	query, exists := validQueries[column]
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid column input"})
 		return
 	}
 
@@ -427,18 +471,18 @@ func RemoveConnection(c *gin.Context, db *sql.DB) {
 	result, err = db.Exec(query, value)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Error in getting rows " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in getting rows " + err.Error()})
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": "No rows affected" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "No rows affected" + err.Error()})
 		return
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"Error": "No Entry found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Entry found"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
@@ -449,7 +493,7 @@ func CreateConstrant(c *gin.Context, db *sql.DB) {
 	var constraint Constraint
 
 	if err := c.ShouldBindJSON(&constraint); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
@@ -477,7 +521,7 @@ func CreateConstrant(c *gin.Context, db *sql.DB) {
 		}
 		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
 		return
-	}	
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successful entry"})
 }
@@ -506,7 +550,7 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 		} else {
 			value, err := strconv.Atoi(parameter)
 			if err != nil || value < 1 {
-				c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid input " + parameter})
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input " + parameter})
 				return
 			}
 			*variables[i] = value
@@ -544,6 +588,7 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 		innerError := rows.Scan(&constraint.ID, &constraint.Worker1, &constraint.Worker2, &constraint.Note)
 		if innerError != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + err.Error()})
+			return
 		}
 		constraints = append(constraints, constraint)
 	}
@@ -563,12 +608,12 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 	id, conversonErr := strconv.Atoi(idStr)
 
 	if conversonErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid parameter"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
 		return
 	}
 
 	if err := c.ShouldBindJSON(&constraint); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
@@ -583,20 +628,20 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 	if err != nil {
 		var errMsg string
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
-			switch mysqlErr.Number{
-				case 1452:
-					errMsg = "Worker with this ID does not exist"
-				case 3819:
-					errMsg = "Can't use the same worker value for both params"
-				case 1062:
-					errMsg = "Duplicate Entry, a constraint for these workers already exists"
-				default:
-					fmt.Print(err)
+			switch mysqlErr.Number {
+			case 1452:
+				errMsg = "Worker with this ID does not exist"
+			case 3819:
+				errMsg = "Can't use the same worker value for both params"
+			case 1062:
+				errMsg = "Duplicate Entry, a constraint for these workers already exists"
+			default:
+				fmt.Print(err)
 			}
 		} else {
 			errMsg = "Unknown error occurred"
-		}	
-		c.JSON(http.StatusConflict, gin.H{"Error": errMsg})
+		}
+		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
 		return
 	}
 
@@ -609,7 +654,7 @@ func DeleteConstraint(c *gin.Context, db *sql.DB) {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid id parameter"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id parameter"})
 		return
 	}
 
@@ -628,7 +673,7 @@ func DeleteConstraint(c *gin.Context, db *sql.DB) {
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"Error": "Constraint does not exist"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Constraint does not exist"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
@@ -637,37 +682,32 @@ func DeleteConstraint(c *gin.Context, db *sql.DB) {
 func AddDaysOff(c *gin.Context, db *sql.DB) {
 	var daysOff DaysOff
 
-	fmt.Print("In the function")
-
 	if err := c.ShouldBind(&daysOff); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalud request body\n" + err.Error()})
 		return
 	}
 
-	if daysOff.StartDate == nil || daysOff.EndDate == nil{
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Start Date and End date are required"})
+	if daysOff.StartDate == nil || daysOff.EndDate == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Start Date and End date are required"})
 		return
 	}
 
 	layout := "2006-01-02"
 
-	fmt.Printf("start date is %s",*daysOff.StartDate)
-	fmt.Printf("end date is %s",*daysOff.EndDate)
-
-	startDate, startDateErr := time.Parse(layout,*daysOff.StartDate)
-	endDate, endDateErr := time.Parse(layout,*daysOff.EndDate)
-	if startDateErr != nil || endDateErr != nil{
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid date time format"})
+	startDate, startDateErr := time.Parse(layout, *daysOff.StartDate)
+	endDate, endDateErr := time.Parse(layout, *daysOff.EndDate)
+	if startDateErr != nil || endDateErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date time format"})
 		return
 	}
 
 	if startDate.Before(time.Now()) {
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Start date must be in the future"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Start date must be in the future"})
 		return
 	}
 
 	if endDate.Before(startDate) {
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"End Date must be after the start date"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "End Date must be after the start date"})
 		return
 	}
 
@@ -677,14 +717,14 @@ func AddDaysOff(c *gin.Context, db *sql.DB) {
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "These days for this user already exists"})
+				c.JSON(http.StatusConflict, gin.H{"error": "These days for this user already exists"})
 				return
 			} else if mysqlErr.Number == 1452 {
-				c.JSON(http.StatusConflict, gin.H{"Error": "This worker does not exist"})
+				c.JSON(http.StatusConflict, gin.H{"error": "This worker does not exist"})
 				return
 			}
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"Error": "Error in inserting values\n" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in inserting values\n" + err.Error()})
 		return
 	}
 
@@ -698,7 +738,7 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 	column := c.Param("column")
 	value := c.Param("value")
 
-	if column == ""  {
+	if column == "" {
 		rows, err = db.Query("SELECT * FROM days_off")
 	} else if column == "worker_id" {
 		query := "SELECT * FROM days_off WHERE worker_id = ?"
@@ -707,7 +747,7 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 		query := "SELECT * FROM days_off WHERE break_id = ?"
 		rows, err = db.Query(query, value)
 	} else {
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Invalid column entry"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid column entry"})
 		return
 	}
 
@@ -739,10 +779,10 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 func RemoveDaysOff(c *gin.Context, db *sql.DB) {
 	idStr := c.Param("id")
 
-	id,err := strconv.Atoi(idStr)
+	id, err := strconv.Atoi(idStr)
 
-	if err != nil{
-		c.JSON(http.StatusBadRequest,gin.H{"Error":"Id is not a number"})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Id is not a number"})
 		return
 	}
 
@@ -762,8 +802,126 @@ func RemoveDaysOff(c *gin.Context, db *sql.DB) {
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"Error": "No Entry found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Entry found"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
+}
+
+func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
+	var permanentRestriction PermanentRestriction
+
+	if err := c.ShouldBindJSON(&permanentRestriction); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	dayOfWeek := permanentRestriction.DayOfWeek
+	startTime := permanentRestriction.StartTime
+	endTime := permanentRestriction.EndTime
+
+	if (startTime != nil && endTime == nil) || (endTime == nil && startTime != nil) ||
+	(*dayOfWeek == "Any" && startTime == nil && endTime == nil){
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Day or week and/or two time fields need to be occupied"})
+		return
+	}
+
+	query := "INSERT INTO permanent_restrictions (worker_id,day_of_week,start_time,end_time) VALUES (?,?,?,?)"
+	_, err := db.Exec(query, permanentRestriction.WorkerId, permanentRestriction.DayOfWeek,
+		permanentRestriction.StartTime, permanentRestriction.EndTime)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to insert values due to error\n" + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message":"Restriction created"})
+}
+
+func GetRestrictions(c *gin.Context,db *sql.DB){
+	var restrictions []PermanentRestriction
+	rows,err := db.Query("SELECT * FROM permanent_restrictions")
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in retrieving values"+err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var restriction PermanentRestriction
+		if err := rows.Scan(&restriction.ID,&restriction.WorkerId,&restriction.DayOfWeek,
+			&restriction.StartTime,&restriction.EndTime); err != nil {
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in scanning rows"})
+			return
+		}
+		restrictions = append(restrictions,restriction)
+	}
+
+	if len(restrictions) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error":"No restrictions found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, restrictions)
+}
+
+func FindRestriction(c *gin.Context,db *sql.DB){
+	var restrictions []PermanentRestriction
+	column := strings.TrimSpace(c.Param("column"))
+	id := strings.TrimSpace(c.Param("id"))
+
+	if column != "worker_id" && column != "id" || id == "" || id == ":"{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid search params"})
+		return
+	}
+
+	query := fmt.Sprintf("SELECT * FROM permanent_restrictions WHERE %s = ?",column)
+	rows, err := db.Query(query,id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in extracting values"})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var restriction PermanentRestriction
+
+		err := rows.Scan(&restriction.ID,&restriction.WorkerId,&restriction.DayOfWeek,&restriction.StartTime,
+		&restriction.EndTime)
+
+		if err != nil{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in scanning rows\n"+err.Error()})
+			return
+		}
+
+		restrictions = append(restrictions,restriction)
+	}
+
+	if len(restrictions) == 0{
+		c.JSON(http.StatusNotFound,gin.H{"error":"No values found"})
+		return
+	}
+
+	c.JSON(http.StatusOK,restrictions)
+}
+
+func DeleteRestriction(c *gin.Context, db *sql.DB){
+	id := strings.TrimSpace(c.Param("id"))
+
+	if id == "" || id == ":"{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid Id"})
+		return
+	}
+
+	query := "DELETE FROM permanent_restrictions WHERE id = ?"
+	_,err := db.Exec(query,id)
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in deleting restriction"})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{"message":"Entry deleted successfully"})
 }

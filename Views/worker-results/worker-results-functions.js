@@ -8,7 +8,8 @@ export async function showWorkers (){
     for (const worker of workers){
         const workerArr = [
             worker.id,worker.first_name,worker.last_name,worker.middle_name,
-            worker.gender,worker.address,worker.contact,worker.age,worker.id_number
+            worker.gender,worker.address,worker.contact,worker.age,worker.id_number,
+            worker.availability,worker.hours
         ]
 
         const tableRow = document.createElement("tr")
@@ -25,7 +26,7 @@ export async function showWorkers (){
         const locationsRow = document.createElement("td")
         const locationsResults = await apiFuncs.workerLocationSearch("worker_id",worker.id)
 
-        if (!Object.keys(locationsResults).includes('Error')){
+        if (!Object.keys(locationsResults).includes('error')){
             const tempArr = []
             for (const location of locationsResults){
                 const locationInfo = await apiFuncs.findLocation("id",location.location_id)

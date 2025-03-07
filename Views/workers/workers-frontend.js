@@ -9,6 +9,8 @@ const idInput = document.getElementById("id-input")
 const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
+const hoursDiv = document.getElementById("hours-div")
+const hoursOptions = document.getElementsByClassName("hours-options")
 
 const unimportantCheckboxArr =[firstNameCheckbox,lastNameCheckbox,middleNameCheckbox]
 const unimportantInputArr = [firstNameInput,lastNameInput,middleNameInput]
@@ -57,14 +59,22 @@ function toogleInputs(checkbox,input){
     }
 }
 
-showLocationsBtn.addEventListener("click",()=>{
-    selectLocationsDiv
-})
-
-export function toogleDisplay(div){
+export function toogleDisplay(div,otherDiv=""){
     if (div.classList.contains("hidden")){
         div.classList.remove("hidden")
+        if (otherDiv)otherDiv.classList.add("hidden")
     }else{
         div.classList.add("hidden")
+    }
+}
+
+export function displayHours(event){
+    if (event.target.id === "specified-option"){
+        hoursDiv.classList.remove("hidden")
+    }else{
+        hoursDiv.classList.add("hidden")
+        for (const checkbox of hoursOptions){
+            checkbox.checked = false
+        }
     }
 }

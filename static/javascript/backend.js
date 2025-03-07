@@ -30,8 +30,8 @@ export async function addLocation(locationName) {
     }
 };
 
-export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number){
-    const neededValuesArr = [first_name,last_name,gender,address,age,id_number]
+export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number,availability,hours){
+    const neededValuesArr = [first_name,last_name,gender,address,age,id_number,availability,hours]
     for (const value of neededValuesArr){
         if (!value){
             return {"error":"Vacant input for required field"}
@@ -52,7 +52,9 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
                 address,
                 contact,
                 age,
-                id_number
+                id_number,
+                availability,
+                hours
             })
         });
 
@@ -83,7 +85,7 @@ export async function getWorkers(){
         .then((workers) => workers);
         return workers
     }catch(error){
-        console.error("Error in getting the workers:",error)
+        console.error("Error in retrieving workers:",error)
     };
 }
 
@@ -410,7 +412,7 @@ export async function removeDaysOff(breakId){ //complete
 }
 
 // async function tester() {
-//     const result = await addDaysOff(2,"2025-12-02","2025-12-02")
+//     const result = await getWorkers()
 //     console.log(result)
 // }
 

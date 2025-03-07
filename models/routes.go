@@ -145,4 +145,18 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.DELETE("remove-days/:id", func(c *gin.Context) {
 		RemoveDaysOff(c, db)
 	})
+
+	//restriction routes
+	router.POST("/create-restriction", func(c *gin.Context) {
+		CreatePermanentRestriction(c, db)
+	})
+	router.GET("/get-restrictions", func(c *gin.Context) {
+		GetRestrictions(c, db)
+	})
+	router.GET("/find-restriction/:column/:id", func(c *gin.Context) {
+		FindRestriction(c,db)
+	})
+	router.DELETE("/delete-restriction/:id",func(c *gin.Context) {
+		DeleteRestriction(c,db)
+	})
 }

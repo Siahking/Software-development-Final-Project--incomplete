@@ -2,7 +2,9 @@ import {
     getWorkers, workerLocationSearch,findLocation,getLocations,addWorker,findWorker,linkWorkerLocations,removeEntry
 } from "../../static/javascript/backend.js";
 
-const tableHeadArray = ["ID","FirstName","LastName","MiddleName","Gender","Address","Contact","Age","Id Number","Locations"]
+const tableHeadArray = ["ID","FirstName","LastName","MiddleName","Gender","Address",
+                        "Contact","Age","Id Number","Availability","Hours","Locations"]
+
 const table = document.getElementById("table");
 const firstRow = document.createElement("tr");
 const showLocationsDiv = document.getElementById('locations-input')
@@ -13,12 +15,50 @@ const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const idNumberInput = document.getElementById("id-number-input")
 
+const availabilityOptions = document.querySelectorAll('input[name="availability"]')
+const hoursOptions = document.querySelectorAll('.hours-options')
+
 tableHeadArray.forEach((item) => {
     const tableHead = document.createElement("th")
     tableHead.innerHTML = item;
     firstRow.appendChild(tableHead);
 })
 table.appendChild(firstRow)
+
+function assignHours(){
+    let option
+    const hours = []
+    for (const value of availabilityOptions){
+        if (value.checked){
+            option = value
+            break
+        }
+    }
+
+    switch (option.value){
+        case "Day":
+            hours.push("6am-6pm","6am-2pm")
+            break
+        case "Night":
+            hours.push("6pm-6am","10pm-6am")
+            break
+        case "Eclipse":
+            hours.push("24hrs")
+            break
+        case "Specified":
+            for(const hour of hoursOptions){
+                if (hour.checked){
+                    hours.push(hour.id)
+                }
+            }
+            if (!hours.length){
+                errorTag.innerHTML = "Need to select hours to work after selecting specified"
+                return [false,[]]
+            }
+    }
+
+    return [option.value,hours]
+}
 
 export async function displayLocations(){
     const locations = await getLocations();
@@ -50,10 +90,16 @@ export async function displayLocations(){
 export async function showWorkers (){
     const workers = await getWorkers();
 
+    if (Object.keys(workers).includes("error")){
+        errorTag.innerHTML = workers.error
+        return
+    }
+
     for (const worker of workers){
         const workerArr = [
             worker.id,worker.first_name,worker.last_name,worker.middle_name,
-            worker.gender,worker.address,worker.contact,worker.age,worker.id_number
+            worker.gender,worker.address,worker.contact,worker.age,worker.id_number,
+            worker.availability,worker.hours
         ]
 
         const tableRow = document.createElement("tr")
@@ -70,7 +116,7 @@ export async function showWorkers (){
         const locationsRow = document.createElement("td")
         const locationsResults = await workerLocationSearch("worker_id",worker.id)
 
-        if (!Object.keys(locationsResults).includes('Error')){
+        if (!Object.keys(locationsResults).includes('error')){
             const tempArr = []
             for (const location of locationsResults){
                 const locationInfo = await findLocation("id",location.location_id)
@@ -110,7 +156,10 @@ export async function addWorkerHandler(event){
     const contact = document.getElementById('add-contact-input').value !== "" ? document.getElementById('add-contact-input').value : null;
     const age = Number(document.getElementById('add-age-input').value)
     const idNumber = Number(document.getElementById('add-id-number-input').value)
-    const result = await addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber)
+    const [availability,hours] = assignHours()
+    if (!availability)return
+
+    const result = await addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber,availability,hours)
     const selectedLocations = []
 
     if (Object.keys(result).includes("error")){
