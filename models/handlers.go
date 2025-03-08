@@ -55,9 +55,9 @@ type DaysOff struct {
 type PermanentRestriction struct {
 	ID        int     `json:"id"`
 	WorkerId  int     `json:"worker_id"`
-	DayOfWeek *string `json:"day_of_week"`
-	StartTime *string `json:"start_time"`
-	EndTime   *string `json:"end_time"`
+	DayOfWeek string `json:"day_of_week"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
 }
 
 func GetLocations(c *gin.Context, db *sql.DB) {
@@ -817,39 +817,43 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 	}
 
 	dayOfWeek := permanentRestriction.DayOfWeek
-	var startTime string
-	var endTime string
+	startTime := permanentRestriction.StartTime
+	endTime := permanentRestriction.EndTime
 
-	if permanentRestriction.StartTime == nil{
-		startTime = "00:00:00"
-	}else if *permanentRestriction.StartTime == "00:00:00"{
-		startTime = "24:00:00"
-	}else{
-		startTime = *permanentRestriction.StartTime
-	}
-
-	if permanentRestriction.EndTime == nil {
-		endTime = "00:00:00"
-	}else if *permanentRestriction.EndTime == "00:00:00"{
-		endTime = "24:00:00"
-	}else{
-		endTime = *permanentRestriction.EndTime
-	}
-
-	if *dayOfWeek == "Any" {
-		if startTime == "00:00:00" && endTime == "00:00:00"{
+	if dayOfWeek == "Any" {
+		if startTime == "" && endTime == ""{
 			c.JSON(http.StatusBadRequest,gin.H{"error":"Please provide valid time values"})
 			return
 		}
-	}else if startTime == "00:00:00" && endTime != "00:00:00" || endTime == "00:00:00" && startTime != "00:00:00"{
+	}else if startTime == "" && endTime != "" || endTime == "" && startTime != ""{
 		c.JSON(http.StatusBadRequest,gin.H{"error":"Please insert a start time and a end time"})
 		return
+	}
+
+	if startTime == ""{
+		startTime = "00:00:00"
+	}else if startTime == "00:00:00"{
+		startTime = "24:00:00"
+	}
+	if endTime == "" {
+		endTime = "00:00:00"
+	}else if endTime == "00:00:00"{
+		endTime = "24:00:00"
 	}
 
 	query := "INSERT INTO permanent_restrictions (worker_id,day_of_week,start_time,end_time) VALUES (?,?,?,?)"
 	_, err := db.Exec(query, permanentRestriction.WorkerId, dayOfWeek,startTime,endTime)
 
 	if err != nil {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == 1062 {
+				c.JSON(http.StatusConflict, gin.H{"error": "This restriction for this worker already exists"})
+				return
+			}else if mysqlErr.Number == 1452 {
+				c.JSON(http.StatusBadRequest,gin.H{"error":"This worker does not exist"})
+				return
+			}
+		}
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to insert values due to error\n" + err.Error()})
 		return
 	}
@@ -935,12 +939,19 @@ func DeleteRestriction(c *gin.Context, db *sql.DB){
 	}
 
 	query := "DELETE FROM permanent_restrictions WHERE id = ?"
-	_,err := db.Exec(query,id)
+	result,err := db.Exec(query,id)
 
 	if err != nil{
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in deleting restriction"})
 		return
 	}
 
-	c.JSON(http.StatusOK,gin.H{"message":"Entry deleted successfully"})
+	rowsAffected, _ := result.RowsAffected()
+
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Restriction does not exist"})
+	}else{
+		c.JSON(http.StatusOK,gin.H{"message":"Entry deleted successfully"})
+	}
+	
 }

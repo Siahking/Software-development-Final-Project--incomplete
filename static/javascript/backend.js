@@ -1,17 +1,19 @@
+const BASEURL = "http://localhost:8080/"
+
 export async function getLocations() {
     try{
-        const data = await fetch("http://localhost:8080/locations")
+        const data = await fetch(`${BASEURL}locations`)
         .then((data)=> data.json())
         .then((data) => data);
         return data
     }catch (error){
-        console.error("Error fetching locations:",error);
+        console.error("error fetching locations:",error);
     };
 };
 
 export async function addLocation(locationName) {
     try{
-        const response = await fetch(`http://localhost:8080/locations/${locationName}`,{
+        const response = await fetch(`${BASEURL}locations/${locationName}`,{
             method:"POST",
             headers:{
                 "Content-Type":"application/json"
@@ -21,7 +23,7 @@ export async function addLocation(locationName) {
         const result = await response.json()
 
         if (!response.ok){
-            throw new Error(result.Error || `Error: ${response.status} ${response.statusText}`)
+            throw new Error(result.error || `error: ${response.status} ${response.statusText}`)
         }
 
         return result
@@ -39,7 +41,7 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
     }
     try {
 
-        const response = await fetch("http://localhost:8080/workers/add-worker",{
+        const response = await fetch(`${BASEURL}workers/add-worker`,{
             method: "POST",
             headers: {
                 "Content-Type":"application/json"
@@ -61,7 +63,7 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
         const result = await response.json();
 
         if(!response.ok){
-            throw new Error(result.Error ||`Error: ${response.status} ${response.statusText}`);
+            throw new Error(result.error ||`error: ${response.status} ${response.statusText}`);
         }
 
         return result;
@@ -71,7 +73,7 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
 }
 
 export async function findLocation(column,value){
-    const result = await fetch(`http://localhost:8080/locations/${column}/${value}`,{
+    const result = await fetch(`${BASEURL}locations/${column}/${value}`,{
         method: "GET"
     })
     const data = await result.json()
@@ -80,17 +82,17 @@ export async function findLocation(column,value){
 
 export async function getWorkers(){
     try{
-        const workers = await fetch("http://localhost:8080/workers")
+        const workers = await fetch(`${BASEURL}workers`)
         .then((workers) => workers.json())
         .then((workers) => workers);
         return workers
     }catch(error){
-        console.error("Error in retrieving workers:",error)
+        console.error("error in retrieving workers:",error)
     };
 }
 
 export async function findWorker(firstName="",lastName="",middleName="",idNumber="",id=null){
-    const url = new URL("http://localhost:8080/find-worker")
+    const url = new URL(`${BASEURL}find-worker`)
     if (id) {
         url.searchParams.append("id",id)
     }else if(idNumber){
@@ -104,7 +106,7 @@ export async function findWorker(firstName="",lastName="",middleName="",idNumber
     return fetch(url)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                throw new Error(`error: ${response.status} - ${response.statusText}`);
             }
             return response.json();
         })
@@ -121,7 +123,7 @@ export async function findWorker(firstName="",lastName="",middleName="",idNumber
 }
 
 export async function removeEntry(id,table){
-    const url = new URL(`http://localhost:8080/delete/${table}/${id}`)
+    const url = new URL(`${BASEURL}delete/${table}/${id}`)
 
     try {
         const response = await fetch(url, {
@@ -134,7 +136,7 @@ export async function removeEntry(id,table){
         const result = await response.json();
 
         if (!response.ok){
-            throw new Error(result.Error||`Error: ${response.statusText}`)
+            throw new Error(result.error||`error: ${response.statusText}`)
         }
 
         return result;
@@ -145,7 +147,7 @@ export async function removeEntry(id,table){
 }
 
 export async function linkWorkerLocations(workerId,locationId){
-    const result = await fetch(`http://localhost:8080/assign-location/${workerId}/${locationId}`,{
+    const result = await fetch(`${BASEURL}assign-location/${workerId}/${locationId}`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
@@ -158,25 +160,25 @@ export async function linkWorkerLocations(workerId,locationId){
 
 export async function workerLocationSearch(column,id){
     try{
-        const response = await fetch(`http://localhost:8080/get-worker-location-connections/${column}/${id}`,{
+        const response = await fetch(`${BASEURL}get-worker-location-connections/${column}/${id}`,{
             method:"GET"
         })
 
         const data = await response.json();
 
         if(!response.ok) {
-            return data || `Error : ${response.status} ${response.statusText}`
+            return data || `error : ${response.status} ${response.statusText}`
         }
 
         return data;
     } catch (error) {
-        console.error("Error fetching worker location connections:",error.message);
+        console.error("error fetching worker location connections:",error.message);
         return { error: error.message };
     }
 }
 
 export async function removeConnections(column,id){
-    const url = new URL(`http://localhost:8080/remove-connection/${column}/${id}`)
+    const url = new URL(`${BASEURL}remove-connection/${column}/${id}`)
 
     try {
         const response = await fetch(url, {
@@ -189,7 +191,7 @@ export async function removeConnections(column,id){
         const result = await response.json();
 
         if (!response.ok){
-            throw new Error(result.Error || `Error : ${response.statusText}`)
+            throw new Error(result.error || `error : ${response.statusText}`)
         }
 
         return result;
@@ -209,7 +211,7 @@ export async function createConstraint(worker1IdStr,worker2IdStr,notes=""){
     }
     
     try {
-        const response = await fetch("http://localhost:8080/create-constraint",{
+        const response = await fetch(`${BASEURL}create-constraint`,{
             method: "POST",
             headers: {
                 "Content-Type":"application/json"
@@ -230,19 +232,19 @@ export async function createConstraint(worker1IdStr,worker2IdStr,notes=""){
         }
 
         if (!response.ok) {
-            throw new Error(result?.Error || `Error: ${response.status} ${response.statusText}`);
+            throw new Error(result?.error || `error: ${response.status} ${response.statusText}`);
         }
 
         return result;
     }catch (error) { 
-        console.log("Error creating constraint:",error.message)   
+        console.log("error creating constraint:",error.message)   
         return { error: error.message };
     }
 }
 
 export async function getConstraints(id=null,worker1=null,worker2=null){ //complete
     let result
-    const url = new URL("http://localhost:8080/find-constraints")
+    const url = new URL(`${BASEURL}find-constraints`)
     if (id || worker1 || worker2){
         if (id){
             url.searchParams.append("id",id)
@@ -265,7 +267,7 @@ export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""
     let worker1Id,worker2Id
 
     if (!id){
-        return {"Error":"Id required"}
+        return {"error":"Id required"}
     }    
 
     try{
@@ -292,7 +294,7 @@ export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""
     }
 
     try{
-        const response = await fetch(`http://localhost:8080/edit-constraints/${id}`,{
+        const response = await fetch(`${BASEURL}edit-constraints/${id}`,{
             method: "PATCH",
             headers: {
                 "Content-Type":"application/json"
@@ -303,18 +305,18 @@ export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""
         const result = await response.json();
 
         if (!response.ok){
-            throw new Error(result.Error || `Error: ${response.status} ${response.statusText}`);
+            throw new Error(result.error || `error: ${response.status} ${response.statusText}`);
         }
 
         return result
     }catch (error){
-        console.error("Error in editing constraints: \n",error);
+        console.error("error in editing constraints: \n",error);
         return { "error":error.message };
     }
 }
 
 export async function deleteConstraints(id){ //working
-    const url = new URL(`http://localhost:8080/delete-constraint/${id}`)
+    const url = new URL(`${BASEURL}delete-constraint/${id}`)
 
     if (!id)return "No parameter provided!"
 
@@ -330,7 +332,7 @@ export async function deleteConstraints(id){ //working
 
         if (!response.ok){
             console.log("in the if statement")
-            throw new Error(result.Error || `Error: ${response.statusText}`)
+            throw new Error(result.error || `error: ${response.statusText}`)
         }
 
         return result
@@ -344,7 +346,7 @@ export async function deleteConstraints(id){ //working
 export async function addDaysOff(workerIdStr,startDate,endDate){ //working
     try{
         const worker_id = parseInt(workerIdStr)
-        const response = await fetch(`http://localhost:8080/add-days-off`,{
+        const response = await fetch(`${BASEURL}add-days-off`,{
             method:'POST',
             headers: {
                 "Content-Type":"application/json"
@@ -359,12 +361,12 @@ export async function addDaysOff(workerIdStr,startDate,endDate){ //working
         const result = await response.json();
 
         if (!response.ok){
-            throw new Error(result.Error || `Error: ${response.status} ${response.statusText}`);
+            throw new Error(result.error || `error: ${response.status} ${response.statusText}`);
         }
 
         return result
     }catch(error){
-        console.error("Error in creating days off: \n",error)
+        console.error("error in creating days off: \n",error)
         return {"error":error.message}
     }
 }
@@ -372,9 +374,9 @@ export async function addDaysOff(workerIdStr,startDate,endDate){ //working
 export async function getDaysOff(column="",value=""){ //working
     let url
     if (column && value){
-        url = `http://localhost:8080/get-days-off/${column}/${value}`
+        url = `${BASEURL}get-days-off/${column}/${value}`
     }else{
-        url = "http://localhost:8080/get-days-off"
+        url = `${BASEURL}get-days-off`
     }
 
     const results = await fetch(url)
@@ -384,10 +386,10 @@ export async function getDaysOff(column="",value=""){ //working
 }
 
 export async function removeDaysOff(breakId){ //complete
-    const url = new URL(`http://localhost:8080/remove-days/${breakId}`)
+    const url = new URL(`${BASEURL}remove-days/${breakId}`)
 
     if (!breakId){
-        return {"Error":"Id required"}
+        return {"error":"Id required"}
     }
     
     try{
@@ -401,7 +403,7 @@ export async function removeDaysOff(breakId){ //complete
         const result = await response.json()
 
         if (!response.ok){
-            throw new Error(result.Error || `Error: ${response.statusText}`)
+            throw new Error(result.error || `error: ${response.statusText}`)
         }
 
         return result
@@ -411,9 +413,93 @@ export async function removeDaysOff(breakId){ //complete
     }
 }
 
-// async function tester() {
-//     const result = await getWorkers()
-//     console.log(result)
-// }
+export async function createPermanentRestriction(worker_id,day_of_week,start_time,end_time){
+    try{
+        worker_id = parseInt(worker_id)
+    }catch{
+        return {"error":"Please provide a valid worker id"}
+    }
+    if (!day_of_week){
+        day_of_week = "Any"
+    }
 
-// tester()
+    const url = `${BASEURL}create-restriction`
+    try {
+        const response = await fetch(url,{
+            method: "POST",
+            headers: {
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                worker_id,
+                day_of_week,
+                start_time,
+                end_time
+            })
+        });
+
+        const result = await response.json()
+        
+        if (!response.ok){
+            throw new Error(result.error || `error: ${response.status} ${response.statusText}`)
+        }
+
+        return result;
+    }catch(error){
+        return { error: error.message };
+    }
+}
+
+export async function getPermanentRestrictions(){
+    const url = `${BASEURL}get-restrictions`
+
+    try{
+        const restrictions = await fetch (url)
+        .then(restrictions => restrictions.json())
+        .then(restrictions => restrictions);
+        return restrictions
+    }catch(error){
+        return {"error":error}
+    }
+}
+
+export async function findPermanentRestrictions(column,id) {
+    if (!column || !id){
+        return {"error":"Please insert valid values"}
+    }
+
+    const url = `${BASEURL}find-restriction/${column}/${id}`
+    const results = await fetch(url,{
+        method: "GET"
+    })
+    const data = await results.json()
+    return data
+}
+
+export async function deletePermanentRestrictions(id){
+    if (!id){
+        return {"error":"Please insert a valid id"}
+    }
+
+    const url = `${BASEURL}delete-restriction/${id}`
+    try{
+        const response = await fetch(url,{
+            method:"DELETE",
+            headers:{
+                'Content-Type':'application/json'
+            }
+        });
+
+        const result = await response.json()
+        return result
+    }catch(error){
+        return{"error":error}
+    }
+}
+
+async function tester() {
+    const result = await deletePermanentRestrictions(1)
+    console.log(result)
+}
+
+tester()

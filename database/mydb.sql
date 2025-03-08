@@ -104,4 +104,4 @@ DROP TABLE permanent_restrictions;
 
 --@block
 DELETE FROM permanent_restrictions;
-ALTER TABLE permanent_restrictions SET AUTO_INCREMENT = 1;
+ALTER TABLE permanent_restrictions AUTO_INCREMENT = 1;
