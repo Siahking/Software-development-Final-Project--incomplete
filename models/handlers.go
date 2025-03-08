@@ -817,18 +817,37 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 	}
 
 	dayOfWeek := permanentRestriction.DayOfWeek
-	startTime := permanentRestriction.StartTime
-	endTime := permanentRestriction.EndTime
+	var startTime string
+	var endTime string
 
-	if (startTime != nil && endTime == nil) || (endTime == nil && startTime != nil) ||
-	(*dayOfWeek == "Any" && startTime == nil && endTime == nil){
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Day or week and/or two time fields need to be occupied"})
+	if permanentRestriction.StartTime == nil{
+		startTime = "00:00:00"
+	}else if *permanentRestriction.StartTime == "00:00:00"{
+		startTime = "24:00:00"
+	}else{
+		startTime = *permanentRestriction.StartTime
+	}
+
+	if permanentRestriction.EndTime == nil {
+		endTime = "00:00:00"
+	}else if *permanentRestriction.EndTime == "00:00:00"{
+		endTime = "24:00:00"
+	}else{
+		endTime = *permanentRestriction.EndTime
+	}
+
+	if *dayOfWeek == "Any" {
+		if startTime == "00:00:00" && endTime == "00:00:00"{
+			c.JSON(http.StatusBadRequest,gin.H{"error":"Please provide valid time values"})
+			return
+		}
+	}else if startTime == "00:00:00" && endTime != "00:00:00" || endTime == "00:00:00" && startTime != "00:00:00"{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Please insert a start time and a end time"})
 		return
 	}
 
 	query := "INSERT INTO permanent_restrictions (worker_id,day_of_week,start_time,end_time) VALUES (?,?,?,?)"
-	_, err := db.Exec(query, permanentRestriction.WorkerId, permanentRestriction.DayOfWeek,
-		permanentRestriction.StartTime, permanentRestriction.EndTime)
+	_, err := db.Exec(query, permanentRestriction.WorkerId, dayOfWeek,startTime,endTime)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to insert values due to error\n" + err.Error()})

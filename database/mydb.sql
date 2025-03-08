@@ -54,14 +54,11 @@ CREATE TABLE worker_constraints (
 CREATE TABLE permanent_restrictions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     worker_id INT NOT NULL,
-    day_of_week ENUM('Any','Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday') NOT NULL DEFAULT 'Any',
+    day_of_week ENUM('Any','Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday') DEFAULT 'Any',
     start_time TIME NULL,
     end_time TIME NULL,
     FOREIGN KEY (worker_id) REFERENCES workers(id) ON DELETE CASCADE,
-    CONSTRAINT unique_unavailability UNIQUE (worker_id, day_of_week, start_time, end_time),
-    CONSTRAINT check_valid_time CHECK (
-        (start_time IS NOT NULL AND end_time IS NOT NULL) OR (start_time IS NULL AND end_time IS NULL)
-    )
+    CONSTRAINT unique_unavailability UNIQUE (worker_id, day_of_week, start_time, end_time)
 );
 
 --@block
@@ -104,3 +101,7 @@ MODIFY COLUMN availability ENUM("Day", "Night", "Eclipse", "Specified") NOT NULL
 
 --@block
 DROP TABLE permanent_restrictions;
+
+--@block
+DELETE FROM permanent_restrictions;
+ALTER TABLE permanent_restrictions SET AUTO_INCREMENT = 1;
