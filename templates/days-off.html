@@ -50,11 +50,57 @@
             <button>Search</button>
         </div>
     </form>
+
+    <h1>Permanent Restrictions</h1>
+    <table id="restriction-table">
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>DayOfWeek</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+    </table>
+    <p id="restriction-table-tag" class="hidden">No restrictions Found</p>
+
+    <button id="add-restriction-btn">Add restriction</button>
+    <button id="find-restriction-btn">Find restriction</button>
+
+    <div id="add-restriction-div" class="hidden">
+        <form id="add-restriction-form">
+            <label for="worker-id-input">Worker ID</label>
+            <input type="number" id="worker-id-input" placeholder="Type here" required>
+            <label for="day-of-week-input">Day Of The Week</label>
+            <input type="text" id="day-of-week-input" placeholder="Type here" autocapitalize="words">
+            <label for="start-time-input">Start Time</label>
+            <input type="time" id="start-time-input" placeholder="Type here">
+            <label for="end-time-input">End Time</label>
+            <input type="time" id="end-time-input"placeholder="Type here">
+            <button>Add Restriction</button>
+        </form>
+    </div>
+
+    <div id="find-restriction-div" class="hidden">
+        <form id="find-restriction-form">
+            <label for="restriction-worker-id">Worker ID</label>
+            <input type="radio" id="restriction-worker-id" name="column-input">
+            <label for="restriction-id">ID</label>
+            <input type="radio" id="restriction-id" name="column-input">
+            <label for="id-value-input">ID Value</label>
+            <input type="text" id="id-value-input" placeholder="Type here">
+            <button>Search</button>
+        </form>
+    </div>
+
     
     <p id="error-tag" style="color: red;"></p>
     
     <script type="module" src="../views/days-off/main.js"></script>
     <script type="module" src="../views/days-off/functions.js"></script>
     <script type="module" src="../views/days-off/frontend.js"></script>
+    <script type="module" src="../views/permanent-restrictions/main.js"></script>
+    <script type="module" src="../views/permanent-restrictions/frontend.js"></script>
+    <script type="module" src="../views/permanent-restrictions/functions.js"></script>
 </body>
 </html>

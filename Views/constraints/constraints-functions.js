@@ -10,6 +10,7 @@ const searchWorker2Id = document.getElementById("worker2-id")
 const constraintId = document.getElementById("constraint-id")
 const worker1IdInput = document.getElementById("worker1Id-input")
 const worker2IdInput = document.getElementById("worker2Id-input")
+const tableErrorTag = document.getElementById("constraint-table-tag")
 
 async function removeConstraint(id){
     const result = await deleteConstraints(id)
@@ -21,25 +22,28 @@ async function removeConstraint(id){
     }
 }
 
-export async function addConstraint(event){
-    
-    event.preventDefault()
+export async function addConstraint(){
 
     const result = await createConstraint(worker1Id.value,worker2Id.value,summary.value)
     if (Object.keys(result).includes("error")){
         errorTag.innerHTML = result.error
         return
     }
-    console.log(result.message)
 
-    sessionStorage.setItem("Message",result.message)
-    window.location.href = '/'
+    // sessionStorage.setItem("Message",result.message)
+    // window.location.href = '/'
 }
 
 export async function displayConstraints(){
     const results = await getConstraints()
 
+    if (Object.keys(results).includes("error")){
+        tableErrorTag.classList.remove("hidden")
+        return
+    }
+
     for (const constraint of results){
+        console.log(constraint)
         const worker1Id = constraint.worker1_id
         const worker2Id = constraint.worker2_id
 
@@ -92,7 +96,6 @@ export async function findConstraint(event){
 
     const results = await getConstraints("",worker1Id,worker2Id)
 
-    console.log(results)
     if (Object.keys(results).includes("error")){
         errorTag.innerHTML = results.error
         return

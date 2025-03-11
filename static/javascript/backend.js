@@ -201,7 +201,7 @@ export async function removeConnections(column,id){
     }
 }
 
-export async function createConstraint(worker1IdStr,worker2IdStr,notes=""){
+export async function createConstraint(worker1IdStr,worker2IdStr,note=""){
     let worker1_id,worker2_id
     try{
         worker1_id = parseInt(worker1IdStr)
@@ -219,7 +219,7 @@ export async function createConstraint(worker1IdStr,worker2IdStr,notes=""){
             body:JSON.stringify({
                 worker1_id,
                 worker2_id,
-                notes
+                note
             })
         });
 
@@ -413,7 +413,7 @@ export async function removeDaysOff(breakId){ //complete
     }
 }
 
-export async function createPermanentRestriction(worker_id,day_of_week,start_time,end_time){
+export async function createRestriction(worker_id,day_of_week,start_time,end_time){
     try{
         worker_id = parseInt(worker_id)
     }catch{
@@ -497,9 +497,9 @@ export async function deletePermanentRestrictions(id){
     }
 }
 
-async function tester() {
-    const result = await deletePermanentRestrictions(1)
-    console.log(result)
-}
+// async function tester() {
+//     const result = await deletePermanentRestrictions(1)
+//     console.log(result)
+// }
 
-tester()
+// tester()

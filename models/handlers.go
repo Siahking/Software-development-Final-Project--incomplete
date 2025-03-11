@@ -852,6 +852,9 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 			}else if mysqlErr.Number == 1452 {
 				c.JSON(http.StatusBadRequest,gin.H{"error":"This worker does not exist"})
 				return
+			}else if mysqlErr.Number == 1265 {
+				c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid Day of Week"})
+				return
 			}
 		}
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to insert values due to error\n" + err.Error()})
@@ -895,7 +898,7 @@ func FindRestriction(c *gin.Context,db *sql.DB){
 	id := strings.TrimSpace(c.Param("id"))
 
 	if column != "worker_id" && column != "id" || id == "" || id == ":"{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid search params"})
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid search params, must be 'worker_id' or 'id'"})
 		return
 	}
 
@@ -953,5 +956,4 @@ func DeleteRestriction(c *gin.Context, db *sql.DB){
 	}else{
 		c.JSON(http.StatusOK,gin.H{"message":"Entry deleted successfully"})
 	}
-	
 }

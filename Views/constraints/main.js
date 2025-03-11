@@ -27,9 +27,10 @@ editBtn.addEventListener("click",()=>
     frontendFuncs.toogleDiv(editDiv,[findConstraintDiv,addConstraintDiv])
 )
 
-addConstraintForm.addEventListener("submit",(event)=>
-    backendFuncs.addConstraint(event)
-)
+addConstraintForm.addEventListener("submit",(event)=>{
+    event.preventDefault()
+    backendFuncs.addConstraint()
+})
 
 findConstraintForm.addEventListener("submit",(event)=>
     backendFuncs.findConstraint(event)

@@ -105,3 +105,6 @@ DROP TABLE permanent_restrictions;
 --@block
 DELETE FROM permanent_restrictions;
 ALTER TABLE permanent_restrictions AUTO_INCREMENT = 1;
+
+--@block
+SELECT * FROM worker_constraints;

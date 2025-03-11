@@ -60,6 +60,9 @@ func htmlRoutes(router *gin.Engine) {
 	router.GET("/find-days-off",func(c *gin.Context) {
 		c.HTML(http.StatusOK, "find-days-off.html",nil)
 	})
+	router.GET("/find-restrictions",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "find-restrictions.html",nil)
+	})
 }
 
 func apiRouter(router *gin.Engine, db *sql.DB) {
