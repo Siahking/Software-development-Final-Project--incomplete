@@ -35,6 +35,8 @@ function assignHours(){
         }
     }
 
+    console.log(option.value)
+
     switch (option.value){
         case "Day":
             hours.push("6am-6pm","6am-2pm")

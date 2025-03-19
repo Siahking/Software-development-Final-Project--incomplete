@@ -108,3 +108,16 @@ ALTER TABLE permanent_restrictions AUTO_INCREMENT = 1;
 
 --@block
 SELECT * FROM worker_constraints;
+
+--@block
+INSERT INTO workers (first_name, last_name, middle_name, gender, address, contact, age, id_number, availability, hours) VALUES
+('John', 'Doe', 'Michael', 'Male', '123 Main St, Springfield', '555-1234', 28, 10001, 'Day', '["6am-2pm", "6am-6pm"]'),
+('Jane', 'Smith', NULL, 'Female', '456 Elm St, Shelbyville', '555-5678', 32, 10002, 'Night', '["6pm-6am", "10pm-6am"]'),
+('Michael', 'Brown', 'James', 'Male', '789 Oak St, Capital City', '555-8765', 40, 10003, 'Specified', '["2pm-10pm", "10pm-6am"]'),
+('Emily', 'Davis', NULL, 'Female', '101 Pine St, Ogdenville', '555-4321', 26, 10004, 'Day', '["6am-2pm", "6am-6pm"]'),
+('Robert', 'Wilson', 'Lee', 'Male', '202 Maple St, North Haverbrook', '555-6789', 35, 10005, 'Specified', '["6am-2pm"]'),
+('Linda', 'Martinez', NULL, 'Female', '303 Birch St, Brockway', '555-9876', 29, 10006, 'Night', '["6pm-6am", "10pm-6am"]'),
+('William', 'Anderson', 'Thomas', 'Male', '404 Cedar St, Springfield', '555-3456', 45, 10007, 'Eclipse', '["24hrs"]'),
+('Sophia', 'Taylor', NULL, 'Female', '505 Walnut St, Shelbyville', '555-6543', 31, 10008, 'Day', '["6am-2pm", "6am-6pm"]'),
+('David', 'Harris', 'Anthony', 'Male', '606 Poplar St, Capital City', '555-7890', 27, 10009, 'Specified', '["10pm-6am"]'),
+('Olivia', 'White', NULL, 'Female', '707 Redwood St, Ogdenville', '555-2109', 30, 10010, 'Night', '["6pm-6am", "10pm-6am"]');

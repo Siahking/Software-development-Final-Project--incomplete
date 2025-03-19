@@ -27,9 +27,6 @@ func htmlRoutes(router *gin.Engine) {
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
-	router.GET("/create-roster", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "create-roster.html", nil)
-	})
 	router.GET("/add-worker", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "add-worker.html", nil)
 	})
@@ -62,6 +59,9 @@ func htmlRoutes(router *gin.Engine) {
 	})
 	router.GET("/find-restrictions",func(c *gin.Context) {
 		c.HTML(http.StatusOK, "find-restrictions.html",nil)
+	})
+	router.GET("/create-roster",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "create-roster.html",nil)
 	})
 }
 

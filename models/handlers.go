@@ -218,7 +218,7 @@ func AddWorker(c *gin.Context, db *sql.DB) {
 		worker.Gender, worker.Address, worker.Contact, worker.Age, worker.ID_Number, worker.Availability, string(hoursJSON))
 
 	if insertionErr != nil {
-		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+		if mysqlErr, ok := insertionErr.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
 				c.JSON(http.StatusConflict, gin.H{"error": "Worker with this ID Number already exists"})
 				return
