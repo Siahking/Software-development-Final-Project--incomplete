@@ -1,24 +1,25 @@
-import * as frontendFuncs from "./locations-frontend.js"
-import * as backendFuncs from "./locations-functions.js"
-import { toogleStates } from "./locations-frontend.js"
+import * as frontend from "./frontend.js"
+import * as funcs from "./functions.js"
 
-const submitBtn = document.getElementById("location-submit-btn")
+const locationForm = document.getElementById("location-form")
 const addLocationBtn = document.getElementById("add-location")
 const findLocationBtn = document.getElementById("find-location")
 
-backendFuncs.loadLocations()
+funcs.loadLocations()
 
 for (const btn of [addLocationBtn,findLocationBtn]){
     btn.addEventListener("click",(event)=>
-        frontendFuncs.toogleDiv(event.target.id)
+        frontend.toogleDiv(event.target.id)
     )
 }
 
-submitBtn.addEventListener("click",()=>{
-    console.log("clicked")
-    if(toogleStates["add-location"]){
-        backendFuncs.newLocation()
+locationForm.addEventListener("submit",(event)=>{
+    console.log("submitted")
+    console.log(frontend.toogleStates)
+    event.preventDefault()
+    if(frontend.toogleStates["add-location"]){
+        funcs.newLocation()
     }else{
-        backendFuncs.findlocation()
+        funcs.findlocation()
     }
 })

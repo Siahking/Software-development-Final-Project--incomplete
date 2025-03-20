@@ -1,5 +1,5 @@
-import * as backendFuncs from "./constraints-functions.js"
-import * as frontendFuncs from "./constraints-frontend.js"
+import * as backendFuncs from "./functions.js"
+import * as frontendFuncs from "./frontend.js"
 
 const addConstraintBtn = document.getElementById("add-constraint-btn")
 const addConstraintDiv = document.getElementById("add-constraint-div")

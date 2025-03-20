@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/daysoff.css">
+    <title>Days Off</title>
+</head>
+<body>
+    <a href="/">Home</a>
+
+    <h1>Days Off</h1>
+
+    <table id="table">
+        <tr>
+            <th>Id</th>
+            <th>Worker</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+    </table>
+
+    <p id="empty-table" class="hidden">No Values Found</p>
+
+    <button id="add-days-off">Add Days Off</button>
+    <button id="find-days-off">Find Days Off</button>
+
+    <div id="add-days-off-div" class="hidden">
+        <form id="add-days-off-form">
+            <label for="worker-id">Worker ID</label>
+            <input type="number" id="worker-id" placeholder="Type here" required>
+            <label for="start-date">Start Date</label>
+            <input type="date" id="start-date" placeholder="Type here" required>
+            <label for="end-date">End Date</label>
+            <input type="date" id="end-date" placeholder="Type here" required>
+            <button type="submit">Add Day Off</button>
+        </form>
+    </div>
+
+    <form id="find-days-off-form">
+        <div id="find-days-off-div" class="hidden">
+            <label for="workerid-radio">Worker Id</label>
+            <input type="radio" id="workerid-radio" placeholder="Type here" name="search-check">
+            <label for="breakid-radio">Break Id</label>
+            <input type="radio" id="breakid-radio" name="search-check">
+            <label for="value" class="hidden" id="value-label">
+                Value
+                <input type="number" id="value" placeholder="Type here">
+            </label>
+            <button>Search</button>
+        </div>
+    </form>
+
+    <h1>Permanent Restrictions</h1>
+    <table id="restriction-table">
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>DayOfWeek</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+    </table>
+    <p id="restriction-table-tag" class="hidden">No restrictions Found</p>
+
+    <button id="add-restriction-btn">Add restriction</button>
+    <button id="find-restriction-btn">Find restriction</button>
+
+    <div id="add-restriction-div" class="hidden">
+        <form id="add-restriction-form">
+            <label for="worker-id-input">Worker ID</label>
+            <input type="number" id="worker-id-input" placeholder="Type here" required>
+            <label for="day-of-week-input">Day Of The Week</label>
+            <input type="text" id="day-of-week-input" placeholder="Type here" autocapitalize="words">
+            <label for="start-time-input">Start Time</label>
+            <input type="time" id="start-time-input" placeholder="Type here">
+            <label for="end-time-input">End Time</label>
+            <input type="time" id="end-time-input"placeholder="Type here">
+            <button>Add Restriction</button>
+        </form>
+    </div>
+
+    <div id="find-restriction-div" class="hidden">
+        <form id="find-restriction-form">
+            <label for="restriction-worker-id">Worker ID</label>
+            <input type="radio" id="restriction-worker-id" name="column-input">
+            <label for="restriction-id">ID</label>
+            <input type="radio" id="restriction-id" name="column-input">
+            <label for="id-value-input">ID Value</label>
+            <input type="text" id="id-value-input" placeholder="Type here">
+            <button>Search</button>
+        </form>
+    </div>
+
+    
+    <p id="error-tag" style="color: red;"></p>
+    
+    <script type="module" src="../views/days-off/main.js"></script>
+    <script type="module" src="../views/days-off/functions.js"></script>
+    <script type="module" src="../views/days-off/frontend.js"></script>
+    <script type="module" src="../views/permanent-restrictions/main.js"></script>
+    <script type="module" src="../views/permanent-restrictions/frontend.js"></script>
+    <script type="module" src="../views/permanent-restrictions/functions.js"></script>
+</body>
+</html>

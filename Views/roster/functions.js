@@ -1,4 +1,4 @@
-import * as apiFuncs from "../../static/javascript/backend.js"
+import * as apiFuncs from "../backend.js"
 
 const WORKERS = await apiFuncs.getWorkers()
 

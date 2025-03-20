@@ -1,4 +1,4 @@
-import * as apiFuncs from "../../static/javascript/backend.js"
+import * as apiFuncs from "../backend.js"
 
 const table = document.getElementById("table")
 const errorTag = document.getElementById("error-tag")

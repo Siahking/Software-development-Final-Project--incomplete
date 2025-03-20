@@ -1,4 +1,4 @@
-import * as apiFuncs from '../../static/javascript/backend.js'
+import * as apiFuncs from '../backend.js'
 import { deleteWorker } from "../../views/workers/workers-functions.js"
 
 export async function showWorkers (){

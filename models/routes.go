@@ -9,11 +9,11 @@ import (
 
 func RegisterRoutes(router *gin.Engine, db *sql.DB) {
 	//Serve static files
-	router.Static("/static", "./static")
+	router.Static("/css", "./css")
 	router.Static("/views", "./views")
 	router.Static("/controllers","./controllers")
 	
-	router.LoadHTMLGlob("templates/*.html")
+	router.LoadHTMLGlob("html/*.html")
 
 	// HTML Routes
 	htmlRoutes(router)

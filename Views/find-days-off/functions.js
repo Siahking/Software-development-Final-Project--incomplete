@@ -1,4 +1,4 @@
-import * as apiFuncs from "../../static/javascript/backend.js" 
+import * as apiFuncs from "../backend.js" 
 import { deleteDaysOff } from "../days-off/functions.js"
 
 const table = document.getElementById("table")

@@ -1,6 +1,4 @@
-import { 
-    getWorkers, workerLocationSearch,findLocation,getLocations,addWorker,findWorker,linkWorkerLocations,removeEntry
-} from "../../static/javascript/backend.js";
+import * as apiFuncs from "../backend.js";
 
 const tableHeadArray = ["ID","FirstName","LastName","MiddleName","Gender","Address",
                         "Contact","Age","Id Number","Availability","Hours","Locations"]
@@ -63,7 +61,7 @@ function assignHours(){
 }
 
 export async function displayLocations(){
-    const locations = await getLocations();
+    const locations = await apiFuncs.getLocations();
     
     if (!locations){
         showLocationsDiv.innerHTML = "No Locations Found"
@@ -90,7 +88,7 @@ export async function displayLocations(){
 }
 
 export async function showWorkers (){
-    const workers = await getWorkers();
+    const workers = await apiFuncs.getWorkers();
 
     if (Object.keys(workers).includes("error")){
         errorTag.innerHTML = workers.error
@@ -116,12 +114,12 @@ export async function showWorkers (){
             tableRow.append(tableData)
         }
         const locationsRow = document.createElement("td")
-        const locationsResults = await workerLocationSearch("worker_id",worker.id)
+        const locationsResults = await apiFuncs.findLocation("worker_id",worker.id)
 
         if (!Object.keys(locationsResults).includes('error')){
             const tempArr = []
             for (const location of locationsResults){
-                const locationInfo = await findLocation("id",location.location_id)
+                const locationInfo = await apiFuncs.findLocation("id",location.location_id)
                 const locationName = locationInfo[0].location
                 tempArr.push(locationName)
             }
@@ -161,7 +159,7 @@ export async function addWorkerHandler(event){
     const [availability,hours] = assignHours()
     if (!availability)return
 
-    const result = await addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber,availability,hours)
+    const result = await apiFuncs.addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber,availability,hours)
     const selectedLocations = []
 
     if (Object.keys(result).includes("error")){
@@ -178,10 +176,10 @@ export async function addWorkerHandler(event){
 
     if (selectedLocations.length>0) {
         //find the worker using the idNumber then assign the worker to a location using worker and location id
-        const newWorker = await findWorker("","","",idNumber)
+        const newWorker = await apiFuncs.findWorker("","","",idNumber)
         const newWorkerId = newWorker[0].id
         selectedLocations.forEach((location)=>{
-            linkWorkerLocations(newWorkerId,location.id)
+            apiFuncs.linkWorkerLocations(newWorkerId,location.id)
         })
     }    
 
@@ -212,7 +210,7 @@ export async function findWorkers(event){
         return
     }
 
-    const results = await findWorker(firstName,lastName,middleName,idNumber,id)
+    const results = await apiFuncs.findWorker(firstName,lastName,middleName,idNumber,id)
     if (Object.keys(results).includes("error")){
         errorTag.innerHTML = results.error
         return
@@ -224,13 +222,13 @@ export async function findWorkers(event){
 
 export async function deleteWorker(event){
     const workerId = event.target.value
-    const worker = await findWorker("","","","",workerId)
+    const worker = await apiFuncs.findWorker("","","","",workerId)
     const firstName = worker[0].first_name
     const lastName = worker[0].last_name
     
     const confirmation = confirm(`Are you sure you want to delete ${firstName} ${lastName} ?`)
     if (confirmation){
-        const result = await removeEntry(workerId,"workers")
+        const result = await apiFuncs.removeEntry(workerId,"workers")
         sessionStorage.setItem("Message",result.message)
         window.location.href = '/'
     }else{

@@ -1,4 +1,4 @@
-import * as backendFuncs from "./find-location-functions.js"
-import * as frontendFuncs from "./find-location-frontend.js"
+import * as backendFuncs from "./functions.js"
+import * as frontendFuncs from "./frontend.js"
 
 backendFuncs.displayLocations()

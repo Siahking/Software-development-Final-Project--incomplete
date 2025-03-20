@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/get-workers.css">
+    <title>Get Workers</title>
+</head>
+<body>
+    <a href="/">Home</a>
+
+    <h1>Get Workers</h1>
+    <table id="table">
+
+    </table>
+
+    <button id="add-worker">Add Worker</button>
+    <button id="find-worker">Find Worker</button>
+
+    <div class="hidden" id="add-worker-div">
+        <form id="add-worker-form">
+            <label for="add-first-name-input">
+                First  Name
+                <input type="text" id="add-first-name-input" placeholder="Type here" autocomplete="off" required>
+            </label>
+            <label for="add-last-name-input">
+                Last  Name
+                <input type="text" id="add-last-name-input" placeholder="Type here" autocomplete="off" required>
+            </label>
+            <label for="add-middle-name-input">
+                Middle  Name
+                <input type="text" id="add-middle-name-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <label for="add-gender-input">
+                Gender
+                 <select id="add-gender-input" required>
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                 </select>
+            </label>
+            <label for="add-address-input">
+                Address
+                <input type="text" id="add-address-input" placeholder="Type here" autocomplete="off" required>
+            </label>
+            <label for="add-contact-input">
+                Contact
+                <input type="text" id="add-contact-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <label for="add-age-input">
+                Age
+                <input type="number" id="add-age-input" placeholder="Type here" min="18" required>
+            </label>
+            <label for="add-id-number-input">
+                ID Number
+                <input type="number" id="add-id-number-input" placeholder="Type here" required>
+            </label>
+            <div id="availability-div">
+                Availability
+                <label for="day-option">
+                    <input type="radio" id="day-option" name="availability" value="Day">
+                    Day
+                </label>
+                <label for="night-option">
+                    <input type="radio" id="night-option" name="availability" value="Night">
+                    Night
+                </label>
+                <label for="eclipse-option">
+                    <input type="radio" id="eclipse-option" name="availability" value="Eclipse">
+                    Eclipse
+                </label>
+                <label for="specified-option">
+                    <input type="radio" id="specified-option" name="availability" value="Specified">
+                    Specified
+                </label>
+            </div>
+            <div id="hours-div" class="hidden">
+                Hours
+                <label for="6am-6pm">
+                    6am to 6pm
+                    <input type="checkbox" id="6am-6pm" class="hours-options">
+                </label>
+                <label for="6pm-6am">
+                    <input type="checkbox" id="6pm-6am" class="hours-options">
+                    6pm to 6am
+                </label>
+                <label for="6am-2pm">
+                    <input type="checkbox" id="6am-2pm" class="hours-options">
+                    6am to 2pm
+                </label>
+                <label for="2am-10pm">
+                    <input type="checkbox" id="2pm-10pm" class="hours-options">
+                    2am to 10pm
+                </label>
+                <label for="10pm-6am">
+                    <input type="checkbox" id="10pm-6am" class="hours-options">
+                    10pm to 6am
+                </label>
+            </div>
+            <button type="button" id="toogle-btn">Add Location</button>
+            <div id="locations-input" class="hidden">
+                
+            </div>
+
+            <button type="submit" id="add-worker-submit-btn">
+                Add Worker
+            </button>
+        </form>
+    </div>
+    <div id="find-worker-div" class="hidden">
+        <form id="workerSearchForm">
+            <label for="id">
+                ID
+                <input type="checkbox" id="id" name="id">
+            </label>
+            <br>
+            <input autocomplete="off" type="number" id="id-input" class="hidden" placeholder="Enter the id here">
+    
+            <label for="first-name">
+                First Name
+                <input type="checkbox" id="first-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="first-name-input" class="hidden" placeholder="Enter the first name here">
+    
+            <label for="last-name">
+                Last Name
+                <input type="checkbox" id="last-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="last-name-input" class="hidden" placeholder="Enter the last name here">
+    
+            <label for="middle-name">
+                Middle Name
+                <input type="checkbox" id="middle-name">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="middle-name-input" class="hidden" placeholder="Enter the middle name here">
+
+            <label for="id-number">
+                ID Number
+                <input type="checkbox" id="id-number">
+            </label>
+            <br>
+            <input autocomplete="off" type="text" id="id-number-input" class="hidden" placeholder="Enter the id number here">
+
+            <button id="search-button" >Search</button>
+        </form>
+    </div>
+    <p id="error-tag" style="color: red;"></p>
+    
+    <script type="module" src="../views/workers/main.js"></script>
+    <script type="module" src="../views/workers/workers-frontend.js"></script>
+    <script type="module" src="../views/workers/workers-functions.js"></script>
+</body>
+</html>

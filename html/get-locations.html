@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/get-locations.css">
+    <title>Locations</title>
+</head>
+<body>
+    <a href="/">Home</a>
+
+    <h1>Locations here</h1>
+    <ul id="list"></ul>
+        
+    </ul>
+
+    <button id="add-location">Add Location</button>
+    <button id="find-location">Find Location</button>
+
+    <div class="hidden" id="add-location-div">
+        <form id="location-form">
+            <label for="location-input">
+                Location Name
+                <input type="text" id="location-input" placeholder="Type here" autocomplete="off">
+            </label>
+            <button id="location-submit-btn">Submit</button>
+        </form>
+    </div>
+
+    <p id="error-tag" style="color: red;"></p>
+
+    <script type="module" src="../views/locations/frontend.js"></script>
+    <script type="module" src="../views/locations/functions.js"></script>
+    <script type="module" src="../views/locations/main.js"></script>
+</body>
+</html>

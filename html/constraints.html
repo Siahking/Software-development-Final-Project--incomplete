@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/constraints.css">
+    <title>Edit Contraints</title>
+</head>
+<body>
+    <a href="/">Home</a>
+
+    <div>
+        <h1>Constraints</h1>
+        <table id="table">
+            <tr>
+                <th>Constraint ID</th>
+                <th>Worker One</th>
+                <th>Worker Two</th>
+                <th>Summary</th>
+            </tr>
+        </table>
+        <p id="constraint-table-tag" class="hidden">No constraints Found</p>
+
+        <button id="add-constraint-btn">Add Constraint</button>
+        <button id="find-constraint-btn">Find Constraint</button>
+        <button id="edit-constraint">Edit Constraint</button>
+
+        <div id="add-constraint-div" class="hidden">
+            <form id="add-constraint-form">
+                <label for="worker1">
+                    Worker 1
+                </label>
+                <input type="number" id="worker1" placeholder="Type here">
+                <label for="worker2">
+                    Worker 2
+                </label>
+                <input type="number" id="worker2" placeholder="Type here">
+                <label for="summary">
+                    Summary
+                </label>
+                <input type="text" id="summary" placeholder="Type here">
+
+                <button type="submit">Add</button>
+            </form>
+        </div>
+
+        <div id="find-constraint-div" class="hidden">
+            <form id="find-constraint-form">
+                <label for="worker1-id">
+                    Worker 1 ID
+                </label>
+                <input type="text" id="worker1-id" placeholder="Type here">
+                <label for="worker2-id">
+                    Worker 2 ID
+                </label>
+                <input type="text" id="worker2-id" placeholder="Type here">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        
+        <div id="edit-constraint-div" class="hidden">
+            <form id="edit-constraint-form">
+                <label for="constraint-id">Constraint ID</label>
+                <input type="number" id="constraint-id" placeholder="Type Here">
+                <p>Change:</p>
+                <label for="worker1-checkbox">Worker1 ID</label>
+                <input type="checkbox" id="worker1-checkbox">
+                <input type="number" id="worker1Id-input" class="hidden" placeholder="Type Here">
+                <label for="worker2-checkbox">Worker2 Id</label>
+                <input type="checkbox" id="worker2-checkbox">
+                <input type="number" class="hidden" id="worker2Id-input" placeholder="Type Here">
+                <label for="summary-checkbox">Summary</label>
+                <input type="checkbox" id="summary-checkbox">
+                <input type="text" class="hidden" id="summary-input" placeholder="Type Here">
+
+                <button type="submit">Change Constraint</button>
+            </form>
+        </div>
+
+        <p id="error-tag" style="color: red;"></p>
+         
+    <script type="module" src="../views/constraints/frontend.js"></script>
+    <script type="module" src="../views/constraints/functions.js"></script>
+    <script type="module" src="../views/constraints/main.js"></script>
+</body>
+</html>
