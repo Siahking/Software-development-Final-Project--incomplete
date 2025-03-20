@@ -37,13 +37,13 @@ func htmlRoutes(router *gin.Engine) {
 		c.HTML(http.StatusOK, "find-locations.html", nil)
 	})
 	router.GET("/get-workers", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "get-workers.html", nil)
+		c.HTML(http.StatusOK, "workers.html", nil)
 	})
 	router.GET("/find-workers", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "find-workers.html", nil)
 	})
 	router.GET("/get-locations", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "get-locations.html", nil)
+		c.HTML(http.StatusOK, "locations.html", nil)
 	})
 	router.GET("/constraints", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "constraints.html", nil)
