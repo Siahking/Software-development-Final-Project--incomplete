@@ -54,7 +54,6 @@ function assignHours(){
                 return [false,[]]
             }
     }
-
     return [option.value,hours]
 }
 

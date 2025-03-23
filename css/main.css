@@ -1,12 +1,4 @@
-a{
-    text-decoration: none;
-    margin: 5px;
-    border: solid var(--button-grey) 1px;
-    background-color: var(--button-grey);
-    padding:3px 8px;
-    border-radius: 15px;
-    color: black;
-}
+
 
 .hidden{
     opacity: 0;

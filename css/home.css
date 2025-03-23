@@ -9,6 +9,7 @@ body,html{
     align-items: center;
     flex-direction: column;
     background-color: #008080;
+    color: white;
 }
 
 h1,p{
@@ -24,14 +25,19 @@ a,button{
     margin: 5px;
     border: solid var(--button-grey) 1px;
     background-color: var(--button-grey);
-    padding:3px 8px;
     border-radius: 15px;
     color: white;
     cursor: pointer;
     transition: 0.3s ease-in-out;
+    display: inline-block;
+}
+
+a{
+    padding:3px 8px;
 }
 
 button{
+    margin: 0;
     padding:5px 8px;
 }
 
@@ -48,9 +54,16 @@ button{
     transition: opacity 0.5s ease, max-height 0.5s ease;
 }
 
+#roster-div button{
+    margin: 9px;
+}
+
+ #roster-div input{
+    cursor: pointer;
+}
+
 a:hover,button:hover{
     background-color: #808080;
     border-color: #808080;
-    padding: .5rem;
-    border-radius: 1.1rem;
+    transform: scale(1.1);
 }
