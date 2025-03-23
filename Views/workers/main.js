@@ -1,5 +1,5 @@
-import * as backendFuncs from "./workers-functions.js"
-import * as frontendFuncs from "./workers-frontend.js"
+import * as backendFuncs from "./functions.js"
+import * as frontendFuncs from "./frontend.js"
 
 const addWorkerBtn = document.getElementById("add-worker")
 const addWorkerDiv = document.getElementById('add-worker-div')

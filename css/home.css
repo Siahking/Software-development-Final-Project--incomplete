@@ -1,5 +1,5 @@
 :root{
-    --button-grey:rgb(191, 191, 191);
+    --button-grey:	#696969;
 }
 
 body,html{
@@ -8,9 +8,18 @@ body,html{
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    background-color: #008080;
 }
 
-a{
+h1,p{
+    color: white;
+}
+
+h1{
+    margin: 0;
+}
+
+a,button{
     text-decoration: none;
     margin: 5px;
     border: solid var(--button-grey) 1px;
@@ -18,8 +27,30 @@ a{
     padding:3px 8px;
     border-radius: 15px;
     color: white;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+button{
+    padding:5px 8px;
 }
 
 .hidden{
-    display: none;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+}
+
+.visible{
+    opacity: 1;
+    max-height: 500px; 
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+}
+
+a:hover,button:hover{
+    background-color: #808080;
+    border-color: #808080;
+    padding: .5rem;
+    border-radius: 1.1rem;
 }

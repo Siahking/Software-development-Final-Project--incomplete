@@ -9,15 +9,26 @@
 <body>
     <p id="message"></p>
 
-    <h1>Welcome Message</h1>
+    <h1>OptiRoster</h1>
+    <p>Optimize your workforce roster</p>
     <div class="options">
-        <a id="create-roster" href="/create-roster">Create Roster</a>
+        <button id="create-roster">Create Roster</button>
         <a id="get-workers" href="/get-workers">Workers</a>
         <a id="get-locations" href="/get-locations">Locations</a>
         <a id="constraints" href="/constraints">Constraints</a>
         <a id="edit-daysoff" href="/days-off">Days Off</a>
     </div>
-    <p id="error-tag" style="color: red;"></p>
+
+    <div id="roster-div" class="hidden">
+        <form id="roster-form">
+        <label for="date">
+            Month
+            <input type="month" id="date" required>
+        </label>
+
+        </form>
+        <p id="error-tag" style="color: red;"></p>
+    </div>
     
     <script type="module" src="../views/home/main.js"></script>
 </body>

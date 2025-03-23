@@ -1,3 +1,3 @@
-import * as backendFuncs from "./worker-results-functions.js"
+import * as backendFuncs from "./functions.js"
 
 backendFuncs.showWorkers()

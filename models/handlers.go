@@ -82,6 +82,7 @@ func GetLocations(c *gin.Context, db *sql.DB) {
 
 	if len(locations) == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No locations found"})
+		return
 	}
 
 	c.IndentedJSON(http.StatusOK, locations)

@@ -33,8 +33,6 @@ function assignHours(){
         }
     }
 
-    console.log(option.value)
-
     switch (option.value){
         case "Day":
             hours.push("6am-6pm","6am-2pm")
@@ -114,11 +112,11 @@ export async function showWorkers (){
             tableRow.append(tableData)
         }
         const locationsRow = document.createElement("td")
-        const locationsResults = await apiFuncs.findLocation("worker_id",worker.id)
+        const locationResults = await apiFuncs.workerLocationSearch("worker_id",worker.id)
 
-        if (!Object.keys(locationsResults).includes('error')){
+        if (!Object.keys(locationResults).includes('error')){
             const tempArr = []
-            for (const location of locationsResults){
+            for (const location of locationResults){
                 const locationInfo = await apiFuncs.findLocation("id",location.location_id)
                 const locationName = locationInfo[0].location
                 tempArr.push(locationName)

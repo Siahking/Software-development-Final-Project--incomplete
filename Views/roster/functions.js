@@ -1,9 +1,9 @@
-import * as apiFuncs from "../backend.js"
+export function assignWorkers(dayNumber,WORKERS,dayBlock,afternoonBlock,nightBlock,location){
+    const [shift1,shift2] = rosterWorkers(WORKERS)
+    console.log(shift2)
 
-const WORKERS = await apiFuncs.getWorkers()
-
-export function assignWorkers(dayNumber,dayBlock,afternoonBlock,nightBlock){
-    const [shift1,shift2] = rosterWorkers()
+    const constainer = document.createElement("div")
+    constainer.setAttribute("id",`${location}-workers-div`)
 
     let dayWorker1 = document.createElement("p")
     let dayWorker2 = document.createElement("p")
@@ -41,34 +41,31 @@ export function assignWorkers(dayNumber,dayBlock,afternoonBlock,nightBlock){
     for (const tag of [nightWorker1,nightWorker2]){
         nightBlock.appendChild(tag)
     }
+
+    
 }
 
-export function rosterWorkers(){
-    const shifts = ["8hr","12hr"]
-    const workerObject = {}
-    const sixToSixDayArray = retrieveWorkers("6am-6pm")
-    const sixToTwoArray = retrieveWorkers("6am-2pm")
-    const twoToTenArray = retrieveWorkers("2pm-10pm")
-    const sixToSixNightArray = retrieveWorkers("6pm-6am")
-    const tenToSixArray = retrieveWorkers("10pm-6am")
+export function rosterWorkers(workers){
+    const shifts = ["8hr","12hr"] //randomly selects a shift for the workers
+    const sixToSixDayArray = retrieveWorkers(workers,"6am-6pm")
+    const sixToTwoArray = retrieveWorkers(workers,"6am-2pm")
+    const twoToTenArray = retrieveWorkers(workers,"2pm-10pm")
+    const sixToSixNightArray = retrieveWorkers(workers,"6pm-6am")
+    const tenToSixArray = retrieveWorkers(workers,"10pm-6am")
     let shiftOne,shiftTwo
 
     const shiftOneShift = shifts[Math.floor(Math.random() * shifts.length)]
     const shiftTwoShift = shifts[Math.floor(Math.random() * shifts.length)]
 
-    console.log("Shift 1")
     if (shiftOneShift== "8hr"){
         const dayWorker = sixToTwoArray.pop()
         setWorkerToUnavailable(dayWorker.id,[sixToSixDayArray])
-        // addWorkerToObject(workerObject,`worker-${dayWorker.id}`,"6am-2pm")
         
         const afternoonWorker = twoToTenArray.pop()
         setWorkerToUnavailable(afternoonWorker.id,[sixToSixDayArray,sixToSixNightArray])
-        // addWorkerToObject(workerObject,`worker-${afternoonWorker.id}`,"2pm-10pm")
     
         const nightWorker = tenToSixArray.pop()
         setWorkerToUnavailable(nightWorker.id,[sixToSixNightArray])
-        // addWorkerToObject(workerObject,`worker-${nightWorker.id}`,"10pm-6am")
     
         shiftOne = {
             "shift":"8hr",
@@ -79,10 +76,8 @@ export function rosterWorkers(){
     }else{
         const dayWorker = sixToSixDayArray.pop()
         setWorkerToUnavailable(dayWorker.id,[sixToTwoArray,twoToTenArray])
-        // addWorkerToObject(workerObject,`worker-${dayWorker.id}`,"6am-6pm")
         const nightWorker = sixToSixNightArray.pop()
         setWorkerToUnavailable(nightWorker.id,[tenToSixArray,twoToTenArray])
-        // addWorkerToObject(workerObject,`worker-${nightWorker.id}`,"6pm-6am")
 
         shiftOne = {
             "shift":"12hr",
@@ -91,8 +86,10 @@ export function rosterWorkers(){
         }
 
     }
+
+    console.log(sixToSixDayArray)
+    console.log(sixToTwoArray)
  
-    console.log("Shift 2")
     if (shiftTwoShift== "8hr"){
         const dayWorker = sixToTwoArray.pop()
         const afternoonWorker = twoToTenArray.pop()
@@ -117,9 +114,9 @@ export function rosterWorkers(){
     return [shiftOne,shiftTwo]
 }
 
-function retrieveWorkers(hours){
+function retrieveWorkers(workers,hours){
     let array = []
-    for (const worker of WORKERS){
+    for (const worker of workers){
         if (worker.hours.includes(hours) || worker.hours.includes("24hrs")){
             array.push(worker)
         }
@@ -129,8 +126,7 @@ function retrieveWorkers(hours){
 }
 
 function setDayNightWorker(tag,worker,shift,time){
-    console.log("worker is")
-    console.log(worker)
+    //selecting the first index of each first name to get the first letter in the name
     tag.innerText = `${shift[worker].first_name[0]}.${shift[worker].last_name}\n`
     if (time === "day"){
         if (shift.shift === "12hr"){

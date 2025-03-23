@@ -3,6 +3,7 @@ import * as apiFuncs from "../backend.js"
 const errorTag = document.getElementById("error-tag")
 const input = document.getElementById("location-input")
 const list = document.getElementById("list");
+const locationsErrorTag = document.getElementById("locations-error-tag")
 
 const valueCheck = ()=>{
     if (!input.value){
@@ -14,6 +15,11 @@ const valueCheck = ()=>{
 
 export async function loadLocations(){
     const locations = await apiFuncs.getLocations();
+
+    if (Object.keys(locations).includes("error")){
+        locationsErrorTag.classList.remove("hidden")
+        return
+    }
     
     locations.forEach(data=>{
         const listItem = document.createElement("li")

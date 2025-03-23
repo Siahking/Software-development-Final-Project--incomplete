@@ -1,4 +1,5 @@
-import * as funcs from "./functions.js"
 import * as frontend from "./frontend.js"
 
-frontend.generateCalender(3,2025)
+const date = JSON.parse(localStorage.getItem("Date"))
+
+frontend.generateCalender(date.month,date.year)

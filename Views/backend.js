@@ -498,7 +498,7 @@ export async function deletePermanentRestrictions(id){
 }
 
 // async function tester() {
-//     const result = await deletePermanentRestrictions(1)
+//     const result = await workerLocationSearch("worker_id",1)
 //     console.log(result)
 // }
 
