@@ -101,13 +101,26 @@ export async function showWorkers (){
 
         const tableRow = document.createElement("tr")
 
-        for (const field of workerArr){
+        for (const [index,field] of workerArr.entries()){
             const tableData = document.createElement("td")
             if (field){
                 tableData.innerHTML = field
             }else{
                 tableData.innerHTML = "Null"
             }
+
+            switch (index){
+                case 5:
+                    tableData.classList.add("addressClass")
+                    break
+                case 6:
+                    tableData.classList.add("contactClass")
+                    break
+                case 9:
+                    tableData.classList.add("availablityClass")
+                    break
+            }
+
             tableRow.append(tableData)
         }
         const locationsRow = document.createElement("td")
@@ -130,6 +143,7 @@ export async function showWorkers (){
         const deleteCell = document.createElement('td')
         const deleteBtn = document.createElement("button")
         deleteBtn.innerHTML = "Delete"
+        deleteBtn.classList.add("delete-btn")
         deleteBtn.value = worker.id
         deleteBtn.setAttribute("name",`delete_id${worker.id}`)
         deleteBtn.addEventListener("click",(event)=>deleteWorker(event))

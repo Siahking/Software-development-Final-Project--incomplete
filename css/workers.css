@@ -1,11 +1,55 @@
-a{
-    text-decoration: none;
-    margin: 5px;
-    border: solid var(--button-grey) 1px;
-    background-color: var(--button-grey);
-    padding:3px 8px;
-    border-radius: 15px;
-    color: black;
+body,html{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+table {
+    min-width: 1270px !important;
+    border-collapse: collapse;
+    margin: auto;
+}
+
+th, td {
+    border-bottom: 1px solid black !important;
+    padding: 8px;
+    text-align: center !important;
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: 2px solid black ; 
+}
+
+#table-container,#data-input,#add-worker-div,#find-worker-div,#name-info-div,#gender-address-info-div,
+#gender-address-info-div label,#availability-div,#hours-div,#workerSearchForm,#locations-input
+#contact-id-info-div,#contact-info-div label{
+    display: flex;
+}
+
+.constainer,.buttons-div,.text-input-label{
+    display: flex;
+}
+
+.text-number-input{
+    height: 25px;
+    max-width: 140px;
+    border:1px solid var(--input-grey);
+}
+
+.addressClass{
+    min-width: 100px !important;
+}
+
+.buttons-div{
+    justify-content: center;
+}
+
+.text-input-label{
+    flex-direction: column;
+    align-items: center;
+    margin: 2px 10px;
 }
 
 .hidden{
@@ -19,4 +63,96 @@ a{
     opacity: 1;
     max-height: 500px; 
     transition: opacity 0.5s ease, max-height 0.5s ease;
+}
+
+.text-number-input:focus{
+    border-color: var(--teal) !important;
+    outline: none;
+}
+
+#table-container{
+    width: 80%;
+    justify-content: center;
+}
+
+#data-input{
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+#add-worker-div,
+#find-worker-div {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 61%; /* Adjust width as needed */
+    max-width: 600px; /* Prevents stretching too wide */
+    min-width: 500px;
+    padding: 30px;
+    background: #f8f8f8; /* Optional: Adds slight background for visibility */
+    border-radius: 8px; /* Optional: Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Slight shadow effect */
+    margin: 50px;
+}
+
+#name-info-div{
+    justify-content: space-between;
+}
+
+#add-age-input{
+    width: 100px;
+}
+
+#gender-address-info-div{
+    padding: 0 10px;
+    justify-content: space-between;
+}
+
+#gender-address-info-div label{
+    flex-direction: column;
+    align-items: center;
+}
+
+#contact-id-info-div{
+    padding: 0 10px;
+    justify-content: space-evenly;
+}
+
+#contact-id-info-div label{
+    flex-direction: column;
+    align-items: center;
+}
+
+#availability-div{
+    padding: 0 10px;
+    justify-content: space-between;
+}
+
+#hours-div{
+    margin: 5px 0;
+    padding: 0 10px;
+    align-items: center;
+    flex-direction: column;
+}
+
+#hours-div label{
+    margin: 1px;
+}
+
+#locations-input{
+    margin-top: 10px;
+    justify-content: space-evenly;
+}
+
+#add-address-input{
+    width: 200px;
+}
+
+#workerSearchForm{
+    flex-direction: column;
+    align-items: center;
 }

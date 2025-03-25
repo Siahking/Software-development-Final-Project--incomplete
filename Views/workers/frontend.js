@@ -41,30 +41,30 @@ function toogleInputs(checkbox,input){
             }
             for (const item of [...unimportantInputArr,otherInput]){
                 item.value = ""
-                item.classList.add("hidden")
+                item.classList.add("specified-hidden")
             }
-            input.classList.remove("hidden")
+            input.classList.remove("specified-hidden")
         }else{
             for (const checkbox of [...unimportantCheckboxArr,otherCheckbox]){
                 checkbox.removeAttribute('disabled')
             }
-            input.classList.add("hidden")
+            input.classList.add("specified-hidden")
         }
         
     }else if (checkbox.checked){
-        input.classList.remove("hidden")
+        input.classList.remove("specified-hidden")
     }else{
-        input.classList.add("hidden")
+        input.classList.add("specified-hidden")
         input.innerHTML = ""
     }
 }
 
 export function toogleDisplay(div,otherDiv=""){
-    if (div.classList.contains("hidden")){
-        div.classList.remove("hidden")
-        if (otherDiv)otherDiv.classList.add("hidden")
+    if (div.classList.contains("specified-hidden")){
+        div.classList.remove("specified-hidden")
+        if (otherDiv)otherDiv.classList.add("specified-hidden")
     }else{
-        div.classList.add("hidden")
+        div.classList.add("specified-hidden")
     }
 }
 

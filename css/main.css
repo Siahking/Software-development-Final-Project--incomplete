@@ -1,14 +1,74 @@
+:root{
+    --grey:#808080;
+    --teal:#4fb9af;
+    --input-grey:#BEBEBE;
+}
 
+.nav-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-.hidden{
+.navbar-brand,.nav-link{
+    color:#808080 !important;
+    transition: 0.2s ease;
+}
+
+.navbar-brand:hover,.nav-link:hover{
+    transition:0.2s ease;
+    color: var(--teal) !important;
+}
+
+#nav-div{
+    background-color: white !important;
+    border-radius: 6px;
+    padding-right: 0;
+}
+
+.grey-btn,.delete-btn,.green-btn{
+    margin:10px 5px;
+    background-color: var(--grey);
+    padding: 5px 8px;
+    border-radius: 15px;
+    border: none;
+    color: white;
+    transition: 0.3s ease-in-out;
+}
+
+.hidden,.specified-hidden{
     opacity: 0;
     max-height: 0;
     overflow: hidden;
     transition: opacity 0.5s ease, max-height 0.5s ease;
 }
 
+.specified-hidden{
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+    overflow: hidden;
+}
+
 .visible{
     opacity: 1;
     max-height: 500px; 
     transition: opacity 0.5s ease, max-height 0.5s ease;
+}
+
+.grey-btn:hover,.delete-btn:hover,.green-btn:hover{
+    transform:scale(1.1);
+}
+
+.grey-btn:hover{
+    background-color: var(--teal);
+}
+
+.delete-btn:hover{
+    background-color: red;
+}
+
+.green-btn:hover{
+    background-color: green;
 }
