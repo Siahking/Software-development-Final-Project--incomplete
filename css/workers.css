@@ -32,12 +32,6 @@ tr:last-child td {
     display: flex;
 }
 
-.text-number-input{
-    height: 25px;
-    max-width: 140px;
-    border:1px solid var(--input-grey);
-}
-
 .addressClass{
     min-width: 100px !important;
 }
@@ -63,11 +57,6 @@ tr:last-child td {
     opacity: 1;
     max-height: 500px; 
     transition: opacity 0.5s ease, max-height 0.5s ease;
-}
-
-.text-number-input:focus{
-    border-color: var(--teal) !important;
-    outline: none;
 }
 
 #table-container{

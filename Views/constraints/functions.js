@@ -63,6 +63,7 @@ export async function displayConstraints(){
 
         deleteBtn.innerHTML = "Delete Constraint"
         deleteBtn.value = constraint.id
+        deleteBtn.classList.add("delete-btn")
         deleteBtn.id = `deleteBtn-${constraint.id}`
         deleteBtn.addEventListener("click",(event)=>removeConstraint(event.target.value))
         deleteCell.appendChild(deleteBtn)

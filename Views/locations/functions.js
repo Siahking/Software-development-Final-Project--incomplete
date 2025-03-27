@@ -27,6 +27,7 @@ export async function loadLocations(){
 
         const deleteBtn = document.createElement("button")
         deleteBtn.innerHTML = "Delete"
+        deleteBtn.classList.add("delete-btn")
         deleteBtn.value = data.id
         deleteBtn.id = `delete-${data.id}`
 

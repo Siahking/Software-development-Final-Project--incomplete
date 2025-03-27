@@ -1,3 +1,19 @@
+#main-container{
+    margin-top: 50px;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+li{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -10px;
+}
+
 a{
     text-decoration: none;
     margin: 5px;
@@ -6,6 +22,10 @@ a{
     padding:3px 8px;
     border-radius: 15px;
     color: black;
+}
+
+.delete-btn{
+    margin-left: 20px;
 }
 
 .hidden{

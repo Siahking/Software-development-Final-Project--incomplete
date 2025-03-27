@@ -17,25 +17,25 @@ export function toogleInputTags(event){
     if (event.target.checked){
         switch(event.target.id){
             case "worker1-checkbox":
-                worker1Input.classList.remove("hidden")
+                worker1Input.classList.remove("specified-hidden")
                 break
             case "worker2-checkbox":
-                worker2Input.classList.remove("hidden")
+                worker2Input.classList.remove("specified-hidden")
                 break
             case "summary-checkbox":
-                summary.classList.remove("hidden")
+                summary.classList.remove("specified-hidden")
                 break
         }
     }else{
         switch(event.target.id){
             case "worker1-checkbox":
-                worker1Input.classList.add("hidden")
+                worker1Input.classList.add("specified-hidden")
                 break
             case "worker2-checkbox":
-                worker2Input.classList.add("hidden")
+                worker2Input.classList.add("specified-hidden")
                 break
             case "summary-checkbox":
-                summary.classList.add("hidden")
+                summary.classList.add("specified-hidden")
                 break
         }
     }

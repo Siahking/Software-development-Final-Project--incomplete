@@ -4,6 +4,33 @@
     --input-grey:#BEBEBE;
 }
 
+#table-div{
+    width: 100%;
+}
+
+#btn-div{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+table {
+    min-width: 900px !important;
+    border-collapse: collapse;
+    margin: auto;
+}
+
+th, td {
+    border-bottom: 1px solid black !important;
+    padding: 8px;
+    text-align: center !important;
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: 2px solid black ; 
+}
+
 .nav-container{
     display: flex;
     flex-direction: column;
@@ -71,4 +98,15 @@
 
 .green-btn:hover{
     background-color: green;
+}
+
+.text-number-input{
+    height: 25px;
+    max-width: 140px;
+    border:1px solid var(--input-grey);
+}
+
+.text-number-input:focus{
+    border-color: var(--teal) !important;
+    outline: none;
 }

@@ -1,3 +1,34 @@
+#table-div{
+    padding: 10px;
+}
+
 .hidden{
     display: none;
+}
+
+input{
+    margin: 0 12px 0 2px !important;
+}
+
+#add-constraint-form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#find-constraint-form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-constraint-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit-constraint-form p{
+    margin-bottom: 5px;
 }
