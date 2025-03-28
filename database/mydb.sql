@@ -74,6 +74,10 @@ SELECT * FROM workers;
 SELECT * FROM worker_locations WHERE location_id = 2;
 
 --@block
+DELETE FROM permanent_restrictions;
+ALTER TABLE permanent_restrictions AUTO_INCREMENT = 1;
+
+--@block
 DELETE FROM locations;
 ALTER TABLE locations AUTO_INCREMENT = 1;
 
@@ -160,3 +164,14 @@ INSERT INTO worker_locations (worker_id, location_id)
 SELECT w.id, 
        (SELECT id FROM locations ORDER BY RAND() LIMIT 1) 
 FROM workers w;
+
+--@block
+SELECT 
+    pr.id AS ID,
+    w.first_name AS first_name,
+    w.last_name AS last_name,
+    pr.day_of_week AS day_of_week,
+    pr.start_time AS start_time,
+    pr.end_time AS end_time
+FROM    permanent_restrictions as pr
+JOIN    workers as w ON pr.worker_id = w.id;

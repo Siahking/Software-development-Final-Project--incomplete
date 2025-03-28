@@ -831,14 +831,20 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 		return
 	}
 
+	fmt.Print("Start time is\n")
+	fmt.Print(startTime)
+	fmt.Print("Endtime is \n")
+	fmt.Print(endTime == "12:00")
+	fmt.Print("\n")
+
 	if startTime == ""{
 		startTime = "00:00:00"
-	}else if startTime == "00:00:00"{
+	}else if startTime == "00:00"{
 		startTime = "24:00:00"
 	}
 	if endTime == "" {
 		endTime = "00:00:00"
-	}else if endTime == "00:00:00"{
+	}else if endTime == "00:00"{
 		endTime = "24:00:00"
 	}
 

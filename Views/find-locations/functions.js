@@ -11,6 +11,7 @@ export function displayLocations(){
         deleteBtn.innerHTML = "Delete"
         deleteBtn.value = data.id
         deleteBtn.id = `delete-${data.id}`
+        deleteBtn.classList.add("delete-btn")
 
         deleteBtn.addEventListener("click",(event)=>
             deleteLocation(event.target.value)

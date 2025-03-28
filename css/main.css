@@ -8,7 +8,7 @@
     width: 100%;
 }
 
-#btn-div{
+.buttons-div{
     width: 100%;
     display: flex;
     justify-content: center;

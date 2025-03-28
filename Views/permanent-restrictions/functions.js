@@ -17,8 +17,10 @@ export async function displayRestrictions(){
     const results = await apiFuncs.getPermanentRestrictions()
 
     if (Object.keys(results).includes("error")){
-        emptyTableTag.classList.remove("hidden")
+        emptyTableTag.classList.remove("specified-hidden")
         return
+    }else{
+        table.classList.remove("specified-hidden")
     }
 
     for (const restriction of results){
@@ -36,10 +38,12 @@ export async function displayRestrictions(){
         deleteBtn.innerHTML = "Delete Restriction"
         deleteBtn.value = restriction.id
         deleteBtn.id = `delete-${restriction.id}`
+        deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>
             deleteRestriction(event.target.value)
         )
         deleteCell.appendChild(deleteBtn)
+        deleteCell.classList.add("delete-cell")
         
         idData.innerHTML  = restriction.id
         firstNameData.innerHTML = workerData.first_name
@@ -81,6 +85,8 @@ export async function findRestriction() {
 }
 
 export async function addRestriction(){
+    console.log(startTime.value)
+    console.log(startTime=="00:00")
     const result = await apiFuncs.createRestriction(workerId.value,dayOfWeek.value,startTime.value,endTime.value)
 
     if (Object.keys(result).includes("error")){

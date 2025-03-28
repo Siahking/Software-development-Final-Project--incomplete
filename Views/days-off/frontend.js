@@ -1,19 +1,19 @@
 const valueLabel = document.getElementById("value-label")
 
 export function toogleDivs(currentDiv,otherDiv){
-    if (currentDiv.classList.contains("hidden")){
-        currentDiv.classList.remove("hidden")
-        otherDiv.classList.add("hidden")
+    if (currentDiv.classList.contains("specified-hidden")){
+        currentDiv.classList.remove("specified-hidden")
+        otherDiv.classList.add("specified-hidden")
     }else{
-        currentDiv.classList.add("hidden")
+        currentDiv.classList.add("specified-hidden")
     }
 }
 
 export function toogleCheckboxes(event){
     if (event.target.checked){
-        valueLabel.classList.remove("hidden")
+        valueLabel.classList.remove("specified-hidden")
     }else{
-        valueLabel.classList.add("hidden")
+        valueLabel.classList.add("specified-hidden")
     }
 
 }

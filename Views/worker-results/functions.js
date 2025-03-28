@@ -1,5 +1,5 @@
 import * as apiFuncs from '../backend.js'
-import { deleteWorker } from "../../views/workers/workers-functions.js"
+import { deleteWorker } from "../../views/workers/functions.js"
 
 export async function showWorkers (){
 
@@ -44,6 +44,7 @@ export async function showWorkers (){
         const deleteBtn = document.createElement("button")
         deleteBtn.innerHTML = "Delete"
         deleteBtn.value = worker.id
+        deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>deleteWorker(event))
 
         deleteCell.appendChild(deleteBtn)

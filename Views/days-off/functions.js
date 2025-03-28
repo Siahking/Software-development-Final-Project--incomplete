@@ -13,6 +13,8 @@ export async function displayDaysOff(){
     if (Object.keys(results).includes("error")){
         emptyTableTag.classList.remove("hidden")
         return
+    }else{
+        table.classList.remove("specified-hidden")
     }
 
     for (const result of results){
@@ -35,6 +37,7 @@ export async function displayDaysOff(){
         deleteBtn.id = `delete_${result.break_id}`
         deleteBtn.value = result.break_id
         deleteBtn.innerHTML = "Remove Days Off"
+        deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>{
             const confirmation = confirm(`Are you sure you want ot delete these days off for ${workerData.first_name} ${workerData.last_name}`)
             if (confirmation){
