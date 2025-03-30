@@ -8,19 +8,30 @@ export async function generateCalender(month,year){
     for (const location of locations){
         const WORKERS = []
         const results = await apiFuncs.workerLocationSearch("location_id",location.id)
+        const headerContainer = document.createElement("div")
+        const locationName = document.createElement("h2")
+        const errorTag = document.createElement("p")
+        locationName.innerText = location.location
+        headerContainer.appendChild(locationName)
+        headerContainer.classList.add("header")
+        if (Object.keys(results).includes("error")){
+            errorTag.innerText = "No workers found for this Location"
+            headerContainer.appendChild(errorTag)
+            container.appendChild(headerContainer)
+            continue
+        }
+        
         for (const result of results){
             const worker = await apiFuncs.findWorker("","","","",result.id)
             WORKERS.push(worker[0])
         }
 
         const calendarContainer = document.createElement("div")
-        const header = document.createElement("h1")
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const date = new Date(year, month - 1, 1);
         const firstDayOfWeek = date.getDay();
         const daysInMonth = new Date(year, month, 0).getDate();
 
-        header.innerText = location.location
         calendarContainer.setAttribute("id",`${location.location}-roster`)
         calendarContainer.classList.add("calendar-container")
 
@@ -59,7 +70,13 @@ export async function generateCalender(month,year){
             const nightShiftBlock = document.createElement("div");
             nightShiftBlock.className = "shift-block shift-3";
 
-            funcs.assignWorkers(day,WORKERS,morningShiftBlock,eveningShiftBlock,nightShiftBlock)
+            const results = funcs.assignWorkers(day,WORKERS,morningShiftBlock,eveningShiftBlock,nightShiftBlock)
+            if (Object.keys(results).includes("error")){
+                errorTag.innerText = results.error
+                headerContainer.appendChild(errorTag)
+                container.appendChild(headerContainer)
+                return
+            }
 
             // Append elements inside the day cell
             dayCell.appendChild(dayNumber);
@@ -69,7 +86,7 @@ export async function generateCalender(month,year){
 
             calendarContainer.appendChild(dayCell);
 
-            container.appendChild(header)
+            container.appendChild(headerContainer)
             container.appendChild(calendarContainer)
         }
     }

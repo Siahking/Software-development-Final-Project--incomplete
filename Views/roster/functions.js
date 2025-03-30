@@ -1,9 +1,13 @@
 export function assignWorkers(dayNumber,WORKERS,dayBlock,afternoonBlock,nightBlock,location){
-    const [shift1,shift2] = rosterWorkers(WORKERS)
-    console.log(shift2)
+    let shift1,shift2
+    const results = rosterWorkers(WORKERS)
+    if (Object.keys(results).includes("error")){
+        return results
+    }
+    [shift1,shift2] = results.success
 
-    const constainer = document.createElement("div")
-    constainer.setAttribute("id",`${location}-workers-div`)
+    const container = document.createElement("div")
+    container.setAttribute("id",`${location}-workers-div`)
 
     let dayWorker1 = document.createElement("p")
     let dayWorker2 = document.createElement("p")
@@ -42,7 +46,7 @@ export function assignWorkers(dayNumber,WORKERS,dayBlock,afternoonBlock,nightBlo
         nightBlock.appendChild(tag)
     }
 
-    
+    return {"success":""}
 }
 
 export function rosterWorkers(workers){
@@ -53,6 +57,20 @@ export function rosterWorkers(workers){
     const sixToSixNightArray = retrieveWorkers(workers,"6pm-6am")
     const tenToSixArray = retrieveWorkers(workers,"10pm-6am")
     let shiftOne,shiftTwo
+
+    const checkArray = [
+        checkShifts("6am-6pm",sixToSixDayArray),
+        checkShifts("6pm-6am",sixToSixNightArray),
+        checkShifts("6am-2pm",sixToTwoArray),
+        checkShifts("2pm-10pm",twoToTenArray),
+        checkShifts("10pm-6am",tenToSixArray)
+    ]
+
+    for (const check of checkArray){
+        if(Object.keys(check).includes("error")){
+            return check
+        }
+    }
 
     const shiftOneShift = shifts[Math.floor(Math.random() * shifts.length)]
     const shiftTwoShift = shifts[Math.floor(Math.random() * shifts.length)]
@@ -86,9 +104,6 @@ export function rosterWorkers(workers){
         }
 
     }
-
-    console.log(sixToSixDayArray)
-    console.log(sixToTwoArray)
  
     if (shiftTwoShift== "8hr"){
         const dayWorker = sixToTwoArray.pop()
@@ -111,7 +126,7 @@ export function rosterWorkers(workers){
             "nightWorker":nightWorker
         }
     }
-    return [shiftOne,shiftTwo]
+    return {"success":[shiftOne,shiftTwo]}
 }
 
 function retrieveWorkers(workers,hours){
@@ -159,4 +174,12 @@ function setWorkerToUnavailable(workerId,arrayOfArrays){
             }
         }
     }
+}
+
+function checkShifts(strShift,shift){
+    if (shift.length < 3){
+        console.log("passed here")
+        return {"error":`Insufficient workers for ${strShift}`}
+    }
+    return {"success":""}
 }

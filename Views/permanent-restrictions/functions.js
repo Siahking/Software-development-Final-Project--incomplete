@@ -85,8 +85,12 @@ export async function findRestriction() {
 }
 
 export async function addRestriction(){
-    console.log(startTime.value)
-    console.log(startTime=="00:00")
+    // const worker = await apiFuncs.findWorker("","","","",workerId.value)
+    // const check = ampleShiftCheck(worker[0])
+    // if (check !== "Sufficient Workers"){
+    //     errorTag.innerHTML = check
+    //     return check
+    // }
     const result = await apiFuncs.createRestriction(workerId.value,dayOfWeek.value,startTime.value,endTime.value)
 
     if (Object.keys(result).includes("error")){
@@ -108,4 +112,101 @@ async function deleteRestriction(id){
 
     sessionStorage.setItem("Message",result.message)
     window.location.href = "/"
+}
+
+async function ampleShiftCheck(workerObj){
+    const getLocations = await apiFuncs.workerLocationSearch("worker_id",workerObj.id)
+    console.log(getLocations)
+    const workerLocations = []
+    for (const object of getLocations){
+        const location = await apiFuncs.findLocation("id",object.location_id)
+        workerLocations.push(location[0].id)
+    }
+    for (const location of workerLocations){
+        const shiftWorkers = {
+            "24hrs":0
+        }
+        for (const shift of workerObj.hours){
+            shiftWorkers[shift] = 0
+        }
+        const results = await apiFuncs.workerLocationSearch("location_id",location)
+
+        for (const result of results){
+            const worker = await apiFuncs.findWorker("","","","",result.worker_id)
+            const shifts = worker[0].hours
+            
+            for (const shift of shifts){
+                if(shiftWorkers[shift]){
+                    shiftWorkers[shift]++
+                }else if (shift=== "24hrs"){
+                    shiftWorkers["24hrs"]++
+                }
+            }
+        }
+
+        for (const shift in shiftWorkers){
+            const errorMsg = `Insufficient workers for shift ${shift},has ${shiftWorkers[shift]}worker(s)`
+            //check if shift workers is less than 3 and 24hr shifts are less than 3
+            if (shiftWorkers[shift] < 3 && shiftWorkers["24hrs"] < 1){
+                return errorMsg
+            }else if (shiftWorkers[shift] < 3){
+                console.log(shiftWorkers[shift])
+                //minuses from 24hr shifts considering 24hr shift workers are flexible
+                const neededWorkers = 3 - shiftWorkers[shift] 
+                if (shiftWorkers["24hrs"] < neededWorkers){
+                    return errorMsg
+                }
+                shiftWorkers["24hrs"] -= neededWorkers
+            }
+        }
+        return "Sufficient Workers"
+    }
+    
+
+}
+
+export async function ampleWorkerCheck(workerObj){
+    const getLocations = await apiFuncs.workerLocationSearch("worker_id",workerObj.id)
+    const workerLocations = []
+    for (const object of getLocations){
+        const location = await apiFuncs.findLocation("id",object.location_id)
+        workerLocations.push(location[0].id)
+    }
+    for (const location of workerLocations){
+        const shiftWorkers = {
+            "6am-2pm":0,
+            "2pm-10pm":0,
+            "10pm-6am":0,
+            "6am-6pm":0,
+            "6pm-6am":0,
+            "24hrs":0
+        }
+        const results = await apiFuncs.workerLocationSearch("location_id",location)
+
+        for (const result of results){
+            const worker = await apiFuncs.findWorker("","","","",result.worker_id)
+            const shifts = worker[0].hours
+            console.log(shifts)
+
+            for (const shift of shifts){
+                shiftWorkers[shift] ++
+            }
+        }
+
+        for (const shift in shiftWorkers){
+            const errorMsg = `Insufficient workers for shift ${shift},has ${shiftWorkers[shift]}worker(s)`
+            //check if shift workers is less than 3 and 24hr shifts are less than 3
+            if (shiftWorkers[shift] < 3 && shiftWorkers["24hrs"] < 1){
+                return errorMsg
+            }else if (shiftWorkers[shift] < 3){
+                //minuses from 24hr shifts considering 24hr shift workers are flexible
+                const neededWorkers = 3 - shiftWorkers[shift] 
+                if (shiftWorkers["24hrs"] < neededWorkers){
+                    return errorMsg
+                }
+                shiftWorkers["24hrs"] -= neededWorkers
+            }
+        }
+        return "Sufficient Workers"
+    }
 }
