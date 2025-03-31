@@ -1,6 +1,8 @@
-export function assignWorkers(dayNumber,WORKERS,dayBlock,afternoonBlock,nightBlock,location){
+import * as apiFuncs from "../backend.js"
+
+export function assignWorkers(paramObject){
     let shift1,shift2
-    const results = rosterWorkers(WORKERS)
+    const results = rosterWorkers(paramObject.dayNumber,paramObject.month,paramObject.year,paramObject.WORKERS,paramObject.daysOff)
     if (Object.keys(results).includes("error")){
         return results
     }
@@ -14,7 +16,7 @@ export function assignWorkers(dayNumber,WORKERS,dayBlock,afternoonBlock,nightBlo
     let afternoonWorker1 = document.createElement("p")
     let afternoonWorker2 = document.createElement("p")
     let nightWorker1 = document.createElement("p")
-    let nightWorker2 =document.createElement("p")
+    let nightWorker2 = document.createElement("p")
     
     dayWorker1 = setDayNightWorker(dayWorker1,"dayWorker",shift1,"day")
     dayWorker2 = setDayNightWorker(dayWorker2,"dayWorker",shift2,"day")
@@ -27,35 +29,35 @@ export function assignWorkers(dayNumber,WORKERS,dayBlock,afternoonBlock,nightBlo
     nightWorker1 = setDayNightWorker(nightWorker1,"nightWorker",shift1,"night")
     nightWorker2 = setDayNightWorker(nightWorker2,"nightWorker",shift2,"night")
 
-    dayWorker1.setAttribute("id",`${dayNumber}-dayworker1`)
-    dayWorker2.setAttribute("id",`${dayNumber}-dayworker2`)
-    afternoonWorker1.setAttribute("id",`${dayNumber}-afternoonworker1`)
-    afternoonWorker2.setAttribute("id",`${dayNumber}-afternoonworker2`)
-    nightWorker1.setAttribute("id",`${dayNumber}-nightworker1`)
-    nightWorker2.setAttribute("id",`${dayNumber}-nightworker2`)
+    dayWorker1.setAttribute("id",`${paramObject.dayNumber}-dayworker1`)
+    dayWorker2.setAttribute("id",`${paramObject.dayNumber}-dayworker2`)
+    afternoonWorker1.setAttribute("id",`${paramObject.dayNumber}-afternoonworker1`)
+    afternoonWorker2.setAttribute("id",`${paramObject.dayNumber}-afternoonworker2`)
+    nightWorker1.setAttribute("id",`${paramObject.dayNumber}-nightworker1`)
+    nightWorker2.setAttribute("id",`${paramObject.dayNumber}-nightworker2`)
 
     for (const tag of [dayWorker1,dayWorker2]){
-        dayBlock.appendChild(tag)
+        paramObject.dayBlock.appendChild(tag)
     }
 
     for (const tag of [afternoonWorker1,afternoonWorker2]){
-        afternoonBlock.appendChild(tag)
+        paramObject.afternoonBlock.appendChild(tag)
     }
 
     for (const tag of [nightWorker1,nightWorker2]){
-        nightBlock.appendChild(tag)
+        paramObject.nightBlock.appendChild(tag)
     }
 
     return {"success":""}
 }
 
-export function rosterWorkers(workers){
+export function rosterWorkers(day,month,year,workers,daysOff){
     const shifts = ["8hr","12hr"] //randomly selects a shift for the workers
-    const sixToSixDayArray = retrieveWorkers(workers,"6am-6pm")
-    const sixToTwoArray = retrieveWorkers(workers,"6am-2pm")
-    const twoToTenArray = retrieveWorkers(workers,"2pm-10pm")
-    const sixToSixNightArray = retrieveWorkers(workers,"6pm-6am")
-    const tenToSixArray = retrieveWorkers(workers,"10pm-6am")
+    const sixToSixDayArray = retrieveWorkers(day,month,year,workers,daysOff,"6am-6pm")
+    const sixToTwoArray = retrieveWorkers(day,month,year,workers,daysOff,"6am-2pm")
+    const twoToTenArray = retrieveWorkers(day,month,year,workers,daysOff,"2pm-10pm")
+    const sixToSixNightArray = retrieveWorkers(day,month,year,workers,daysOff,"6pm-6am")
+    const tenToSixArray = retrieveWorkers(day,month,year,workers,daysOff,"10pm-6am")
     let shiftOne,shiftTwo
 
     const checkArray = [
@@ -129,9 +131,23 @@ export function rosterWorkers(workers){
     return {"success":[shiftOne,shiftTwo]}
 }
 
-function retrieveWorkers(workers,hours){
+function retrieveWorkers(day,month,year,workers,daysOff,hours){
     let array = []
+    const excludedWorkers = {}
+    for (const result of daysOff){
+        const [startYear,startMonth,startDay] = result.start_date.split("-")
+        const [endYear,endMonth,endDay] = result.end_date.split("-")
+        if (startMonth == (month+1) && startYear == year){
+            if(
+                day >= parseInt(startDay) && day <= parseInt(endDay) &&
+                month <= parseInt(endMonth) && year <= parseInt(endYear)
+            ) {
+                excludedWorkers[result.worker_id] = true
+            }
+        }
+    }
     for (const worker of workers){
+        if (excludedWorkers[`${worker.id}`])continue
         if (worker.hours.includes(hours) || worker.hours.includes("24hrs")){
             array.push(worker)
         }
@@ -178,8 +194,11 @@ function setWorkerToUnavailable(workerId,arrayOfArrays){
 
 function checkShifts(strShift,shift){
     if (shift.length < 3){
-        console.log("passed here")
         return {"error":`Insufficient workers for ${strShift}`}
     }
     return {"success":""}
 }
+
+// function getDayName(date){
+
+// }

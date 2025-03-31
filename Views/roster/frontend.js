@@ -2,6 +2,10 @@ import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
 
 export async function generateCalender(month,year){
+    let daysOff = await apiFuncs.getDaysOff()
+    if (Object.keys(daysOff).includes("error")){
+        daysOff = []
+    }
     const locations = JSON.parse(localStorage.getItem("Locations"))
     const container = document.getElementById("container")
 
@@ -70,7 +74,18 @@ export async function generateCalender(month,year){
             const nightShiftBlock = document.createElement("div");
             nightShiftBlock.className = "shift-block shift-3";
 
-            const results = funcs.assignWorkers(day,WORKERS,morningShiftBlock,eveningShiftBlock,nightShiftBlock)
+            const assignWorkerParams = {
+                dayNumber:day,
+                month:month,
+                year:year,
+                WORKERS:WORKERS,
+                dayBlock:morningShiftBlock,
+                afternoonBlock:eveningShiftBlock,
+                nightBlock:nightShiftBlock,
+                daysOff:daysOff
+            }
+
+            const results = funcs.assignWorkers(assignWorkerParams)
             if (Object.keys(results).includes("error")){
                 errorTag.innerText = results.error
                 headerContainer.appendChild(errorTag)

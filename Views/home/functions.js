@@ -62,7 +62,7 @@ export function saveDateAndLocations(){
     }
 
     const dateObject = {
-        month:selectedDate.getMonth(),
+        month:selectedDate.getMonth() + 1,
         year:selectedDate.getFullYear()
     }
 
