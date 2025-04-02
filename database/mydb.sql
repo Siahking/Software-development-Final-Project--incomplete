@@ -74,6 +74,9 @@ SELECT * FROM workers;
 SELECT * FROM worker_locations WHERE location_id = 2;
 
 --@block
+SELECT * FROM permanent_restrictions;
+
+--@block
 DELETE FROM permanent_restrictions;
 ALTER TABLE permanent_restrictions AUTO_INCREMENT = 1;
 

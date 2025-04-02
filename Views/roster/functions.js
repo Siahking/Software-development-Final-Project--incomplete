@@ -2,7 +2,10 @@ import * as apiFuncs from "../backend.js"
 
 export function assignWorkers(paramObject){
     let shift1,shift2
-    const results = rosterWorkers(paramObject.dayNumber,paramObject.month,paramObject.year,paramObject.WORKERS,paramObject.daysOff)
+    const results = rosterWorkers(
+        paramObject.dayNumber,paramObject.month,paramObject.year,paramObject.WORKERS,
+        paramObject.daysOff,paramObject.restrictions
+    )
     if (Object.keys(results).includes("error")){
         return results
     }
@@ -51,13 +54,13 @@ export function assignWorkers(paramObject){
     return {"success":""}
 }
 
-export function rosterWorkers(day,month,year,workers,daysOff){
+export function rosterWorkers(day,month,year,workers,daysOff,restrictions){
     const shifts = ["8hr","12hr"] //randomly selects a shift for the workers
-    const sixToSixDayArray = retrieveWorkers(day,month,year,workers,daysOff,"6am-6pm")
-    const sixToTwoArray = retrieveWorkers(day,month,year,workers,daysOff,"6am-2pm")
-    const twoToTenArray = retrieveWorkers(day,month,year,workers,daysOff,"2pm-10pm")
-    const sixToSixNightArray = retrieveWorkers(day,month,year,workers,daysOff,"6pm-6am")
-    const tenToSixArray = retrieveWorkers(day,month,year,workers,daysOff,"10pm-6am")
+    const sixToSixDayArray = retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-6pm")
+    const sixToTwoArray = retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-2pm")
+    const twoToTenArray = retrieveWorkers(day,month,year,workers,daysOff,restrictions,"2pm-10pm")
+    const sixToSixNightArray = retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6pm-6am")
+    const tenToSixArray = retrieveWorkers(day,month,year,workers,daysOff,restrictions,"10pm-6am")
     let shiftOne,shiftTwo
 
     const checkArray = [
@@ -131,9 +134,11 @@ export function rosterWorkers(day,month,year,workers,daysOff){
     return {"success":[shiftOne,shiftTwo]}
 }
 
-function retrieveWorkers(day,month,year,workers,daysOff,hours){
+function retrieveWorkers(day,month,year,workers,daysOff,restrictions,hours){
     let array = []
     const excludedWorkers = {}
+    //add workers to be excluded for this day to the excluded array
+    //first cehcking for days off
     for (const result of daysOff){
         const [startYear,startMonth,startDay] = result.start_date.split("-")
         const [endYear,endMonth,endDay] = result.end_date.split("-")
@@ -146,8 +151,13 @@ function retrieveWorkers(day,month,year,workers,daysOff,hours){
             }
         }
     }
+    const stringDay = getDayName(`${year}-${month}-${day}`)
+
     for (const worker of workers){
-        if (excludedWorkers[`${worker.id}`])continue
+        if (
+            excludedWorkers[`${worker.id}`] ||
+            !restrictionCheck(stringDay,worker,hours,restrictions)
+        )continue
         if (worker.hours.includes(hours) || worker.hours.includes("24hrs")){
             array.push(worker)
         }
@@ -199,6 +209,77 @@ function checkShifts(strShift,shift){
     return {"success":""}
 }
 
-// function getDayName(date){
+function getDayName(dateString){
+    const date = new Date(dateString);
+    const options = { weekday: 'long' };
+    return date.toLocaleDateString('en-US',options);
+}
 
-// }
+function restrictionCheck(day,worker,hours,restrictions){
+    let startTime,endTime,shiftStart,shiftEnd
+    if (restrictions[worker.id]){
+        const workerRestrictions = restrictions[worker.id]
+        for (const restriction of workerRestrictions){
+            if (restriction.day_of_week === day){
+                const strStartTime = restriction.start_time.split(":")[0]
+                const strEndTime = restriction.end_time.split(":")[0]
+                startTime = parseInt(strStartTime) == 24 ? 1 : parseInt(strStartTime)
+                endTime =  parseInt(strEndTime) == 24 ? 1 : parseInt(strEndTime)
+
+                switch (hours){
+                    case "6am-6pm":
+                        shiftStart = 6;
+                        shiftEnd = 18;
+                        break
+                    case "6am-2pm":
+                        shiftStart = 6;
+                        shiftEnd = 14;
+                        break
+                    case "2pm-10pm":
+                        shiftStart = 14;
+                        shiftEnd = 22;
+                        break
+                    case "6pm-6am":
+                        shiftStart = 18;
+                        shiftEnd = 6;
+                        break
+                    case "10pm-6am":
+                        shiftStart = 22;
+                        shiftEnd = 6;
+                        break
+                }
+
+                if (
+                    startTime === 0 && endTime === 0 ||
+                    startTime === 0 && endTime < endTime ||
+                    endTime === 0 && startTime < endTime ||
+                    startTime > shiftStart && startTime < shiftEnd ||
+                    endTime > shiftStart && endTime < shiftEnd ||
+                    startTime < shiftStart && endTime > shiftEnd
+                ){
+                    return false
+                }
+            }
+        }
+    }
+    
+    return true
+}
+
+function dayOffCheck(daysOff){
+    //add workers to be excluded for this day to the object
+    const obj = {}
+    for (const result of daysOff){
+        const [startYear,startMonth,startDay] = result.start_date.split("-")
+        const [endYear,endMonth,endDay] = result.end_date.split("-")
+        if (startMonth == (month+1) && startYear == year){
+            if(
+                day >= parseInt(startDay) && day <= parseInt(endDay) &&
+                month <= parseInt(endMonth) && year <= parseInt(endYear)
+            ) {
+                obj[result.worker_id] = true
+            }
+        }
+    }
+    return obj
+}

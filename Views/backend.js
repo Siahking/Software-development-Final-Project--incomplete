@@ -498,8 +498,9 @@ export async function deletePermanentRestrictions(id){
 }
 
 // async function tester() {
-//     const result = await workerLocationSearch("worker_id",1)
-//     console.log(result)
+//     const result = await getPermanentRestrictions()
+//     const newResult = result[0].start_time.split(":")
+//     console.log(parseInt(newResult[0])>1)
 // }
 
 // tester()

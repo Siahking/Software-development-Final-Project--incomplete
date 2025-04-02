@@ -2,10 +2,29 @@ import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
 
 export async function generateCalender(month,year){
+    let restrictions = {}
     let daysOff = await apiFuncs.getDaysOff()
+    const restrictionsArray = await apiFuncs.getPermanentRestrictions()
     if (Object.keys(daysOff).includes("error")){
         daysOff = []
     }
+    if (!Object.keys(restrictionsArray).includes("error")){  
+        for (const restriction of restrictionsArray){
+            const key = restriction.worker_id
+            const restrictionObject = {
+                id:restriction.id,
+                day_of_week:restriction.day_of_week,
+                start_time:restriction.start_time,
+                end_time:restriction.end_time
+            }
+            if (restrictions[key]){
+                restrictions[key].push(restrictionObject)
+            }else{
+                restrictions[key] = [restrictionObject]
+            }
+        }
+    }
+    
     const locations = JSON.parse(localStorage.getItem("Locations"))
     const container = document.getElementById("container")
 
@@ -82,7 +101,8 @@ export async function generateCalender(month,year){
                 dayBlock:morningShiftBlock,
                 afternoonBlock:eveningShiftBlock,
                 nightBlock:nightShiftBlock,
-                daysOff:daysOff
+                daysOff:daysOff,
+                restrictions:restrictions
             }
 
             const results = funcs.assignWorkers(assignWorkerParams)
