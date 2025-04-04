@@ -209,6 +209,11 @@ export async function createConstraint(worker1IdStr,worker2IdStr,note=""){
     }catch{
         return "Please Insert Valid Values" 
     }
+
+    const checkResults = await getConstraints("",worker2_id,worker1_id)
+    if (!Object.keys(checkResults).includes("error")){
+        return {"error":"Constraint already exists"}
+    }
     
     try {
         const response = await fetch(`${BASEURL}create-constraint`,{

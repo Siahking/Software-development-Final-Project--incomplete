@@ -2,12 +2,42 @@ import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
 
 export async function generateCalender(month,year){
+    let constraints = {
+        "worker1Constraints":{},
+        "worker2Constraints":{}
+    }
     let restrictions = {}
     let daysOff = await apiFuncs.getDaysOff()
+    const constraintsArray = await apiFuncs.getConstraints()
     const restrictionsArray = await apiFuncs.getPermanentRestrictions()
     if (Object.keys(daysOff).includes("error")){
         daysOff = []
     }
+    if (!Object.keys(constraintsArray).includes("error")){
+        for (const constraint of constraintsArray){
+            const worker1Key = constraint.worker1_id
+            const worker2Key = constraint.worker2_id
+            const generalData = {
+                id:constraint.id,
+                note:constraint.note
+            }
+            const worker1Data = {...generalData,...{worker2_id:constraint.worker2_id}}
+            const worker2Data = {...generalData,...{worker1_id:constraint.worker1_id}}
+            if (constraints.worker1Constraints[worker1Key]){
+                constraints.worker1Constraints[worker1Key].push(worker1Data)         
+            }else{
+                constraints.worker1Constraints[worker1Key] = [worker1Data]
+            }
+            
+            if (constraints.worker2Constraints[worker2Key]){
+                constraints.worker2Constraints[worker2Key].push(worker2Data)
+            }else{
+                constraints.worker2Constraints[worker2Key] = [worker2Data]
+            }
+            
+        }
+    }
+    console.log(constraints)
     if (!Object.keys(restrictionsArray).includes("error")){  
         for (const restriction of restrictionsArray){
             const key = restriction.worker_id
@@ -102,7 +132,8 @@ export async function generateCalender(month,year){
                 afternoonBlock:eveningShiftBlock,
                 nightBlock:nightShiftBlock,
                 daysOff:daysOff,
-                restrictions:restrictions
+                restrictions:restrictions,
+                constraints:constraints
             }
 
             const results = funcs.assignWorkers(assignWorkerParams)
