@@ -15,7 +15,7 @@ td{
     margin: 0;
 }
 
-#add-days-off-div,#find-days-off-form{
+.container{
     display: flex;
     justify-content: center;
 }

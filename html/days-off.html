@@ -55,7 +55,7 @@
         <button id="find-days-off" class="grey-btn">Find Days Off</button>
     </div>
 
-    <div id="add-days-off-div" class="specified-hidden">
+    <div id="add-days-off-div" class="specified-hidden container">
         <form id="add-days-off-form">
             <label for="worker-id">Worker ID</label>
             <input type="number" id="worker-id" placeholder="Type here" class="text-number-input" required>
@@ -105,7 +105,7 @@
     <button id="find-restriction-btn" class="grey-btn">Find restriction</button>
     </div>
 
-    <div id="add-restriction-div" class="specified-hidden">
+    <div id="add-restriction-div" class="specified-hidden container">
         <form id="add-restriction-form">
             <label for="worker-id-input">Worker ID</label>
             <input type="number" id="worker-id-input" placeholder="Type here" class="text-number-input" required>
@@ -119,14 +119,20 @@
         </form>
     </div>
 
-    <div id="find-restriction-div" class="specified-hidden">
+    <div id="find-restriction-div" class="specified-hidden container">
         <form id="find-restriction-form">
-            <label for="restriction-worker-id">Worker ID</label>
-            <input type="radio" id="restriction-worker-id" name="column-input">
-            <label for="restriction-id">ID</label>
-            <input type="radio" id="restriction-id" name="column-input">
-            <label for="id-value-input">ID Value</label>
-            <input type="text" id="id-value-input" placeholder="Type here">
+            <label for="restriction-worker-id">
+                Worker ID
+                <input type="radio" id="restriction-worker-id" name="column-input">
+            </label>
+            <label for="restriction-id">
+                ID
+                <input type="radio" id="restriction-id" name="column-input">
+            </label>
+            <label for="id-value-input">
+                ID Value
+                <input type="text" id="id-value-input" placeholder="Type here">
+            </label>
             <button class="green-btn">Search</button>
         </form>
     </div>
