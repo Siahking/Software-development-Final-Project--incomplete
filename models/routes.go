@@ -162,4 +162,9 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.DELETE("/delete-restriction/:id",func(c *gin.Context) {
 		DeleteRestriction(c,db)
 	})
+
+	//search routes
+	router.GET("/retrieve-workers-locations/:column/:id",func(c *gin.Context) {
+		RetrieveWorkersOrLocation(c,db)
+	})
 }

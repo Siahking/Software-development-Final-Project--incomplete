@@ -502,10 +502,19 @@ export async function deletePermanentRestrictions(id){
     }
 }
 
+export async function retrieveWorkerOrLocations(column,id){
+    const url = `${BASEURL}retrieve-workers-locations/${column}/${id}`
+
+    const results = await fetch(url,{
+        method:"GET"
+    })
+    const data = await results.json()
+    return data
+}
+
 // async function tester() {
-//     const result = await getPermanentRestrictions()
-//     const newResult = result[0].start_time.split(":")
-//     console.log(parseInt(newResult[0])>1)
+//     const result = await retrieveWorkerOrLocations("worker_id","cat")
+//     console.log(result)
 // }
 
 // tester()

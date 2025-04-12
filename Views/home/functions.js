@@ -52,7 +52,7 @@ export function saveDateAndLocations(){
     currentDate.setDate(1)
 
     if (selectedDate <= currentDate) {
-        errorTag.innerHTML = "Please select a future month."
+        errorTag.innerHTML = "Please select a subsequent month."
         return;
     }
 

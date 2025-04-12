@@ -1,4 +1,5 @@
 import * as apiFuncs from "../backend.js"
+import * as helperFuncs from "./helper-functions.js"
 
 const table = document.getElementById("table")
 const errorTag = document.getElementById("error-tag")
@@ -7,11 +8,24 @@ const workerIdCheckbox = document.getElementById("workerid-radio")
 const breakIdCheckbox = document.getElementById("breakid-radio")
 const valueInput = document.getElementById("value")
 
+const workers = await apiFuncs.getWorkers()
+const SHIFTOBJECT = {}
+
+for (const worker of workers){
+    for (const hour of worker.hours){
+        if (SHIFTOBJECT[hour]){
+            SHIFTOBJECT[hour]++
+        }else{
+            SHIFTOBJECT[hour] = 1
+        }
+    }
+}
+
 export async function displayDaysOff(){
     const results = await apiFuncs.getDaysOff()
 
     if (Object.keys(results).includes("error")){
-        emptyTableTag.classList.remove("hidden")
+        emptyTableTag.classList.remove("specified-hidden")
         return
     }else{
         table.classList.remove("specified-hidden")
@@ -61,11 +75,21 @@ export async function newDaysOff(event){
     
     event.preventDefault()
 
-    const workerId = document.getElementById("worker-id")
-    const startDate = document.getElementById("start-date")
-    const endDate = document.getElementById("end-date")
+    const workerId = document.getElementById("worker-id").value
+    const startDate = document.getElementById("start-date").value
+    const endDate = document.getElementById("end-date").value
+    const workerDetails = await apiFuncs.findWorker("","","","",workerId)
+    const workerLocations = await apiFuncs.workerLocationSearch("worker_id",workerId)
 
-    const result = await apiFuncs.addDaysOff(workerId.value,startDate.value,endDate.value)
+    for(const result of workerLocations){
+        const checkResults = await helperFuncs.validateCoverage(result.location_id,startDate,endDate,workerDetails[0])
+        if (!checkResults){
+            errorTag.innerText = "Insufficient workers, cannot request day off"
+            return
+        }
+    }
+
+    const result = await apiFuncs.addDaysOff(workerId,startDate,endDate)
 
     if (Object.keys(result).includes("error")){
         errorTag.innerHTML = result.error
@@ -111,4 +135,24 @@ export async function findDaysOff(event){
 
     localStorage.setItem("DaysOff",JSON.stringify(result))
     window.location.href = "/find-days-off"
+}
+
+function specificiedCheck(worker,workers){
+    const array = []
+    for (const hour of worker.hours){
+        for (const worker of workers){
+            const tempArray = []
+            if (worker.hours.includes(hour)){
+                tempArray.push(worker)
+            }
+            array.push(tempArray)
+        }
+    }
+
+    for (const innerArray of array){
+        if (innerArray.length < 3){
+            return false
+        }
+    }
+    return true
 }
