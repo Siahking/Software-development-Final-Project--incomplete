@@ -37,7 +37,6 @@ export async function generateCalender(month,year){
             
         }
     }
-    console.log(constraints)
     if (!Object.keys(restrictionsArray).includes("error")){  
         for (const restriction of restrictionsArray){
             const key = restriction.worker_id

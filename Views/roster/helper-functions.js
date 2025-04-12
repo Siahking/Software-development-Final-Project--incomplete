@@ -62,9 +62,6 @@ export function setWorkerToUnavailable(workerId,arrayOfArrays,constraints){
             }
         }
     }
-    if (workersToExclude.length > 0){
-        console.log(workersToExclude)
-    }
 }
 
 export function checkShifts(strShift,shift){
