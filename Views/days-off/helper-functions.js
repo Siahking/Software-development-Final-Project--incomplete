@@ -59,20 +59,14 @@ export async function validateCoverage(locationId, startDate, endDate, targetWor
             }
             
             for (const count of Object.values(shiftObject)){
-                if (count < 3) {
-                    console.log("insufficient workers for count " + count)
-                    return false
-                }
+                if (count < 3) return false
             }
         }else if (targetWorker.availability === "Specified"){
             return specifiedCheck(targetWorker, availableWorkers)
         }else{
             shiftWorkers = availableWorkers.filter(worker => worker.availability === targetWorker.availability)
             console.log(targetWorker)
-            if (shiftWorkers.length < 3){
-                console.log("insufficient workers for shift length " + shiftWorkers.length)
-                return false
-            }
+            if (shiftWorkers.length < 3)return false
         }
 
         dateCursor.setDate(dateCursor.getDate()+1)
@@ -98,9 +92,9 @@ export function specifiedCheck(targetWorker, availableWorkers) {
     // Check if all target shifts are covered by at least 3 workers
     for (const hour of targetWorker.hours) {
         if (!shiftCount[hour] || shiftCount[hour] < 3) {
-            return [false,"Insuffiecient workers for shift, cannot set day off within function"]
+            return false
         }
     }
 
-    return [true,""]
+    return true
 }

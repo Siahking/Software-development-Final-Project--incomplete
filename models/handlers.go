@@ -847,7 +847,7 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				c.JSON(http.StatusConflict, gin.H{"error": "This restriction for this worker already exists"})
+				c.JSON(http.StatusConflict, gin.H{"error": "The restriction for this worker already exists or this worker already has a restriction for this day"})
 				return
 			}else if mysqlErr.Number == 1452 {
 				c.JSON(http.StatusBadRequest,gin.H{"error":"This worker does not exist"})
