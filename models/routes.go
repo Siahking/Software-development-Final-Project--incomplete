@@ -163,6 +163,20 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 		DeleteRestriction(c,db)
 	})
 
+	//occupancy routes
+	router.POST("/create-occupancy",func(c *gin.Context) {
+		CreateNewOccupancy(c,db)
+	})
+	router.GET("/retrieve-occupancies/:column/:value",func(c *gin.Context) {
+		RetrieveOccupancies(c,db)
+	})
+	router.GET("/retrieve-occupancies",func(c *gin.Context) {
+		RetrieveOccupancies(c,db)
+	})
+	router.DELETE("/delete-occupancy/:id",func(c *gin.Context) {
+		RemoveOccupancy(c,db)
+	})
+
 	//search routes
 	router.GET("/retrieve-workers-locations/:column/:id",func(c *gin.Context) {
 		RetrieveWorkersOrLocation(c,db)

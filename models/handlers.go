@@ -53,11 +53,18 @@ type DaysOff struct {
 }
 
 type PermanentRestriction struct {
-	ID        int     `json:"id"`
-	WorkerId  int     `json:"worker_id"`
+	ID        int    `json:"id"`
+	WorkerId  int    `json:"worker_id"`
 	DayOfWeek string `json:"day_of_week"`
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
+}
+
+type Occupancy struct {
+	ID        int    `json:"id"`
+	WorkerId  int    `json:"worker_id"`
+	EventDate string `json:"event_date"`
+	Note      string `json:"note"`
 }
 
 func GetLocations(c *gin.Context, db *sql.DB) {
@@ -773,7 +780,7 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, dayOffs)
+	c.JSON(http.StatusOK, dayOffs)
 }
 
 func RemoveDaysOff(c *gin.Context, db *sql.DB) {
@@ -821,92 +828,92 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 	endTime := permanentRestriction.EndTime
 
 	if dayOfWeek == "Any" {
-		if startTime == "" && endTime == ""{
-			c.JSON(http.StatusBadRequest,gin.H{"error":"Please provide valid time values"})
+		if startTime == "" && endTime == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid time values"})
 			return
 		}
-	}else if startTime == "" && endTime != "" || endTime == "" && startTime != ""{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Please insert a start time and a end time"})
+	} else if startTime == "" && endTime != "" || endTime == "" && startTime != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please insert a start time and a end time"})
 		return
 	}
 
-	if startTime == ""{
+	if startTime == "" {
 		startTime = "00:00:00"
-	}else if startTime == "00:00"{
+	} else if startTime == "00:00" {
 		startTime = "24:00:00"
 	}
 	if endTime == "" {
 		endTime = "00:00:00"
-	}else if endTime == "00:00"{
+	} else if endTime == "00:00" {
 		endTime = "24:00:00"
 	}
 
 	query := "INSERT INTO permanent_restrictions (worker_id,day_of_week,start_time,end_time) VALUES (?,?,?,?)"
-	_, err := db.Exec(query, permanentRestriction.WorkerId, dayOfWeek,startTime,endTime)
+	_, err := db.Exec(query, permanentRestriction.WorkerId, dayOfWeek, startTime, endTime)
 
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
 				c.JSON(http.StatusConflict, gin.H{"error": "The restriction for this worker already exists or this worker already has a restriction for this day"})
 				return
-			}else if mysqlErr.Number == 1452 {
-				c.JSON(http.StatusBadRequest,gin.H{"error":"This worker does not exist"})
+			} else if mysqlErr.Number == 1452 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "This worker does not exist"})
 				return
-			}else if mysqlErr.Number == 1265 {
-				c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid Day of Week"})
+			} else if mysqlErr.Number == 1265 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Day of Week"})
 				return
 			}
 		}
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to insert values due to error\n" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert values due to error\n" + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message":"Restriction created"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Restriction created"})
 }
 
-func GetRestrictions(c *gin.Context,db *sql.DB){
+func GetRestrictions(c *gin.Context, db *sql.DB) {
 	var restrictions []PermanentRestriction
-	rows,err := db.Query("SELECT * FROM permanent_restrictions")
+	rows, err := db.Query("SELECT * FROM permanent_restrictions")
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in retrieving values"+err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in retrieving values" + err.Error()})
 		return
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var restriction PermanentRestriction
-		if err := rows.Scan(&restriction.ID,&restriction.WorkerId,&restriction.DayOfWeek,
-			&restriction.StartTime,&restriction.EndTime); err != nil {
-			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in scanning rows"})
+		if err := rows.Scan(&restriction.ID, &restriction.WorkerId, &restriction.DayOfWeek,
+			&restriction.StartTime, &restriction.EndTime); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in scanning rows"})
 			return
 		}
-		restrictions = append(restrictions,restriction)
+		restrictions = append(restrictions, restriction)
 	}
 
 	if len(restrictions) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error":"No restrictions found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "No restrictions found"})
 		return
 	}
 
 	c.JSON(http.StatusOK, restrictions)
 }
 
-func FindRestriction(c *gin.Context,db *sql.DB){
+func FindRestriction(c *gin.Context, db *sql.DB) {
 	var restrictions []PermanentRestriction
 	column := strings.TrimSpace(c.Param("column"))
 	id := strings.TrimSpace(c.Param("id"))
 
-	if column != "worker_id" && column != "id" || id == "" || id == ":"{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid search params, must be 'worker_id' or 'id'"})
+	if column != "worker_id" && column != "id" || id == "" || id == ":" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid search params, must be 'worker_id' or 'id'"})
 		return
 	}
 
-	query := fmt.Sprintf("SELECT * FROM permanent_restrictions WHERE %s = ?",column)
-	rows, err := db.Query(query,id)
+	query := fmt.Sprintf("SELECT * FROM permanent_restrictions WHERE %s = ?", column)
+	rows, err := db.Query(query, id)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in extracting values"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in extracting values"})
 		return
 	}
 	defer rows.Close()
@@ -914,38 +921,38 @@ func FindRestriction(c *gin.Context,db *sql.DB){
 	for rows.Next() {
 		var restriction PermanentRestriction
 
-		err := rows.Scan(&restriction.ID,&restriction.WorkerId,&restriction.DayOfWeek,&restriction.StartTime,
-		&restriction.EndTime)
+		err := rows.Scan(&restriction.ID, &restriction.WorkerId, &restriction.DayOfWeek, &restriction.StartTime,
+			&restriction.EndTime)
 
-		if err != nil{
-			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in scanning rows\n"+err.Error()})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in scanning rows\n" + err.Error()})
 			return
 		}
 
-		restrictions = append(restrictions,restriction)
+		restrictions = append(restrictions, restriction)
 	}
 
-	if len(restrictions) == 0{
-		c.JSON(http.StatusNotFound,gin.H{"error":"No values found"})
+	if len(restrictions) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No values found"})
 		return
 	}
 
-	c.JSON(http.StatusOK,restrictions)
+	c.JSON(http.StatusOK, restrictions)
 }
 
-func DeleteRestriction(c *gin.Context, db *sql.DB){
+func DeleteRestriction(c *gin.Context, db *sql.DB) {
 	id := strings.TrimSpace(c.Param("id"))
 
-	if id == "" || id == ":"{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid Id"})
+	if id == "" || id == ":" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Id"})
 		return
 	}
 
 	query := "DELETE FROM permanent_restrictions WHERE id = ?"
-	result,err := db.Exec(query,id)
+	result, err := db.Exec(query, id)
 
-	if err != nil{
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in deleting restriction"})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in deleting restriction"})
 		return
 	}
 
@@ -953,13 +960,120 @@ func DeleteRestriction(c *gin.Context, db *sql.DB){
 
 	if rowsAffected == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Restriction does not exist"})
-	}else{
-		c.JSON(http.StatusOK,gin.H{"message":"Entry deleted successfully"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
 }
 
-//info retrieval functions
-func RetrieveWorkersOrLocation(c *gin.Context, db *sql.DB){
+func CreateNewOccupancy(c *gin.Context, db *sql.DB) {
+	var occupancy Occupancy
+
+	if err := c.ShouldBindJSON(&occupancy); err != nil {
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid request body"})
+		return
+	}
+
+	layout := "2006-01-02"
+
+	_,eventDateError := time.Parse(layout,occupancy.EventDate)
+
+	if eventDateError != nil{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid date format,\n" + eventDateError.Error()})
+		return
+	}
+
+	query := "INSERT INTO occupancy (worker_id,event_date,note) VALUES (?,?,?)"
+	_, err := db.Exec(query, occupancy.WorkerId,occupancy.EventDate,occupancy.Note)
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in inserting values,\n" + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated,gin.H{"message":"Occupancy added successfully"})
+}
+
+func RetrieveOccupancies(c *gin.Context, db *sql.DB){
+	var occupancies []Occupancy
+	var rows *sql.Rows
+	var err error
+	column := c.Param("column")
+	value := c.Param("value")
+	
+	if column == "" {
+		rows, err = db.Query("SELECT * FROM occupancy")
+	}else if column == "worker_id"{
+		query := "SELECT * FROM occupancy WHERE worker_id = ?"
+		rows, err = db.Query(query,value)
+	}else if column == "event_date"{
+		query := "SELECT * FROM occupancy WHERE event_date = ?"
+		rows, err = db.Query(query,value)
+	}else if column == "note"{
+		query := "SELECT * FROM occupancy WHERE note = ?"
+		rows, err = db.Query(query,value)
+	}else{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid column entry"})
+		return
+	}
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in exctracting values\n"+err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var occupancy Occupancy
+
+		if err := rows.Scan(&occupancy.ID, &occupancy.WorkerId, &occupancy.EventDate, &occupancy.Note); err != nil{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in retrieving values\n"+ err.Error()})
+			return
+		}
+
+		occupancies = append(occupancies, occupancy)
+	}
+	
+	if len(occupancies) == 0{
+		c.JSON(http.StatusNotFound,gin.H{"error":"No values found for given criteria"})
+		return
+	}
+
+	c.JSON(http.StatusOK,occupancies)
+}
+
+func RemoveOccupancy(c *gin.Context, db *sql.DB) {
+	idStr := c.Param("id")
+
+	id, conversionErr := strconv.Atoi(idStr)
+
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid id Parameter"})
+		return
+	}
+
+	query := "DELETE FROM occupancy WHERE id = ?"
+	result, err := db.Exec(query, id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in deleting occupancy\n"+err.Error()})
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "No rows affected\n" + err.Error()})
+		return
+	}
+
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Occupancy does not exist"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
+	}
+}
+
+// info retrieval functions
+func RetrieveWorkersOrLocation(c *gin.Context, db *sql.DB) {
 	column := strings.TrimSpace(c.Param("column"))
 	valueStr := c.Param("id")
 
@@ -980,7 +1094,7 @@ func RetrieveWorkersOrLocation(c *gin.Context, db *sql.DB){
 		return
 	}
 
-	rows, err := db.Query(query,value)
+	rows, err := db.Query(query, value)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve values from database\n" + err.Error()})
 		return
@@ -990,53 +1104,53 @@ func RetrieveWorkersOrLocation(c *gin.Context, db *sql.DB){
 	var connections interface{}
 	found := false
 
-	if (column == "worker_id"){
+	if column == "worker_id" {
 		var locations []Location
-		for rows.Next(){
+		for rows.Next() {
 			found = true
 			var location Location
-			err := rows.Scan(&location.ID,&location.Location)
+			err := rows.Scan(&location.ID, &location.Location)
 
-			if err != nil{
-				c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to scan locations\n"+err.Error()})
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan locations\n" + err.Error()})
 				return
 			}
-			locations = append(locations,location)
+			locations = append(locations, location)
 		}
 		connections = locations
-	}else{
+	} else {
 		var workers []Worker
 		for rows.Next() {
 			found = true
 			var worker Worker
 			var hoursJSON string
-			err := rows.Scan(&worker.ID,&worker.FirstName,&worker.LastName,&worker.MiddleName,
-				&worker.Gender,&worker.Address,&worker.Contact,&worker.Age,&worker.ID_Number,
-				&worker.Availability,&hoursJSON)
-			
-			if err != nil{
-				c.JSON(http.StatusInternalServerError,gin.H{"error":"Failed to scan workers\n"+err.Error()})
+			err := rows.Scan(&worker.ID, &worker.FirstName, &worker.LastName, &worker.MiddleName,
+				&worker.Gender, &worker.Address, &worker.Contact, &worker.Age, &worker.ID_Number,
+				&worker.Availability, &hoursJSON)
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to scan workers\n" + err.Error()})
 				return
 			}
 
-			if hoursJSON != ""{
+			if hoursJSON != "" {
 				conversionErr := json.Unmarshal([]byte(hoursJSON), &worker.Hours)
-				if conversionErr != nil{
-					c.JSON(http.StatusInternalServerError,gin.H{"error": "Error in decoding hours JSON\n" + err.Error()})
+				if conversionErr != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in decoding hours JSON\n" + err.Error()})
 					return
 				}
-			}else{
+			} else {
 				worker.Hours = []string{}
 			}
-			workers = append(workers,worker)
+			workers = append(workers, worker)
 		}
 		connections = workers
 	}
 
-	if !found{
-		c.JSON(http.StatusNotFound,gin.H{"error":"No values retrieved for given params"})
+	if !found {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No values retrieved for given params"})
 		return
 	}
 
-	c.JSON(http.StatusOK,connections)
+	c.JSON(http.StatusOK, connections)
 }

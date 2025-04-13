@@ -78,6 +78,7 @@ function getDayName(dateString){
 }
 
 function restrictionCheck(day,worker,hours,restrictions){
+    //returns true if a worker has a restriction which obstructs the roster hours, else returns false
     let startTime,endTime,shiftStart,shiftEnd
     if (restrictions[worker.id]){
         const workerRestrictions = restrictions[worker.id]
