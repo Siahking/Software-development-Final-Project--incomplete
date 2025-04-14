@@ -1,35 +1,39 @@
+import { removeExact } from "@fullcalendar/core/internal.js";
+
 const BASEURL = "http://localhost:8080/"
 
-export async function getLocations() {
-    try{
-        const data = await fetch(`${BASEURL}locations`)
-        .then((data)=> data.json())
-        .then((data) => data);
-        return data
-    }catch (error){
-        console.error("error fetching locations:",error);
+async function apiRequest(endpoint, method = "GET", body = null){
+    const url = `${BASEURL}${endpoint}`
+    const options = {
+        method,
+        headers: { "Content-Type": "application/json" },
     };
-};
 
-export async function addLocation(locationName) {
-    try{
-        const response = await fetch(`${BASEURL}locations/${locationName}`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            }
-        })
+    if (body){
+        options.body = JSON.stringify(body);
+    }
 
-        const result = await response.json()
+    try {
+        const response = await fetch(url, options);
+        const result = await response.json();
 
         if (!response.ok){
-            throw new Error(result.error || `error: ${response.status} ${response.statusText}`)
+            throw new Error(result?.error || `Error: ${response.status} ${response.statusText}`)
         }
 
         return result
-    }catch(error){
-        return {"error":error.message}
+    }catch(error) {
+        return { error: error.message }
     }
+}
+
+export async function getLocations() {
+    return apiRequest("locations")
+};
+
+export async function addLocation(locationName) {
+    const url = `locations/${locationName}`
+    return apiRequest(url,"POST")
 };
 
 export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number,availability,hours){
@@ -39,56 +43,19 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
             return {"error":"Vacant input for required field"}
         }
     }
-    try {
 
-        const response = await fetch(`${BASEURL}workers/add-worker`,{
-            method: "POST",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                first_name,
-                last_name,
-                middle_name,
-                gender,
-                address,
-                contact,
-                age,
-                id_number,
-                availability,
-                hours
-            })
-        });
-
-        const result = await response.json();
-
-        if(!response.ok){
-            throw new Error(result.error ||`error: ${response.status} ${response.statusText}`);
-        }
-
-        return result;
-    }catch (error) {    
-        return { error: error.message };
-    }
+    return apiRequest("workers/add-worker","POST",{
+        first_name,last_name,middle_name,gender,address,contact,age,id_number,availability,hours
+    })
 }
 
 export async function findLocation(column,value){
-    const result = await fetch(`${BASEURL}locations/${column}/${value}`,{
-        method: "GET"
-    })
-    const data = await result.json()
-    return data
+    const url = `locations/${column}/${value}`
+    return apiRequest(url)
 }
 
 export async function getWorkers(){
-    try{
-        const workers = await fetch(`${BASEURL}workers`)
-        .then((workers) => workers.json())
-        .then((workers) => workers);
-        return workers
-    }catch(error){
-        console.error("error in retrieving workers:",error)
-    };
+    return apiRequest("workers")
 }
 
 export async function findWorker(firstName="",lastName="",middleName="",idNumber="",id=null){
@@ -102,103 +69,32 @@ export async function findWorker(firstName="",lastName="",middleName="",idNumber
         if (lastName) url.searchParams.append("last_name", lastName);
         if (middleName) url.searchParams.append("middle_name", middleName);
     };
-    
-    return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`error: ${response.status} - ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .catch(error => {
-            console.error("An error occurred while fetching workers:", error.message);
-            if (error.message.includes("404")) {
-                return { error: "Worker not found"};
-            }else if (error.message.includes("500")){
-                return { error: "Server error, please try again later"};
-            }else{
-                return { error: "An unexpected error occurred" };
-            }
-        });
+
+    const response = await fetch(url)
+    const data = await response.json()
+
+    return data
 }
 
 export async function removeEntry(id,table){
-    const url = new URL(`${BASEURL}delete/${table}/${id}`)
-
-    try {
-        const response = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        const result = await response.json();
-
-        if (!response.ok){
-            throw new Error(result.error||`error: ${response.statusText}`)
-        }
-
-        return result;
-    } catch (error){
-        console.error("Failed to delete worker", error);
-        return {error:error.message};
-    }
+    if (!id || !table)return {"error":"ID and Table required"}
+    const url = `delete/${table}/${id}`
+    return apiRequest(url,"DELETE")
 }
 
 export async function linkWorkerLocations(workerId,locationId){
-    const result = await fetch(`${BASEURL}assign-location/${workerId}/${locationId}`,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        }
-    })
-    .then((data)=> data.json())
-    .then((data) => data)
-    return result
+    const url = `assign-location/${workerId}/${locationId}`
+    return apiRequest(url,"POST")
 }
 
 export async function workerLocationSearch(column,id){
-    try{
-        const response = await fetch(`${BASEURL}get-worker-location-connections/${column}/${id}`,{
-            method:"GET"
-        })
-
-        const data = await response.json();
-
-        if(!response.ok) {
-            return data || `error : ${response.status} ${response.statusText}`
-        }
-
-        return data;
-    } catch (error) {
-        console.error("error fetching worker location connections:",error.message);
-        return { error: error.message };
-    }
+    const url = `get-worker-location-connections/${column}/${id}`
+    return apiRequest(url)
 }
 
 export async function removeConnections(column,id){
-    const url = new URL(`${BASEURL}remove-connection/${column}/${id}`)
-
-    try {
-        const response = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        const result = await response.json();
-
-        if (!response.ok){
-            throw new Error(result.error || `error : ${response.statusText}`)
-        }
-
-        return result;
-    } catch (error){
-        console.error("Failed to delete connection", error);
-        return {error:error.message};
-    }
+    const url = `remove-connection/${column}/${id}`
+    return apiRequest(url,"DELETE")
 }
 
 export async function createConstraint(worker1IdStr,worker2IdStr,note=""){
@@ -210,41 +106,9 @@ export async function createConstraint(worker1IdStr,worker2IdStr,note=""){
         return "Please Insert Valid Values" 
     }
 
-    const checkResults = await getConstraints("",worker2_id,worker1_id)
-    if (!Object.keys(checkResults).includes("error")){
-        return {"error":"Constraint already exists"}
-    }
-    
-    try {
-        const response = await fetch(`${BASEURL}create-constraint`,{
-            method: "POST",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                worker1_id,
-                worker2_id,
-                note
-            })
-        });
-
-        let result;
-        try {
-            result = await response.json();
-        } catch (error) {
-            console.error("JSON Parsing Error:", error.message);
-            result = null;
-        }
-
-        if (!response.ok) {
-            throw new Error(result?.error || `error: ${response.status} ${response.statusText}`);
-        }
-
-        return result;
-    }catch (error) { 
-        console.log("error creating constraint:",error.message)   
-        return { error: error.message };
-    }
+    return apiRequest("create-constraint","POST",{
+        worker1_id,worker2_id,note
+    })
 }
 
 export async function getConstraints(id=null,worker1=null,worker2=null){ //complete
@@ -298,82 +162,27 @@ export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""
         }
     }
 
-    try{
-        const response = await fetch(`${BASEURL}edit-constraints/${id}`,{
-            method: "PATCH",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(jsonValues)
-        });
-
-        const result = await response.json();
-
-        if (!response.ok){
-            throw new Error(result.error || `error: ${response.status} ${response.statusText}`);
-        }
-
-        return result
-    }catch (error){
-        console.error("error in editing constraints: \n",error);
-        return { "error":error.message };
-    }
+    const url = `edit-constraints/${id}`
+    return apiRequest(url,"PATCH",jsonValues)
 }
 
 export async function deleteConstraints(id){ //working
-    const url = new URL(`${BASEURL}delete-constraint/${id}`)
+    if (!id)return {"error":"No parameter provided!"}
 
-    if (!id)return "No parameter provided!"
-
-    try{
-        const response = await fetch(url,{
-            method: 'DELETE',
-            headers:{
-                'Content-Type':'application/json'
-            }
-        });
-
-        const result = await response.json()
-
-        if (!response.ok){
-            console.log("in the if statement")
-            throw new Error(result.error || `error: ${response.statusText}`)
-        }
-
-        return result
-    }catch(error){
-        console.error("Failed to delete worker",error);
-        return {error:error.message}
-    }
-    
+    const url = `delete-constraint/${id}`
+    return apiRequest(url,"DELETE")
 }
 
-export async function addDaysOff(workerIdStr,startDate,endDate){ //working
+export async function addDaysOff(workerIdStr,start_date,end_date){ //working
+    let worker_id
     try{
-        const worker_id = parseInt(workerIdStr)
-        const response = await fetch(`${BASEURL}add-days-off`,{
-            method:'POST',
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                "worker_id":worker_id,
-                "start_date":startDate,
-                "end_date":endDate
-            })
-        });
-
-        const result = await response.json();
-
-        if (!response.ok){
-            throw new Error(result.error || `error: ${response.status} ${response.statusText}`);
-        }
-
-        return result
-    }catch(error){
-        console.error("error in creating days off: \n",error)
-        return {"error":error.message}
+        worker_id = parseInt(workerIdStr)
+    }catch{
+        return {"error":"Invalid worker id input"}
     }
+    return apiRequest(workerIdStr,"POST",{
+        worker_id,start_date,end_date
+    })
 }
 
 export async function getDaysOff(column="",value=""){ //working
@@ -391,31 +200,13 @@ export async function getDaysOff(column="",value=""){ //working
 }
 
 export async function removeDaysOff(breakId){ //complete
-    const url = new URL(`${BASEURL}remove-days/${breakId}`)
+    const url = `remove-days/${breakId}`
 
     if (!breakId){
         return {"error":"Id required"}
     }
-    
-    try{
-        const response = await fetch(url,{
-            method: 'DELETE',
-            headers:{
-                'Content-Type':'application/json'
-            }
-        });
 
-        const result = await response.json()
-
-        if (!response.ok){
-            throw new Error(result.error || `error: ${response.statusText}`)
-        }
-
-        return result
-    }catch(error){
-        console.error("Failed to delete day off",error);
-        return {error:error.message}
-    }
+    return apiRequest(url,"DELETE")
 }
 
 export async function createRestriction(worker_id,day_of_week,start_time,end_time){
@@ -428,44 +219,13 @@ export async function createRestriction(worker_id,day_of_week,start_time,end_tim
         day_of_week = "Any"
     }
 
-    const url = `${BASEURL}create-restriction`
-    try {
-        const response = await fetch(url,{
-            method: "POST",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                worker_id,
-                day_of_week,
-                start_time,
-                end_time
-            })
-        });
-
-        const result = await response.json()
-        
-        if (!response.ok){
-            throw new Error(result.error || `error: ${response.status} ${response.statusText}`)
-        }
-
-        return result;
-    }catch(error){
-        return { error: error.message };
-    }
+    return apiRequest("create-restriction","POST",{
+        worker_id,day_of_week,start_time,end_time
+    })
 }
 
 export async function getPermanentRestrictions(){
-    const url = `${BASEURL}get-restrictions`
-
-    try{
-        const restrictions = await fetch (url)
-        .then(restrictions => restrictions.json())
-        .then(restrictions => restrictions);
-        return restrictions
-    }catch(error){
-        return {"error":error}
-    }
+    return apiRequest("get-restrictions")
 }
 
 export async function findPermanentRestrictions(column,id) {
@@ -473,12 +233,8 @@ export async function findPermanentRestrictions(column,id) {
         return {"error":"Please insert valid values"}
     }
 
-    const url = `${BASEURL}find-restriction/${column}/${id}`
-    const results = await fetch(url,{
-        method: "GET"
-    })
-    const data = await results.json()
-    return data
+    const url = `find-restriction/${column}/${id}`
+    return apiRequest(url)
 }
 
 export async function deletePermanentRestrictions(id){
@@ -486,35 +242,45 @@ export async function deletePermanentRestrictions(id){
         return {"error":"Please insert a valid id"}
     }
 
-    const url = `${BASEURL}delete-restriction/${id}`
-    try{
-        const response = await fetch(url,{
-            method:"DELETE",
-            headers:{
-                'Content-Type':'application/json'
-            }
-        });
-
-        const result = await response.json()
-        return result
-    }catch(error){
-        return{"error":error}
-    }
+    const url = `delete-restriction/${id}`
+    return apiRequest(url,"DELETE")
 }
 
 export async function retrieveWorkerOrLocations(column,id){
-    const url = `${BASEURL}retrieve-workers-locations/${column}/${id}`
-
-    const results = await fetch(url,{
-        method:"GET"
-    })
-    const data = await results.json()
-    return data
+    const url = `retrieve-workers-locations/${column}/${id}`
+    return apiRequest(url)
 }
 
-// async function tester() {
-//     const result = await retrieveWorkerOrLocations("worker_id","cat")
-//     console.log(result)
-// }
+export async function createOccupancy(worker_id,event_date,note){
+    if (!worker_id || !event_date){
+        return{"error":"Invalid Params"}
+    }
 
-// tester()
+    return apiRequest("create-occupancy","POST",{
+        worker_id,event_date,note
+    })
+}
+
+export async function retrieveOccupancies(column="",value=""){
+    let url
+    if (!column && !value){
+        url = `retrieve-occupancies`
+    }else{
+        url = `retrieve-occupancies/${column}/${value}`
+    }
+
+    return apiRequest(url)
+}
+
+export async function removeOccupancy(id){
+    if (!id)return {"error":"Please insert a valid ID"}
+
+    return apiRequest(`delete-occupancy/${id}`,"DELETE")
+}
+
+async function tester() {
+    const result = await removeOccupancy(2)
+    console.log(result)
+}
+
+tester()

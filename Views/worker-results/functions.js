@@ -4,6 +4,8 @@ import { deleteWorker } from "../../views/workers/functions.js"
 export async function showWorkers (){
 
     const workers = JSON.parse(localStorage.getItem("workerData"));
+
+    console.log(workers)
     
     for (const worker of workers){
         const workerArr = [

@@ -50,7 +50,7 @@ function assignHours(){
                 }
             }
             if (!hours.length){
-                errorTag.innerHTML = "Need to select hours to work after selecting specified"
+                errorTag.innerText = "Need to select hours to work after selecting specified"
                 return [false,[]]
             }
     }
@@ -88,7 +88,7 @@ export async function showWorkers (){
     const workers = await apiFuncs.getWorkers();
 
     if (Object.keys(workers).includes("error")){
-        errorTag.innerHTML = workers.error
+        errorTag.innerText = workers.error
         return
     }
 
@@ -174,7 +174,7 @@ export async function addWorkerHandler(event){
     const selectedLocations = []
 
     if (Object.keys(result).includes("error")){
-        errorTag.innerHTML = result.error
+        errorTag.innerText = result.error
         return
     }
 
@@ -217,13 +217,16 @@ export async function findWorkers(event){
     }
 
     if (!emptyValues){
-        errorTag.innerHTML = "Please Fillout atleast one field to search for workers"
+        errorTag.innerText = "Please Fillout atleast one field to search for workers"
         return
     }
 
     const results = await apiFuncs.findWorker(firstName,lastName,middleName,idNumber,id)
+    console.log(results)
+    return
     if (Object.keys(results).includes("error")){
-        errorTag.innerHTML = results.error
+        console.log("passed here")
+        errorTag.innerText = results.error
         return
     }
 
@@ -243,7 +246,7 @@ export async function deleteWorker(event){
         sessionStorage.setItem("Message",result.message)
         window.location.href = '/'
     }else{
-        errorTag.innerHTML = "Failed to delete worker"
+        errorTag.innerText = "Failed to delete worker"
     }
 }
 

@@ -52,7 +52,7 @@ CREATE TABLE worker_constraints (
     worker1_id INT NOT NULL,
     worker2_id INT NOT NULL,
     note TEXT,
-    UNIQUE (worker1_id, worker2_id),  -- To prevent duplicate constraints
+    CONSTRAINT unique_constraint UNIQUE (worker1_id, worker2_id),  -- To prevent duplicate constraints
     FOREIGN KEY (worker1_id) REFERENCES workers(id) ON DELETE CASCADE,
     FOREIGN KEY (worker2_id) REFERENCES workers(id) ON DELETE CASCADE
 );

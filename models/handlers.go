@@ -318,7 +318,9 @@ func FindWorker(c *gin.Context, db *sql.DB) {
 	}
 
 	if len(workers) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "No Workers found"})
+		fmt.Print("Passed here \n\n")
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Workers found"})
+		return
 	} else {
 		c.IndentedJSON(http.StatusOK, workers)
 	}
@@ -986,6 +988,12 @@ func CreateNewOccupancy(c *gin.Context, db *sql.DB) {
 	_, err := db.Exec(query, occupancy.WorkerId,occupancy.EventDate,occupancy.Note)
 
 	if err != nil{
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == 1062 {
+				c.JSON(http.StatusConflict,gin.H{"error":"This Occupancy for this worker already exists"})
+				return
+			}
+		}
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in inserting values,\n" + err.Error()})
 		return
 	}
