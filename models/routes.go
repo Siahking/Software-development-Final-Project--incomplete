@@ -176,6 +176,9 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.DELETE("/delete-occupancy/:id",func(c *gin.Context) {
 		RemoveOccupancy(c,db)
 	})
+	router.DELETE("/clear-occupancies",func(c *gin.Context) {
+		EmptyOccupancies(c,db)
+	})
 
 	//search routes
 	router.GET("/retrieve-workers-locations/:column/:id",func(c *gin.Context) {

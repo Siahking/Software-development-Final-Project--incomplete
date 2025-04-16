@@ -137,22 +137,22 @@ export async function findDaysOff(event){
     window.location.href = "/find-days-off"
 }
 
-function specificiedCheck(worker,workers){
-    const array = []
-    for (const hour of worker.hours){
-        for (const worker of workers){
-            const tempArray = []
-            if (worker.hours.includes(hour)){
-                tempArray.push(worker)
-            }
-            array.push(tempArray)
-        }
-    }
+// function specificiedCheck(worker,workers){
+//     const array = []
+//     for (const hour of worker.hours){
+//         for (const worker of workers){
+//             const tempArray = []
+//             if (worker.hours.includes(hour)){
+//                 tempArray.push(worker)
+//             }
+//             array.push(tempArray)
+//         }
+//     }
 
-    for (const innerArray of array){
-        if (innerArray.length < 3){
-            return false
-        }
-    }
-    return true
-}
+//     for (const innerArray of array){
+//         if (innerArray.length < 3){
+//             return false
+//         }
+//     }
+//     return true
+// }

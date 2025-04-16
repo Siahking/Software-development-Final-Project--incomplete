@@ -1,6 +1,8 @@
+import * as apiFuncs from "../backend.js"
+
 export function retrieveWorkers(day,month,year,workers,daysOff,restrictions,hours){
     let array = []
-    const excludedWorkers = dayOffCheck(day,month,daysOff)
+    const excludedWorkers = dayOffCheck(day,month,year,daysOff)
     const stringDay = getDayName(`${year}-${month}-${day}`)
 
     for (const worker of workers){
@@ -129,21 +131,44 @@ function restrictionCheck(day,worker,hours,restrictions){
     return true
 }
 
-function dayOffCheck(day,month,daysOff){
+ async function dayOffCheck(day,month,year,daysOff){
+    const occupancies = await apiFuncs.retrieveOccupancies("event_date",`${year}-${month}-${day}`)
+
     //add workers to be excluded for this day to the object
     const obj = {}
     for (const result of daysOff){
-        const [startYear,startMonth,startDay] = result.start_date.split("-")
-        const [endYear,endMonth,endDay] = result.end_date.split("-")
-        if (startMonth == (month+1) && startYear == year){
-            if(
-                day >= parseInt(startDay) && day <= parseInt(endDay) &&
-                month <= parseInt(endMonth) && year <= parseInt(endYear)
-            ) {
-                obj[result.worker_id] = true
-            }
+        const startDate = new Date(result.start_date)
+        const endDate = new Date(result.endDate)
+        const currentDate = new Date(year, month, day);
+
+        if (currentDate >= startDate && currentDate <= endDate ) {
+            obj[result.worker_id] = true;
+        }
+    }
+
+    if (!Object.keys(occupancies).includes("error")){
+        for (const occupancy of occupancies){
+            obj[occupancy.worker_id] = true;
         }
     }
     
     return obj
+}
+
+export function dateToString(day,month,year){
+    const newDay = day < 10 ?`0${day}` : `${day}`
+    const newMonth = month < 10 ? `0${month}` : `${month}`
+
+    return `${year}-${newMonth}-${newDay}`
+}
+
+export async function setWorkerForShift(workerArray,date,shiftWorkersArray,constraints){
+    while(true){
+        const worker = workerArray.pop()
+        const result = await apiFuncs.createOccupancy(worker.id,date,"Work") 
+        setWorkerToUnavailable(worker.id,shiftWorkersArray,constraints)
+        if (!Object.keys(result).includes("error")){
+            return worker
+        }
+    }
 }

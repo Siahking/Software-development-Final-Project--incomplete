@@ -30,6 +30,9 @@ function assignHours(){
         if (value.checked){
             option = value
             break
+        }else{
+            errorTag.innerText = "Please select a valid availability option"
+            return
         }
     }
 
@@ -222,8 +225,6 @@ export async function findWorkers(event){
     }
 
     const results = await apiFuncs.findWorker(firstName,lastName,middleName,idNumber,id)
-    console.log(results)
-    return
     if (Object.keys(results).includes("error")){
         console.log("passed here")
         errorTag.innerText = results.error

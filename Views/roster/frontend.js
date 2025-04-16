@@ -2,6 +2,7 @@ import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
 
 export async function generateCalender(month,year){
+    await apiFuncs.clearOccupancies()
     let constraints = {
         "worker1Constraints":{},
         "worker2Constraints":{}
@@ -65,7 +66,7 @@ export async function generateCalender(month,year){
         const errorTag = document.createElement("p")
         locationName.innerText = location.location
         headerContainer.appendChild(locationName)
-        headerContainer.classList.add("header")
+        headerContainer.classList.add("location-header-div")
         if (Object.keys(results).includes("error")){
             errorTag.innerText = "No workers found for this Location"
             headerContainer.appendChild(errorTag)
@@ -74,7 +75,7 @@ export async function generateCalender(month,year){
         }
         
         for (const result of results){
-            const worker = await apiFuncs.findWorker("","","","",result.id)
+            const worker = await apiFuncs.findWorker("","","","",result.worker_id)
             WORKERS.push(worker[0])
         }
 
@@ -135,7 +136,7 @@ export async function generateCalender(month,year){
                 constraints:constraints
             }
 
-            const results = funcs.assignWorkers(assignWorkerParams)
+            const results = await funcs.assignWorkers(assignWorkerParams)
             if (Object.keys(results).includes("error")){
                 errorTag.innerText = results.error
                 headerContainer.appendChild(errorTag)

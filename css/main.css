@@ -110,3 +110,10 @@ tr:last-child td {
     border-color: var(--teal) !important;
     outline: none;
 }
+
+#error-div{
+    display: flex;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+}

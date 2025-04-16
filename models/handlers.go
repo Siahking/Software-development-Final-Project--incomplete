@@ -1042,7 +1042,7 @@ func RetrieveOccupancies(c *gin.Context, db *sql.DB){
 	}
 	
 	if len(occupancies) == 0{
-		c.JSON(http.StatusNotFound,gin.H{"error":"No values found for given criteria"})
+		c.JSON(http.StatusNotFound,gin.H{"error":"No values found"})
 		return
 	}
 
@@ -1078,6 +1078,18 @@ func RemoveOccupancy(c *gin.Context, db *sql.DB) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
+}
+
+func EmptyOccupancies(c *gin.Context, db *sql.DB){
+	query := "DELETE FROM occupancy"
+
+	_, err := db.Exec(query)
+
+	if err != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in clearing table\n"+err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK,gin.H{"message":"Table cleared successfully"})
 }
 
 // info retrieval functions

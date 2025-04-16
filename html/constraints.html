@@ -69,7 +69,7 @@
                 </label>
                 <label for="summary">
                     Summary
-                    <input type="text" id="summary" placeholder="Type here" class="text-number-input">
+                    <input type="text" id="summary" placeholder="Type here" class="text-number-input" autocomplete="off">
                 </label>
 
                 <button type="submit"  class="green-btn">Add</button>
@@ -117,7 +117,9 @@
             </form>
         </div>
 
-        <p id="error-tag" style="color: red;"></p>
+        <div id="error-div">
+            <p id="error-tag" style="color: red;"></p>
+        </div>
          
     <script type="module" src="../views/constraints/frontend.js"></script>
     <script type="module" src="../views/constraints/functions.js"></script>

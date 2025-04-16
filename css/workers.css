@@ -23,7 +23,7 @@ tr:last-child td {
 }
 
 #table-container,#data-input,#add-worker-div,#find-worker-div,#name-info-div,#gender-address-info-div,
-#gender-address-info-div label,#availability-div,#hours-div,#workerSearchForm,#locations-input
+#gender-address-info-div label,#availability-div,#hours-div,#workerSearchForm,#locations-input,
 #contact-id-info-div,#contact-info-div label{
     display: flex;
 }

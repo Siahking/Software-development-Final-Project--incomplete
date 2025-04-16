@@ -25,3 +25,9 @@ td{
     flex-direction: column;
     align-items: center;
 }
+
+#add-restriction-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

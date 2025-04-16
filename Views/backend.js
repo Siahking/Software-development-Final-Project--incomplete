@@ -1,9 +1,7 @@
-import { removeExact } from "@fullcalendar/core/internal.js";
-
 const BASEURL = "http://localhost:8080/"
 
 async function apiRequest(endpoint, method = "GET", body = null){
-    const url = `${BASEURL}${endpoint}`
+    const url = `http://localhost:8080/${endpoint}`
     const options = {
         method,
         headers: { "Content-Type": "application/json" },
@@ -180,7 +178,7 @@ export async function addDaysOff(workerIdStr,start_date,end_date){ //working
     }catch{
         return {"error":"Invalid worker id input"}
     }
-    return apiRequest(workerIdStr,"POST",{
+    return apiRequest("add-days-off","POST",{
         worker_id,start_date,end_date
     })
 }
@@ -278,9 +276,13 @@ export async function removeOccupancy(id){
     return apiRequest(`delete-occupancy/${id}`,"DELETE")
 }
 
-async function tester() {
-    const result = await removeOccupancy(2)
-    console.log(result)
+export async function clearOccupancies(){
+    return apiRequest("clear-occupancies","DELETE")
 }
 
-tester()
+// async function tester() {
+//     const result = await removeOccupancy(2)
+//     console.log(result)
+// }
+
+// tester()

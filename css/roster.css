@@ -7,21 +7,26 @@
 
 .calendar-item {
     position: relative;
-    padding: 30px 20px;
-    border: 1px solid #ccc;
+    padding: 30px 20px ;
+    border: 1px solid #ddd;
     background-color: lightgray;
-    display: flex;
-    flex-direction: column;
+    min-width: 120px; /* Adjust to fit your design */
+    height: 150px ; /* Adjust based on content */
     align-items: center;
-    justify-content: flex-start;
-    height: 120px; /* Adjust the height */
+    overflow: hidden;
 }
 
 .calendar-header {
-    height: 25px;
-    padding: 30px 20px;
+    height: 25px ;
+    padding: 30px 20px ;
     font-weight: bold;
     background-color: #f0f0f0;
+}
+
+.location-header-div{
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .day-number {
@@ -33,8 +38,8 @@
 }
 
 .shift-block {
-    width: 100%;
-    height: 30px;
+    width: 100% ;
+    height: 30px ;
     margin: 3px 0;
     border-radius: 5px;
     padding: 5px;
@@ -44,11 +49,11 @@
 }
 
 .shift-block {
-    width: 100%; /* Ensures it takes up the entire container */
-    max-width: 200px; /* Adjust width as needed */
-    min-height: 50px; /* Prevents the div from collapsing */
+    width: 100% ; /* Ensures it takes up the entire container */
+    max-width: 200px ; /* Adjust width as needed */
+    min-height: 50px ; /* Prevents the div from collapsing */
     word-wrap: break-word; /* Ensures long words wrap properly */
-    overflow: hidden; /* Hides overflow content */
+    overflow: hidden ; /* Hides overflow content */
     white-space: normal; /* Allows text to wrap */
     display: flex; /* Enables flexible alignment */
     flex-direction: column; /* Ensures text stacks properly */
@@ -67,18 +72,6 @@
     overflow: hidden;
 }
 
-.calendar-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    width: 150px; /* Adjust to fit your design */
-    height: 150px; /* Adjust based on content */
-    overflow: hidden;
-    border: 1px solid #ddd;
-}
-
-
 .shift-1 {
     background-color: lightblue;
 }
@@ -94,4 +87,27 @@
 .shift-block p {
     margin: 2px 0;
     font-size: 12px;
+}
+
+#home-div{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#home-tag{
+    padding: 10px 20px;
+    color: var(--grey);
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 22px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+#home-tag:hover{
+    transition: 0.3s ease;
+    color: var(--teal);
 }
