@@ -86,10 +86,23 @@ export async function findRestriction() {
 }
 
 export async function addRestriction(){
+    let dayOfWeek
+    let checked = false
+    const options = document.querySelectorAll(".day-of-week-input")
     const workerId = document.getElementById("worker-id-input").value
-    const dayOfWeek = document.getElementById("day-of-week-input").value
     const startTime = document.getElementById("start-time-input").value
     const endTime = document.getElementById("end-time-input").value
+
+    for (const input of options){
+        if (input.checked){
+            dayOfWeek = input.value
+            checked = true
+        }
+    }
+
+    if (!checked){
+        dayOfWeek = "Any"
+    }
 
     const locationId = await apiFuncs.workerLocationSearch("worker_id",workerId)
     const check = await validateCoverage(locationId[0].location_id,dayOfWeek,workerId)

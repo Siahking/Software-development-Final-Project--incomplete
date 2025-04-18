@@ -1,7 +1,7 @@
 const BASEURL = "http://localhost:8080/"
 
 async function apiRequest(endpoint, method = "GET", body = null){
-    const url = `http://localhost:8080/${endpoint}`
+    const url = `${BASEURL}${endpoint}`
     const options = {
         method,
         headers: { "Content-Type": "application/json" },
@@ -109,19 +109,24 @@ export async function createConstraint(worker1IdStr,worker2IdStr,note=""){
     })
 }
 
-export async function getConstraints(id=null,worker1=null,worker2=null){ //complete
+export async function getConstraints(
+    id=null,worker1FirstName=null,worker1LastName=null,worker2FirstName=null,worker2LastName=null
+){ //complete
     let result
     const url = new URL(`${BASEURL}find-constraints`)
-    if (id || worker1 || worker2){
-        if (id){
-            url.searchParams.append("id",id)
-        }else {
-            if (worker1){
-                url.searchParams.append("worker1",worker1)
-            }
-            if (worker2){
-                url.searchParams.append("worker2",worker2)
-            }
+    // if (id || worker1 || worker2){
+    if (id){
+        url.searchParams.append("id",id)
+    }else {
+        if (worker1FirstName){
+            if (!worker1LastName)return {"error":"Both the firstname and the lastname is required"}
+            url.searchParams.append("worker1_firstname",worker1FirstName)
+            url.searchParams.append("worker1_lastname",worker1LastName)
+        }
+        if (worker2FirstName){
+            if (!worker1LastName)return {"error":"Both the firstname and the lastname is required"}
+            url.searchParams.append("worker2_firstname",worker2FirstName)
+            url.searchParams.append("worker2_lastname",worker2LastName)
         }
     }
     result = await fetch(url)
@@ -281,7 +286,7 @@ export async function clearOccupancies(){
 }
 
 // async function tester() {
-//     const result = await removeOccupancy(2)
+//     const result = await getConstraints("","sophia")
 //     console.log(result)
 // }
 

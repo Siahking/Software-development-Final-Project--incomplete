@@ -22,7 +22,7 @@ tr:last-child td {
     border-bottom: 2px solid black ; 
 }
 
-#table-container,#data-input,#add-worker-div,#find-worker-div,#name-info-div,#gender-address-info-div,
+#table-container,#add-worker-div,#find-worker-div,#name-info-div,#gender-address-info-div,
 #gender-address-info-div label,#availability-div,#hours-div,#workerSearchForm,#locations-input,
 #contact-id-info-div,#contact-info-div label{
     display: flex;
@@ -62,15 +62,6 @@ tr:last-child td {
 #table-container{
     width: 80%;
     justify-content: center;
-}
-
-#data-input{
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding-top: 0;
-    margin-top: 0;
 }
 
 #add-worker-div,

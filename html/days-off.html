@@ -57,11 +57,11 @@
 
     <div id="add-days-off-div" class="specified-hidden container">
         <form id="add-days-off-form">
-            <label for="worker-id">Worker ID</label>
+            <label for="worker-id" class="bold">Worker ID</label>
             <input type="number" id="worker-id" placeholder="Type here" class="text-number-input" required>
-            <label for="start-date">Start Date</label>
+            <label for="start-date" class="bold">Start Date</label>
             <input type="date" id="start-date" placeholder="Type here" class="text-number-input" required>
-            <label for="end-date">End Date</label>
+            <label for="end-date" class="bold">End Date</label>
             <input type="date" id="end-date" placeholder="Type here" class="text-number-input" required>
             <button type="submit" class="green-btn">Add Day Off</button>
         </form>
@@ -69,15 +69,15 @@
 
     <form id="find-days-off-form">
         <div id="find-days-off-div" class="specified-hidden">
-            <label for="workerid-radio">
+            <label for="workerid-radio" class="bold">
                 Worker Id
                 <input type="radio" id="workerid-radio" placeholder="Type here" name="search-check">
             </label>
-            <label for="breakid-radio">
+            <label for="breakid-radio" class="bold">
                 Break Id
                 <input type="radio" id="breakid-radio" name="search-check">
             </label>
-            <label for="value" class="specified-hidden" id="value-label">
+            <label for="value" class="specified-hidden bold" id="value-label">
                 Value
                 <input type="number" id="value" placeholder="Type here">
             </label>
@@ -102,61 +102,69 @@
 
     <div class="buttons-div">
         <button id="add-restriction-btn" class="grey-btn">Add restriction</button>
-    <button id="find-restriction-btn" class="grey-btn">Find restriction</button>
+        <button id="find-restriction-btn" class="grey-btn">Find restriction</button>
     </div>
 
     <div id="add-restriction-div" class="specified-hidden container">
         <form id="add-restriction-form">
-            <label for="worker-id-input">Worker ID</label>
+            <label for="worker-id-input" class="bold">Worker ID</label>
             <input type="number" id="worker-id-input" placeholder="Type here" class="text-number-input" required>
-            <p>Day Of The Week</p>
+            <p class="bold">Day Of The Week</p>
             <label for="sunday">
                 Sunday
-                <input type="radio" name="day-of-week-option" id="sunday" value="Sunday">
+                <input type="radio" name="day-of-week-option" id="sunday" value="Sunday" class="day-of-week-input">
             </label>
             <label for="monday">
                 Monday
-                <input type="radio" name="day-of-week-option" id="monday" value="Monday">
+                <input type="radio" name="day-of-week-option" id="monday" value="Monday" class="day-of-week-input">
             </label>
             <label for="tueday">
                 Tuesday
-                <input type="radio" name="day-of-week-option" id="tueday" value="Tueday">
+                <input type="radio" name="day-of-week-option" id="tueday" value="Tueday" class="day-of-week-input">
             </label>
             <label for="wednesday">
                 Wednesday
-                <input type="radio" name="day-of-week-option" id="sunday" value="Sunday">
+                <input type="radio" name="day-of-week-option" id="sunday" value="Sunday" class="day-of-week-input">
             </label>
             <label for="thursday">
                 Thursday
-                <input type="radio" name="day-of-week-option" id="thursday" value="Thursday">
+                <input type="radio" name="day-of-week-option" id="thursday" value="Thursday" class="day-of-week-input">
             </label>
             <label for="friday">
                 Friday
-                <input type="radio" name="day-of-week-option" id="friday" value="Friday">
+                <input type="radio" name="day-of-week-option" id="friday" value="Friday" class="day-of-week-input">
             </label>
             <label for="saturday">
                 Saturday
-                <input type="radio" name="day-of-week-option" id="saturday" value="Saturday">
+                <input type="radio" name="day-of-week-option" id="saturday" value="Saturday" class="day-of-week-input">
             </label>
-            <label for="start-time-input">Start Time</label>
-            <input type="time" id="start-time-input" placeholder="Type here" class="text-number-input">
-            <label for="end-time-input">End Time</label>
-            <input type="time" id="end-time-input"placeholder="Type here" class="text-number-input">
+            <div id="time-div">
+                <div id="start-time-div">
+                    <label for="start-time-input" class="bold">Start Time</label>    
+                    <input type="time" id="start-time-input" placeholder="Type here" class="text-number-input">
+                </div>
+                <div id="end-time-div">
+                    <label for="end-time-input" class="bold" >End Time</label>
+                    <input type="time" id="end-time-input"placeholder="Type here" class="text-number-input">
+                </div>
+            </div>
             <button class="green-btn">Add Restriction</button>
         </form>
     </div>
 
     <div id="find-restriction-div" class="specified-hidden container">
         <form id="find-restriction-form">
-            <label for="restriction-worker-id">
-                Worker ID
-                <input type="radio" id="restriction-worker-id" name="column-input">
-            </label>
-            <label for="restriction-id">
-                ID
-                <input type="radio" id="restriction-id" name="column-input">
-            </label>
-            <label for="id-value-input">
+            <div id="restriction-ids-div">
+                <label for="restriction-id" class="bold">
+                    ID
+                    <input type="radio" id="restriction-id" name="column-input">
+                </label>
+                <label for="restriction-worker-id" class="bold">
+                    Worker ID
+                    <input type="radio" id="restriction-worker-id" name="column-input">
+                </label>
+            </div>
+            <label for="id-value-input" class="bold">
                 ID Value
                 <input type="text" id="id-value-input" placeholder="Type here">
             </label>

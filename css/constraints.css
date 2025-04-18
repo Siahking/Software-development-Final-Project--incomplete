@@ -32,3 +32,17 @@ input{
 #edit-constraint-form p{
     margin-bottom: 5px;
 }
+
+#add-constraint-div,#find-constraint-div,#edit-constraint-div{
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* width: 61%; Adjust width as needed */
+    /* max-width: 600px; Prevents stretching too wide */
+    /* min-width: 550px; */
+    padding: 1.5rem;
+    background: #f8f8f8; /* Optional: Adds slight background for visibility */
+    border-radius: 8px; /* Optional: Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Slight shadow effect */
+    margin: 50px;
+}

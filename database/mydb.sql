@@ -206,3 +206,25 @@ JOIN    workers as w ON pr.worker_id = w.id;
 
 --@block
 SELECT w.* FROM workers w JOIN worker_locations wl ON w.id = wl.worker_id WHERE wl.location_id = 1;
+
+--@block
+SELECT 
+    wc.id,
+    w1.first_name AS worker1_firstname,
+    w1.last_name AS worker1_lastname,
+    w2.first_name AS worker2_firstname,
+    w2.last_name AS worker2_lastname,
+    wc.note 
+FROM 
+    worker_constraints wc 
+JOIN
+    workers w1 ON wc.worker1_id = w1.id
+JOIN
+    workers w2 ON wc.worker2_id = w2.id
+WHERE
+    (
+        (w1.first_name = "Sophia" AND w1.last_name = "Brown" AND w2.first_name = "James" AND w2.last_name = "Anderson")
+        OR
+        (w1.first_name = "James" AND w1.last_name = "Anderson" AND w2.first_name = "Sophia" and w2.last_name = "Brown")
+    );
+    

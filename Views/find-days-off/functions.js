@@ -25,6 +25,7 @@ export async function displayDaysOff(){
         endDate.innerHTML = result.end_date
 
         deleteBtn.id = `delete_${result.break_id}`
+        deleteBtn.classList.add("delete-btn")
         deleteBtn.value = result.break_id
         deleteBtn.innerHTML = "Remove Days Off"
         deleteBtn.addEventListener("click",(event)=>{

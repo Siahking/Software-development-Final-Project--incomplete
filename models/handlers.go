@@ -45,6 +45,15 @@ type Constraint struct {
 	Note    *string `json:"note"`
 }
 
+type AdvancedConstraintSearch struct{
+	ID *int `json:"id"`
+	Worker1FirstName *string `json:"worker1_firstname"`
+	Worker1LastName *string `json:"worker1_lastname"`
+	Worker2FirstName *string `json:"worker2_firstname"`
+	Worker2LastName *string `json:"worker2_lastname"`
+	Note *string `json:"note"`
+}
+
 type DaysOff struct {
 	BreakId   int     `json:"break_id"`
 	WorkerId  int     `json:"worker_id"`
@@ -537,52 +546,62 @@ func CreateConstrant(c *gin.Context, db *sql.DB) {
 
 // code to search for constraint and return if constraint exists or not
 func FindConstraint(c *gin.Context, db *sql.DB) {
+	advancedSearch := false
 	var query string
 	var rows *sql.Rows
 	var err error
-	var constraints []Constraint
+	var id int
 
 	idStr := c.Query("id")
-	worker1Str := c.Query("worker1")
-	worker2Str := c.Query("worker2")
-	baseString := "SELECT * FROM worker_constraints WHERE "
-	var id int
-	var worker1 int
-	var worker2 int
+	worker1FirstName := c.Query("worker1_firstname")
+	worker1LastName := c.Query("worker1_lastname")
+	worker2FirstName := c.Query("worker2_firstname")
+	worker2LastName := c.Query("worker2_lastname")
+	baseString1 := 	`SELECT wc.id,w1.first_name AS worker1_firstname,w1.last_name AS worker1_lastname,w2.first_name AS worker2_firstname,
+					w2.last_name AS worker2_lastname,wc.note AS note 
+					FROM worker_constraints wc 
+					JOIN workers w1 ON wc.worker1_id = w1.id
+					JOIN workers w2 ON wc.worker2_id = w2.id
+					WHERE`
+	baseString2 := "SELECT * FROM worker_constraints"
 
-	parameters := []string{idStr, worker1Str, worker2Str}
-	variables := []*int{&id, &worker1, &worker2}
-
-	for i, parameter := range parameters {
-		if parameter == "" {
-			*variables[i] = 0
-		} else {
-			value, err := strconv.Atoi(parameter)
-			if err != nil || value < 1 {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input " + parameter})
-				return
-			}
-			*variables[i] = value
+	if idStr == ""{
+		id = 0
+	}else{
+		id,err = strconv.Atoi(idStr)
+		if err != nil{
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+			return
 		}
 	}
 
-	if id == 0 && worker1 == 0 && worker2 == 0 {
-		rows, err = db.Query("SELECT * FROM worker_constraints")
+	if id == 0 && worker1FirstName == "" && worker1LastName == "" && worker2FirstName == "" {
+		rows, err = db.Query(baseString2)
 	} else if id > 0 {
-		query = baseString + "id = ?"
+		query = baseString2 + " WHERE id = ?"
 		rows, err = db.Query(query, id)
-	} else if worker1 > 0 && worker2 > 0 {
-		query = baseString + "worker1_id = ? AND worker2_id = ?"
-		rows, err = db.Query(query, worker1, worker2)
-	} else if worker1 > 0 {
-		query = baseString + "worker1_id = ?"
-		rows, err = db.Query(query, worker1)
-	} else if worker2 > 0 {
-		query = baseString + "worker2_id = ?"
-		rows, err = db.Query(query, worker2)
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid search parameters"})
-		return
+		advancedSearch = true
+		if worker1FirstName != "" && worker2FirstName != "" {
+			query = baseString1 + `(
+				(w1.first_name = ? AND w1.last_name = ? AND w2.first_name = ? AND w2.last_name = ? )
+				OR 
+				(w1.first_name = ? AND w1.last_name = ? AND w2.first_name = ? AND w2.last_name = ? )
+			)`
+			rows, err = db.Query(
+				query, worker1FirstName, worker1LastName,worker2FirstName,worker2LastName,
+				worker2FirstName,worker2LastName,worker1FirstName,worker1LastName)
+		} else if worker1FirstName != "" || worker2FirstName != ""  {
+			query = baseString1 + ` (w1.first_name = ? AND w1.last_name = ? OR w2.first_name = ? AND w2.last_name = ?)`
+			if worker1FirstName != ""{
+				rows, err = db.Query(query, worker1FirstName,worker1LastName,worker1FirstName,worker1LastName)
+			}else{
+				rows, err = db.Query(query, worker2FirstName,worker2LastName,worker2FirstName,worker2LastName)
+			}
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid search parameters"})
+			return
+		}
 	}
 
 	if err != nil {
@@ -592,22 +611,46 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 
 	defer rows.Close()
 
-	for rows.Next() {
-		var constraint Constraint
-		innerError := rows.Scan(&constraint.ID, &constraint.Worker1, &constraint.Worker2, &constraint.Note)
-		if innerError != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + err.Error()})
+	if (advancedSearch == true){
+		var results []AdvancedConstraintSearch
+
+		for rows.Next() {
+			var constraint AdvancedConstraintSearch
+			innerError := rows.Scan(&constraint.ID, &constraint.Worker1FirstName, &constraint.Worker1LastName,
+				&constraint.Worker2FirstName,&constraint.Worker2LastName,&constraint.Note)
+			if innerError != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + err.Error()})
+				return
+			}
+			results = append(results, constraint)
+		}
+	
+		if len(results) == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "No constraint found"})
 			return
 		}
-		constraints = append(constraints, constraint)
-	}
 
-	if len(constraints) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No constraint found"})
-		return
-	}
+		c.IndentedJSON(http.StatusOK, results)
+	}else{
+		var constraints []Constraint
 
-	c.IndentedJSON(http.StatusOK, constraints)
+		for rows.Next() {
+			var constraint Constraint
+			innerError := rows.Scan(&constraint.ID, &constraint.Worker1, &constraint.Worker2, &constraint.Note)
+			if innerError != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + err.Error()})
+				return
+			}
+			constraints = append(constraints, constraint)
+		}
+	
+		if len(constraints) == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "No constraint found"})
+			return
+		}
+
+		c.IndentedJSON(http.StatusOK, constraints)
+	}
 }
 
 func EditConstraints(c *gin.Context, db *sql.DB) {
