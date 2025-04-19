@@ -19,9 +19,9 @@ export async function showWorkers (){
         for (const field of workerArr){
             const tableData = document.createElement("td")
             if (field){
-                tableData.innerHTML = field
+                tableData.innerText = field
             }else{
-                tableData.innerHTML = "Null"
+                tableData.innerText = "Null"
             }
             tableRow.append(tableData)
         }
@@ -35,16 +35,16 @@ export async function showWorkers (){
                 const locationName = locationInfo[0].location
                 tempArr.push(locationName)
             }
-            locationsRow.innerHTML = tempArr.join(', ')
+            locationsRow.innerText = tempArr.join(', ')
         }else{
-            locationsRow.innerHTML = "Unassigned"
+            locationsRow.innerText = "Unassigned"
         }
 
         tableRow.appendChild(locationsRow)
 
         const deleteCell = document.createElement('td')
         const deleteBtn = document.createElement("button")
-        deleteBtn.innerHTML = "Delete"
+        deleteBtn.innerText = "Delete"
         deleteBtn.value = worker.id
         deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>deleteWorker(event))

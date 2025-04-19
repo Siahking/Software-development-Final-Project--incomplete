@@ -146,7 +146,7 @@ export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""
         worker1Id = parseInt(worker1IdStr)
         worker2Id = parseInt(worker2IdStr)
     }catch{
-        errorTag.innerHTML = "Invalid insertion values for input areas"
+        errorTag.innerText = "Invalid insertion values for input areas"
         return
     }
 
@@ -286,7 +286,7 @@ export async function clearOccupancies(){
 }
 
 // async function tester() {
-//     const result = await getConstraints("","sophia")
+//     const result = await getConstraints("","william","evans","sophia","brown")
 //     console.log(result)
 // }
 

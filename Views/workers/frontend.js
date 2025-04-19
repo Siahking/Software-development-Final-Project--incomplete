@@ -55,7 +55,7 @@ function toogleInputs(checkbox,input){
         input.classList.remove("specified-hidden")
     }else{
         input.classList.add("specified-hidden")
-        input.innerHTML = ""
+        input.innerText = ""
     }
 }
 

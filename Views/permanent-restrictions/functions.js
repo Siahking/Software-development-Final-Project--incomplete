@@ -36,7 +36,7 @@ export async function displayRestrictions(){
         const deleteCell = document.createElement("td")
         const deleteBtn = document.createElement("button")
 
-        deleteBtn.innerHTML = "Delete Restriction"
+        deleteBtn.innerText = "Delete Restriction"
         deleteBtn.value = restriction.id
         deleteBtn.id = `delete-${restriction.id}`
         deleteBtn.classList.add("delete-btn")
@@ -46,12 +46,12 @@ export async function displayRestrictions(){
         deleteCell.appendChild(deleteBtn)
         deleteCell.classList.add("delete-cell")
         
-        idData.innerHTML  = restriction.id
-        firstNameData.innerHTML = workerData.first_name
-        lastNameData.innerHTML = workerData.last_name
-        dayOfWeekData.innerHTML = restriction.day_of_week
-        startTimeData.innerHTML = restriction.start_time == "00:00:00" ?  "--" :  restriction.start_time
-        endTimeData.innerHTML = restriction.end_time == "00:00:00" ?  "--" :  restriction.end_time
+        idData.innerText  = restriction.id
+        firstNameData.innerText = workerData.first_name
+        lastNameData.innerText = workerData.last_name
+        dayOfWeekData.innerText = restriction.day_of_week
+        startTimeData.innerText = restriction.start_time == "00:00:00" ?  "--" :  restriction.start_time
+        endTimeData.innerText = restriction.end_time == "00:00:00" ?  "--" :  restriction.end_time
         
         for (const data of [idData,firstNameData,lastNameData,dayOfWeekData,startTimeData,endTimeData,deleteCell]){
             tableRow.appendChild(data)
@@ -72,12 +72,12 @@ export async function findRestriction() {
     } else if (idRadio.checked){
         results = await apiFuncs.findPermanentRestrictions("id",idValue.value)
     } else{
-        errorTag.innerHTML = "Please select an id to search from"
+        errorTag.innerText = "Please select an id to search from"
         return 
     }
 
     if(Object.keys(results).includes("error")){
-        errorTag.innerHTML = results.error
+        errorTag.innerText = results.error
         return
     }
 
@@ -115,7 +115,7 @@ export async function addRestriction(){
     const result = await apiFuncs.createRestriction(workerId,dayOfWeek,startTime,endTime)
 
     if (Object.keys(result).includes("error")){
-        errorTag.innerHTML = result.error
+        errorTag.innerText = result.error
         return
     }
 
@@ -127,7 +127,7 @@ async function deleteRestriction(id){
     const result = await apiFuncs.deletePermanentRestrictions(id)
 
     if (Object.keys(result).includes("error")){
-        errorTag.innerHTML = result.error
+        errorTag.innerText = result.error
         return
     }
 

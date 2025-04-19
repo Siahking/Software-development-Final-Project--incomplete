@@ -7,7 +7,7 @@ export async function loadLocations(){
     const locations = await apiFuncs.getLocations()
 
     if (Object.keys(locations).includes("error")){
-        errorTag.innerHTML = "No locations found"
+        errorTag.innerText = "No locations found"
         return
     }
 
@@ -52,12 +52,12 @@ export function saveDateAndLocations(){
     currentDate.setDate(1)
 
     if (selectedDate <= currentDate) {
-        errorTag.innerHTML = "Please select a subsequent month."
+        errorTag.innerText = "Please select a subsequent month."
         return;
     }
 
     if (locations.length === 0){
-        errorTag.innerHTML = "Please select atleast one location"
+        errorTag.innerText = "Please select atleast one location"
         return
     }
 

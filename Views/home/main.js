@@ -18,10 +18,10 @@ rosterDiv.addEventListener("submit",(event)=>{
 window.addEventListener("DOMContentLoaded",()=>{
     const message = sessionStorage.getItem("Message")
 
-    errorTag.innerHTML = ""
+    errorTag.innerText = ""
 
     if (message)
-        messageTag.innerHTML = message
+        messageTag.innerText = message
         sessionStorage.removeItem("Message")
         localStorage.removeItem("Message")
 })

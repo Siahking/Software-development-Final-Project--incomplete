@@ -8,7 +8,7 @@ export function displayLocations(){
         const text = document.createTextNode(data.location)
 
         const deleteBtn = document.createElement("button")
-        deleteBtn.innerHTML = "Delete"
+        deleteBtn.innerText = "Delete"
         deleteBtn.value = data.id
         deleteBtn.id = `delete-${data.id}`
         deleteBtn.classList.add("delete-btn")

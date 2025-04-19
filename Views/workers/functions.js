@@ -18,7 +18,7 @@ const hoursOptions = document.querySelectorAll('.hours-options')
 
 tableHeadArray.forEach((item) => {
     const tableHead = document.createElement("th")
-    tableHead.innerHTML = item;
+    tableHead.innerText = item;
     firstRow.appendChild(tableHead);
 })
 table.appendChild(firstRow)
@@ -64,7 +64,7 @@ export async function displayLocations(){
     const locations = await apiFuncs.getLocations();
     
     if (!locations){
-        showLocationsDiv.innerHTML = "No Locations Found"
+        showLocationsDiv.innerText = "No Locations Found"
     }
 
     locations.forEach(location=>{
@@ -72,7 +72,7 @@ export async function displayLocations(){
         const input = document.createElement("input")
         const span = document.createElement("span")
 
-        span.innerHTML = location.location
+        span.innerText = location.location
 
         input.id = location.id
         input.value = location.location
@@ -107,9 +107,9 @@ export async function showWorkers (){
         for (const [index,field] of workerArr.entries()){
             const tableData = document.createElement("td")
             if (field){
-                tableData.innerHTML = field
+                tableData.innerText = field
             }else{
-                tableData.innerHTML = "Null"
+                tableData.innerText = "Null"
             }
 
             switch (index){
@@ -136,16 +136,16 @@ export async function showWorkers (){
                 const locationName = locationInfo[0].location
                 tempArr.push(locationName)
             }
-            locationsRow.innerHTML = tempArr.join(', ')
+            locationsRow.innerText = tempArr.join(', ')
         }else{
-            locationsRow.innerHTML = "Unassigned"
+            locationsRow.innerText = "Unassigned"
         }
 
         tableRow.appendChild(locationsRow)
 
         const deleteCell = document.createElement('td')
         const deleteBtn = document.createElement("button")
-        deleteBtn.innerHTML = "Delete"
+        deleteBtn.innerText = "Delete"
         deleteBtn.classList.add("delete-btn")
         deleteBtn.value = worker.id
         deleteBtn.setAttribute("name",`delete_id${worker.id}`)

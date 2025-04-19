@@ -43,21 +43,21 @@ export async function displayDaysOff(){
         const rawWorkerData = await apiFuncs.findWorker("","","","",result.worker_id)
         const workerData = rawWorkerData[0]
 
-        idInfo.innerHTML = result.break_id
-        workerInfo.innerHTML = `${workerData.first_name} ${workerData.last_name}`
-        startDate.innerHTML = result.start_date
-        endDate.innerHTML = result.end_date
+        idInfo.innerText = result.break_id
+        workerInfo.innerText = `${workerData.first_name} ${workerData.last_name}`
+        startDate.innerText = result.start_date
+        endDate.innerText = result.end_date
 
         deleteBtn.id = `delete_${result.break_id}`
         deleteBtn.value = result.break_id
-        deleteBtn.innerHTML = "Remove Days Off"
+        deleteBtn.innerText = "Remove Days Off"
         deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>{
             const confirmation = confirm(`Are you sure you want ot delete these days off for ${workerData.first_name} ${workerData.last_name}`)
             if (confirmation){
                 deleteDaysOff(event)
             }else{
-                errorTag.innerHTML = "Operation Canceled"
+                errorTag.innerText = "Operation Canceled"
                 return
             }
         })
@@ -92,7 +92,7 @@ export async function newDaysOff(event){
     const result = await apiFuncs.addDaysOff(workerId,startDate,endDate)
 
     if (Object.keys(result).includes("error")){
-        errorTag.innerHTML = result.error
+        errorTag.innerText = result.error
         return
     }
 
@@ -106,7 +106,7 @@ export async function deleteDaysOff(event){
     const result = await apiFuncs.removeDaysOff(breakId)
 
     if (Object.keys(result).includes("error")){
-        errorTag.innerHTML = result.error
+        errorTag.innerText = result.error
         return
     }
 
@@ -124,12 +124,12 @@ export async function findDaysOff(event){
     }else if (breakIdCheckbox.checked){
         result = await apiFuncs.getDaysOff("break_id",valueInput.value)
     }else{
-        errorTag.innerHTML = "Unknown search value"
+        errorTag.innerText = "Unknown search value"
         return
     }
 
     if (Object.keys(result).includes("error")){
-        errorTag.innerHTML = result.error
+        errorTag.innerText = result.error
         return
     }
 
