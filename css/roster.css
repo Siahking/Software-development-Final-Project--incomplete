@@ -1,8 +1,23 @@
+.location-header-div,.shift-block,.location-header-div,#home-div{
+    display: flex;
+}
+
+.calendar-item,.shift-block{
+    align-items: center;
+}
+
+.calendar-item,#home-tag{
+    text-align: center;
+}
+
+.shift-block,#home-div,.location-header-div{
+    justify-content: center;
+}
+
 .calendar-container {
     display: grid;
-    grid-template-columns: repeat(7, 1fr); /* 7 columns for each day of the week */
+    grid-template-columns: repeat(7, 1fr);
     gap: 5px;
-    text-align: center;
 }
 
 .calendar-item {
@@ -10,8 +25,8 @@
     padding: 30px 20px ;
     border: 1px solid #ddd;
     background-color: lightgray;
-    min-width: 120px; /* Adjust to fit your design */
-    height: 150px ; /* Adjust based on content */
+    min-width: 120px;
+    height: 150px ; 
     align-items: center;
     overflow: hidden;
 }
@@ -25,8 +40,6 @@
 
 .location-header-div{
     width: 100%;
-    display: flex;
-    justify-content: center;
 }
 
 .day-number {
@@ -38,38 +51,19 @@
 }
 
 .shift-block {
-    width: 100% ;
-    height: 30px ;
-    margin: 3px 0;
-    border-radius: 5px;
-    padding: 5px;
-    flex-direction: column;
-    align-items: center;
-    min-height: 30px;
-}
-
-.shift-block {
-    width: 100% ; /* Ensures it takes up the entire container */
-    max-width: 200px ; /* Adjust width as needed */
-    min-height: 50px ; /* Prevents the div from collapsing */
-    word-wrap: break-word; /* Ensures long words wrap properly */
-    overflow: hidden ; /* Hides overflow content */
-    white-space: normal; /* Allows text to wrap */
-    display: flex; /* Enables flexible alignment */
-    flex-direction: column; /* Ensures text stacks properly */
-    align-items: center; /* Centers content horizontally */
-    justify-content: center; /* Centers content vertically */
+    width: 100% ; 
+    max-width: 200px ; 
+    min-height: 50px ; 
+    word-wrap: break-word; 
+    overflow: hidden ;
+    white-space: normal; 
+    flex-direction: column; 
+    align-items: center; 
     padding: 0;
-    border: 1px solid #ccc; /* Optional: Adds a border */
-    background-color: #f9f9f9; /* Optional: Light background */
-}
-
-.shift-block p {
-    margin: 0; /* Removes default margins */
-    text-align: center; /* Centers text */
-    max-width: 100%; /* Ensures it stays inside the div */
-    word-wrap: break-word;
-    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9; 
+    border-radius: 5px;
+    margin: 3px 0;
 }
 
 .shift-1 {
@@ -90,8 +84,6 @@
 }
 
 #home-div{
-    display: flex;
-    justify-content: center;
     width: 100%;
 }
 
@@ -102,7 +94,6 @@
     border: none;
     border-radius: 5px;
     font-size: 22px;
-    text-align: center;
     cursor: pointer;
     transition: 0.3s ease;
 }

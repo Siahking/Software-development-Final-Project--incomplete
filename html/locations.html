@@ -50,16 +50,18 @@
             <button id="find-location" class="grey-btn">Find Location</button>
         </div>
 
-        <div class="hidden" id="add-location-div">
+        <div class="data-input-container">
+          <div class="specified-hidden" id="add-location-div">
             <form id="location-form">
-                <label for="location-input">
+                <label for="location-input" class="bold">
                     Location Name
                     <input type="text" class="text-number-input" id="location-input" placeholder="Type here" autocomplete="off">
                 </label>
                 <button id="location-submit-btn" class="green-btn">Submit</button>
             </form>
+          </div>
         </div>
-
+        
         <p id="error-tag" style="color: red;"></p>
     
     </div>

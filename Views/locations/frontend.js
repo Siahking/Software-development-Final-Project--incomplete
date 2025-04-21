@@ -19,9 +19,9 @@ export function toogleDiv(btnId){
     }
     toogleStates[btnId] = !toogleStates[btnId]
     if (!toogleStates["find-location"] && !toogleStates["add-location"]){
-        locationDiv.classList.add("hidden")
+        locationDiv.classList.add("specified-hidden")
     }else{
-        locationDiv.classList.remove("hidden")
+        locationDiv.classList.remove("specified-hidden")
     }
     input.value = ""
 }

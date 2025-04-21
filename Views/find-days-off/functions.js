@@ -13,7 +13,6 @@ export async function displayDaysOff(){
         const workerInfo = document.createElement("td")
         const startDate = document.createElement("td")
         const endDate = document.createElement("td")
-        const deleteCell = document.createElement("td")
         const deleteBtn = document.createElement("button")
 
         const rawWorkerData = await apiFuncs.findWorker("","","","",result.worker_id)
@@ -38,9 +37,7 @@ export async function displayDaysOff(){
             }
         })
 
-        deleteCell.appendChild(deleteBtn)
-
-        for (const cell of [idInfo,workerInfo,startDate,endDate,deleteCell]){
+        for (const cell of [idInfo,workerInfo,startDate,endDate,deleteBtn]){
             tableRow.appendChild(cell)
         }
         table.appendChild(tableRow)

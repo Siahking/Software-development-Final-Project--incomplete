@@ -42,16 +42,13 @@ export async function showWorkers (){
 
         tableRow.appendChild(locationsRow)
 
-        const deleteCell = document.createElement('td')
         const deleteBtn = document.createElement("button")
         deleteBtn.innerText = "Delete"
         deleteBtn.value = worker.id
         deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>deleteWorker(event))
 
-        deleteCell.appendChild(deleteBtn)
-
-        tableRow.append(deleteCell)
+        tableRow.append(deleteBtn)
         table.append(tableRow)
     }
 }

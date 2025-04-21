@@ -4,14 +4,24 @@
     --input-grey:#BEBEBE;
 }
 
-#table-div{
-    width: 100%;
+.buttons-div,.nav-container,#error-div,.data-input-container{
+    display: flex;
 }
 
-.buttons-div{
-    width: 100%;
-    display: flex;
+#table-div,.buttons-div,#error-div,.data-input-container{
+    width: 100% !important;
+}
+
+.buttons-div,.data-input-container,#error-div{
     justify-content: center;
+}
+
+.data-input-container,.nav-container{
+    align-items: center;
+}
+
+.nav-container,.data-input-container{
+    flex-direction: column;
 }
 
 table {
@@ -22,19 +32,21 @@ table {
 
 th, td {
     border-bottom: 1px solid black !important;
-    padding: 8px;
     text-align: center !important;
     vertical-align: middle;
 }
 
-tr:last-child td {
-    border-bottom: 2px solid black ; 
+th{
+    padding: 8px;
 }
 
-.nav-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+td{
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+tr:last-child td {
+    border-bottom: 2px solid black ; 
 }
 
 .navbar-brand,.nav-link{
@@ -112,10 +124,7 @@ tr:last-child td {
 }
 
 #error-div{
-    display: flex;
     margin-top: 10px;
-    width: 100%;
-    justify-content: center;
 }
 
 .bold{
@@ -123,11 +132,13 @@ tr:last-child td {
 }
 
 .data-input-container{
-    display: flex;
-    width: 100% !important;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     padding-top: 0;
     margin-top: 0;
+}
+
+.navbar-brand {
+    padding-top: 8px; /* Matches nav-link vertical spacing */
+    padding-bottom: 8px;
+    display: flex;
+    align-items: center;
 }

@@ -50,25 +50,25 @@
         <p id="error-tag" style="color: red;"></p>
     </div>
 
-    <div class="data-input-constainer">
+    <div class="data-input-container">
         <div class="specified-hidden" id="add-worker-div">
             <form id="add-worker-form">
                 <div id="name-info-div">
-                    <label for="add-first-name-input" class="text-input-label">
+                    <label for="add-first-name-input" class="text-input-label bold">
                         First  Name
                         <input type="text" class="text-number-input" id="add-first-name-input" placeholder="Type here" autocomplete="off" required>
                     </label>
-                    <label for="add-middle-name-input" class="text-input-label">
+                    <label for="add-middle-name-input" class="text-input-label bold">
                         Middle  Name
                         <input type="text" class="text-number-input" id="add-middle-name-input" placeholder="Type here" autocomplete="off">
                     </label>
-                    <label for="add-last-name-input" class="text-input-label">
+                    <label for="add-last-name-input" class="text-input-label bold">
                         Last  Name
                         <input type="text" class="text-number-input" id="add-last-name-input" placeholder="Type here" autocomplete="off" required>
                     </label>
                 </div>
                 <div id="gender-address-info-div">
-                    <label for="add-gender-input">
+                    <label for="add-gender-input" class="bold">
                         Gender
                          <select id="add-gender-input" required>
                             <option value="" disabled selected>Select gender</option>
@@ -77,63 +77,63 @@
                             <option value="Other">Other</option>
                          </select>
                     </label>
-                    <label for="add-address-input">
+                    <label for="add-address-input" class="bold">
                         Address
                         <input type="text" class="text-number-input" id="add-address-input" placeholder="Type here" autocomplete="off" required>
                     </label>
-                    <label for="add-age-input">
+                    <label for="add-age-input" class="bold">
                         Age
                         <input type="number" class="text-number-input" id="add-age-input" placeholder="Type here" min="18" required>
                     </label>
                 </div>
                 <div id="contact-id-info-div">
-                    <label for="add-contact-input">
+                    <label for="add-contact-input" class="bold">
                         Contact
                         <input type="text" class="text-number-input" id="add-contact-input" placeholder="Type here" autocomplete="off">
                     </label>
-                    <label for="add-id-number-input">
+                    <label for="add-id-number-input" class="bold">
                         ID Number
                         <input type="number" id="add-id-number-input" class="text-number-input" placeholder="Type here" required>
                     </label>
                 </div>
                 <div id="availability-div">
-                    Availability
-                    <label for="day-option">
+                    <p class="bold">Availability</p>
+                    <label for="day-option" class="bold">
                         <input type="radio" id="day-option" name="availability" value="Day">
                         Day
                     </label>
-                    <label for="night-option">
+                    <label for="night-option" class="bold">
                         <input type="radio" id="night-option" name="availability" value="Night">
                         Night
                     </label>
-                    <label for="eclipse-option">
+                    <label for="eclipse-option" class="bold">
                         <input type="radio" id="eclipse-option" name="availability" value="Eclipse">
                         Eclipse
                     </label>
-                    <label for="specified-option">
+                    <label for="specified-option" class="bold">
                         <input type="radio" id="specified-option" name="availability" value="Specified">
                         Specified
                     </label>
                 </div>
                 <div id="hours-div" class="hidden">
                     Hours
-                    <label for="6am-6pm">
+                    <label for="6am-6pm" class="bold">
                         <input type="checkbox" id="6am-6pm" class="hours-options">
                         6am to 6pm
                     </label>
-                    <label for="6pm-6am">
+                    <label for="6pm-6am" class="bold">
                         <input type="checkbox" id="6pm-6am" class="hours-options">
                         6pm to 6am
                     </label>
-                    <label for="6am-2pm">
+                    <label for="6am-2pm" class="bold">
                         <input type="checkbox" id="6am-2pm" class="hours-options">
                         6am to 2pm
                     </label>
-                    <label for="2am-10pm">
+                    <label for="2am-10pm" class="bold">
                         <input type="checkbox" id="2pm-10pm" class="hours-options">
                         2am to 10pm
                     </label>
-                    <label for="10pm-6am">
+                    <label for="10pm-6am" class="bold">
                         <input type="checkbox" id="10pm-6am" class="hours-options">
                         10pm to 6am
                     </label>
@@ -153,30 +153,30 @@
         </div>
         <div id="find-worker-div" class="specified-hidden">
             <form id="workerSearchForm">
-                <label for="id">
+                <label for="id" class="bold">
                     ID
                     <input type="checkbox" id="id" name="id">
-                    <input autocomplete="off" type="number" id="id-input" class="specified-hidden text-number-input" placeholder="Enter the id here">
+                    <input autocomplete="off" type="number" id="id-input" class="specified-hidden text-number-input" placeholder="Type Here">
                 </label>
-                <label for="first-name">
+                <label for="first-name" class="bold">
                     First Name
                     <input type="checkbox" id="first-name">
-                    <input autocomplete="off" type="text" id="first-name-input" class="specified-hidden text-number-input" placeholder="Enter the first name here">
+                    <input autocomplete="off" type="text" id="first-name-input" class="specified-hidden text-number-input" placeholder="Type Here">
                 </label>
-                <label for="last-name">
+                <label for="last-name" class="bold">
                     Last Name
                     <input type="checkbox" id="last-name">
-                    <input autocomplete="off" type="text" id="last-name-input" class="specified-hidden text-number-input" placeholder="Enter the last name here">
+                    <input autocomplete="off" type="text" id="last-name-input" class="specified-hidden text-number-input" placeholder="Type Here">
                 </label>
-                <label for="middle-name">
+                <label for="middle-name" class="bold">
                     Middle Name
                     <input type="checkbox" id="middle-name">
-                    <input autocomplete="off" type="text" id="middle-name-input" class="specified-hidden text-number-input" placeholder="Enter the middle name here">
+                    <input autocomplete="off" type="text" id="middle-name-input" class="specified-hidden text-number-input" placeholder="Type Here">
                 </label>
-                <label for="id-number">
+                <label for="id-number" class="bold">
                     ID Number
                     <input type="checkbox" id="id-number">
-                    <input autocomplete="off" type="text" id="id-number-input" class="specified-hidden text-number-input" placeholder="Enter the id number here">
+                    <input autocomplete="off" type="text" id="id-number-input" class="specified-hidden text-number-input" placeholder="Type Here">
                 </label>
                 <button id="search-button" class="green-btn">Search</button>
             </form>

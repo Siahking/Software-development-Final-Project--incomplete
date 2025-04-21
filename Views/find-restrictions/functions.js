@@ -1,4 +1,5 @@
 import { getWorker } from '../permanent-restrictions/functions.js'
+import { deleteRestriction } from '../permanent-restrictions/functions.js'
 
 const table = document.getElementById("table")
 
@@ -14,6 +15,15 @@ export async function displayRestrictions() {
         const dayOfWeekData= document.createElement("td")
         const startTimeData = document.createElement("td")
         const endTimeData = document.createElement("td")
+        const deleteBtn = document.createElement("button")
+
+        deleteBtn.innerText = "Delete Restriction"
+        deleteBtn.value = restriction.id
+        deleteBtn.id = `delete-${restriction.id}`
+        deleteBtn.classList.add("delete-btn")
+        deleteBtn.addEventListener("click",(event)=>
+            deleteRestriction(event.target.value)
+        )
         
         idData.innerText  = restriction.id
         firstNameData.innerText = workerData.first_name
@@ -22,7 +32,7 @@ export async function displayRestrictions() {
         startTimeData.innerText = restriction.start_time == "00:00:00" ?  "--" :  restriction.start_time
         endTimeData.innerText = restriction.end_time == "00:00:00" ?  "--" :  restriction.end_time
         
-        for (const data of [idData,firstNameData,lastNameData,dayOfWeekData,startTimeData,endTimeData]){
+        for (const data of [idData,firstNameData,lastNameData,dayOfWeekData,startTimeData,endTimeData,deleteBtn]){
             tableRow.appendChild(data)
         }
 

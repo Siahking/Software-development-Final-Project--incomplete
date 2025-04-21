@@ -143,7 +143,6 @@ export async function showWorkers (){
 
         tableRow.appendChild(locationsRow)
 
-        const deleteCell = document.createElement('td')
         const deleteBtn = document.createElement("button")
         deleteBtn.innerText = "Delete"
         deleteBtn.classList.add("delete-btn")
@@ -151,9 +150,7 @@ export async function showWorkers (){
         deleteBtn.setAttribute("name",`delete_id${worker.id}`)
         deleteBtn.addEventListener("click",(event)=>deleteWorker(event))
 
-        deleteCell.appendChild(deleteBtn)
-
-        tableRow.append(deleteCell)
+        tableRow.append(deleteBtn)
         table.append(tableRow)
     }
 }

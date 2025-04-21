@@ -1,3 +1,19 @@
+#add-constraints-form,#edit-constraint-form,#find-constraint-data-div,#find-constraint-button-div,#find-constraint-form,.worker-data label{
+    display: flex;
+}
+
+#add-constraint-form,#edit-constraint-form,#find-constraint-data-div,#find-constraint-form,.worker-data label{
+    flex-direction: column;
+}
+
+#add-constraint-form,#edit-constraint-form,#find-constraint-form,#find-constraint-data-div{
+    align-items: center;
+}
+
+#add-constraint-form,#edit-constraint-form,#find-constraint-form,#find-constraint-data-div,#find-constraint-button-div{
+    justify-content: center;
+}
+
 #table-div{
     padding: 10px;
 }
@@ -10,23 +26,12 @@ input{
     margin: 0 12px 0 2px !important;
 }
 
-#add-constraint-form{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#add-constraint-form label{
+    margin-bottom: 8px;
 }
 
-#find-constraint-form{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#edit-constraint-form{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+#add-constraint-form button{
+    margin: 0;
 }
 
 #edit-constraint-form p{
@@ -34,15 +39,22 @@ input{
 }
 
 #add-constraint-div,#find-constraint-div,#edit-constraint-div{
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* width: 61%; Adjust width as needed */
-    /* max-width: 600px; Prevents stretching too wide */
-    /* min-width: 550px; */
     padding: 1.5rem;
-    background: #f8f8f8; /* Optional: Adds slight background for visibility */
-    border-radius: 8px; /* Optional: Rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Slight shadow effect */
-    margin: 50px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 40px;
+}
+
+
+#find-constraint-div{
+    width: 350px;
+}
+
+#find-constraint-data-div{
+    width: 100%;
+}
+
+#find-constraint-button-div button{
+    margin-bottom: 0;
 }

@@ -3,12 +3,15 @@
     --teal:#4fb9af;
 }
 
+body,html,#roster-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 body,html{
     height: 80vh;
-    display: flex;
     justify-content: center;
-    align-items: center;
-    flex-direction: column;
     background-color: var(--teal);
     color: white;
 }
@@ -53,12 +56,6 @@ button{
     opacity: 1;
     max-height: 500px; 
     transition: opacity 0.5s ease, max-height 0.5s ease;
-}
-
-#roster-div{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 #roster-div button{

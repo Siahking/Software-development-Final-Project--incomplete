@@ -1,3 +1,33 @@
+#table-container,#add-worker-div,#find-worker-div,#name-info-div,#gender-address-info-div,
+#gender-address-info-div label,#availability-div,#hours-div,#workerSearchForm,#locations-input,
+#contact-id-info-div,#contact-info-div label,.buttons-div,.text-input-label{
+    display: flex;
+}
+
+.text-input-label,#add-worker-div,#find-worker-div,#gender-address-info-div label,#hours-div,#workerSearchForm{
+    flex-direction: column;
+}
+
+.text-input-label,#add-worker-div,#find-worker-div,#gender-address-info-div label,#contact-id-info-div label,#hours-div,#workerSearchForm{
+    align-items: center;
+}
+
+.buttons-div,#add-worker-div,#find-worker-div,#table-container{
+    justify-content: center;
+}
+
+#name-info-div,#gender-address-info-div,#availability-div{
+    justify-content: space-between;
+}
+
+#contact-id-info-div,#locations-input{
+    justify-content: space-evenly;
+}
+
+#contact-id-info-div,#gender-address-info-div,#availability-div,#hours-div{
+    padding: 0 10px;
+}
+
 body,html{
     margin: 0;
     padding: 0;
@@ -22,27 +52,11 @@ tr:last-child td {
     border-bottom: 2px solid black ; 
 }
 
-#table-container,#add-worker-div,#find-worker-div,#name-info-div,#gender-address-info-div,
-#gender-address-info-div label,#availability-div,#hours-div,#workerSearchForm,#locations-input,
-#contact-id-info-div,#contact-info-div label{
-    display: flex;
-}
-
-.constainer,.buttons-div,.text-input-label{
-    display: flex;
-}
-
 .addressClass{
     min-width: 100px !important;
 }
 
-.buttons-div{
-    justify-content: center;
-}
-
 .text-input-label{
-    flex-direction: column;
-    align-items: center;
     margin: 2px 10px;
 }
 
@@ -61,14 +75,10 @@ tr:last-child td {
 
 #table-container{
     width: 80%;
-    justify-content: center;
 }
 
 #add-worker-div,
 #find-worker-div {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     width: 61%; /* Adjust width as needed */
     max-width: 600px; /* Prevents stretching too wide */
     min-width: 500px;
@@ -79,44 +89,16 @@ tr:last-child td {
     margin: 50px;
 }
 
-#name-info-div{
-    justify-content: space-between;
-}
-
 #add-age-input{
     width: 100px;
 }
 
-#gender-address-info-div{
-    padding: 0 10px;
-    justify-content: space-between;
-}
-
-#gender-address-info-div label{
-    flex-direction: column;
-    align-items: center;
-}
-
-#contact-id-info-div{
-    padding: 0 10px;
-    justify-content: space-evenly;
-}
-
-#contact-id-info-div label{
-    flex-direction: column;
-    align-items: center;
-}
-
 #availability-div{
-    padding: 0 10px;
-    justify-content: space-between;
+    margin-top: 8px;
 }
 
 #hours-div{
     margin: 5px 0;
-    padding: 0 10px;
-    align-items: center;
-    flex-direction: column;
 }
 
 #hours-div label{
@@ -125,14 +107,8 @@ tr:last-child td {
 
 #locations-input{
     margin-top: 10px;
-    justify-content: space-evenly;
 }
 
 #add-address-input{
     width: 200px;
-}
-
-#workerSearchForm{
-    flex-direction: column;
-    align-items: center;
 }

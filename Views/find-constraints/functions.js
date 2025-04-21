@@ -24,7 +24,6 @@ export async function displayConstraints(){
         const worker1Data = document.createElement("td")
         const worker2Data = document.createElement("td")
         const summaryData = document.createElement("td")
-        const deleteCell = document.createElement("td")
         const deleteBtn = document.createElement("button")
 
         deleteBtn.innerText = "Delete Constraint"
@@ -32,7 +31,6 @@ export async function displayConstraints(){
         deleteBtn.id = `deleteBtn-${constraint.id}`
         deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>removeConstraint(event.target.value))
-        deleteCell.appendChild(deleteBtn)
 
         IDData.innerText = constraint.id
         worker1Data.innerText = worker1Info

@@ -1,35 +1,19 @@
-td{
-    margin: 0 !important;
-    padding: 0 !important;
+.table-div,.container,#find-days-off-div,#add-restriction-form,#start-time-div,#end-time-div,#restriction-ids-div,#time-div,#add-days-off-form{
+    display: flex;
+}
+
+.table-div,#find-days-off-div,#add-restriction-form,#start-time-div,#end-time-div,#restriction-ids-div,#add-restriction-div,#add-days-off-div,
+#find-restriction-div,#find-days-off-div,#add-days-off-form{
+    flex-direction: column;
+    align-items: center;
 }
 
 .table-div{
-    display: flex;
-    align-items: center;
-    flex-direction: column;
     padding: 10px;
 }
 
-.delete-btn{
-    padding: 0;
-    margin: 0;
-}
-
-.container{
-    display: flex;
+.container,#add-restriction-div,#add-days-off-div,#find-restriction-div,#find-days-off-div {
     justify-content: center;
-}
-
-#find-days-off-div{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#add-restriction-form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 #add-restriction-form p{
@@ -38,18 +22,38 @@ td{
 
 #start-time-div,#end-time-div{
     margin: 0 5px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
 }
 
 #time-div{
-    display: flex;
     margin-top: 15px;
 }
 
-#restriction-ids-div{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#add-restriction-div,#add-days-off-div,
+#find-restriction-div,#find-days-off-div {
+    background: #f8f8f8;
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    margin: 50px;
+    padding: 10px 0;
+}
+
+#add-days-off-div,#find-days-off-div{
+    padding-top: 20px;
+    width: 250px;
+}
+
+#add-restriction-div{
+    width: 300px;
+}
+
+#find-restriction-div{
+    width: 360px;
+}
+
+#add-days-off-form label{
+    margin-bottom: 10px;
+}
+
+#add-days-off-form button{
+    margin-top: 0;
 }

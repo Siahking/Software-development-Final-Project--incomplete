@@ -1,16 +1,20 @@
+.main-container,li,#add-location-div{
+    display: flex;
+    align-items: center;
+}
+
+.main-container,#add-location-div{
+    flex-direction: column;
+}
+
 .main-container{
     margin-top: 50px;
     height: 100vh;
     width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 li{
-    display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: -10px;
 }
 
@@ -28,6 +32,14 @@ a{
     margin-left: 20px;
 }
 
-.hidden{
-    display: none;
+#add-location-div {
+    justify-content: center;
+    width: 450px; 
+    max-width: 450px;
+    min-width: 450px;
+    padding: 30px;
+    background: #f8f8f8; 
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    margin: 40px;
 }

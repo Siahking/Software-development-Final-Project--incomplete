@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/daysoff.css">
     <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/daysoff.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Days Off</title>
 </head>
@@ -55,35 +55,43 @@
         <button id="find-days-off" class="grey-btn">Find Days Off</button>
     </div>
 
-    <div id="add-days-off-div" class="specified-hidden container">
-        <form id="add-days-off-form">
-            <label for="worker-id" class="bold">Worker ID</label>
-            <input type="number" id="worker-id" placeholder="Type here" class="text-number-input" required>
-            <label for="start-date" class="bold">Start Date</label>
-            <input type="date" id="start-date" placeholder="Type here" class="text-number-input" required>
-            <label for="end-date" class="bold">End Date</label>
-            <input type="date" id="end-date" placeholder="Type here" class="text-number-input" required>
-            <button type="submit" class="green-btn">Add Day Off</button>
+    <div class="data-input-container">
+        <div id="add-days-off-div" class="specified-hidden container">
+            <form id="add-days-off-form">
+                <label for="worker-id" class="bold">
+                    Worker ID
+                    <input type="number" id="worker-id" placeholder="Type here" class="text-number-input" required>
+                </label>
+                <label for="start-date" class="bold">
+                    Start Date
+                    <input type="date" id="start-date" placeholder="Type here" class="text-number-input" required>
+                </label>
+                <label for="end-date" class="bold">
+                    End Date
+                    <input type="date" id="end-date" placeholder="Type here" class="text-number-input" required>
+                </label>
+                <button type="submit" class="green-btn">Add Day Off</button>
+            </form>
+        </div>
+
+        <form id="find-days-off-form">
+            <div id="find-days-off-div" class="specified-hidden">
+                <label for="workerid-radio" class="bold">
+                    Worker Id
+                    <input type="radio" id="workerid-radio" placeholder="Type here" name="search-check">
+                </label>
+                <label for="breakid-radio" class="bold">
+                    Break Id
+                    <input type="radio" id="breakid-radio" name="search-check">
+                </label>
+                <label for="value" class="specified-hidden bold" id="value-label">
+                    Value
+                    <input type="number" id="value" placeholder="Type here">
+                </label>
+                <button class="green-btn">Search</button>
+            </div>
         </form>
     </div>
-
-    <form id="find-days-off-form">
-        <div id="find-days-off-div" class="specified-hidden">
-            <label for="workerid-radio" class="bold">
-                Worker Id
-                <input type="radio" id="workerid-radio" placeholder="Type here" name="search-check">
-            </label>
-            <label for="breakid-radio" class="bold">
-                Break Id
-                <input type="radio" id="breakid-radio" name="search-check">
-            </label>
-            <label for="value" class="specified-hidden bold" id="value-label">
-                Value
-                <input type="number" id="value" placeholder="Type here">
-            </label>
-            <button class="green-btn">Search</button>
-        </div>
-    </form>
 
     <div class="table-div">
         <h1>Permanent Restrictions</h1>
@@ -105,74 +113,75 @@
         <button id="find-restriction-btn" class="grey-btn">Find restriction</button>
     </div>
 
-    <div id="add-restriction-div" class="specified-hidden container">
-        <form id="add-restriction-form">
-            <label for="worker-id-input" class="bold">Worker ID</label>
-            <input type="number" id="worker-id-input" placeholder="Type here" class="text-number-input" required>
-            <p class="bold">Day Of The Week</p>
-            <label for="sunday">
-                Sunday
-                <input type="radio" name="day-of-week-option" id="sunday" value="Sunday" class="day-of-week-input">
-            </label>
-            <label for="monday">
-                Monday
-                <input type="radio" name="day-of-week-option" id="monday" value="Monday" class="day-of-week-input">
-            </label>
-            <label for="tueday">
-                Tuesday
-                <input type="radio" name="day-of-week-option" id="tueday" value="Tueday" class="day-of-week-input">
-            </label>
-            <label for="wednesday">
-                Wednesday
-                <input type="radio" name="day-of-week-option" id="sunday" value="Sunday" class="day-of-week-input">
-            </label>
-            <label for="thursday">
-                Thursday
-                <input type="radio" name="day-of-week-option" id="thursday" value="Thursday" class="day-of-week-input">
-            </label>
-            <label for="friday">
-                Friday
-                <input type="radio" name="day-of-week-option" id="friday" value="Friday" class="day-of-week-input">
-            </label>
-            <label for="saturday">
-                Saturday
-                <input type="radio" name="day-of-week-option" id="saturday" value="Saturday" class="day-of-week-input">
-            </label>
-            <div id="time-div">
-                <div id="start-time-div">
-                    <label for="start-time-input" class="bold">Start Time</label>    
-                    <input type="time" id="start-time-input" placeholder="Type here" class="text-number-input">
+    <div class="data-input-container">
+        <div id="add-restriction-div" class="specified-hidden container">
+            <form id="add-restriction-form">
+                <label for="worker-id-input" class="bold">Worker ID</label>
+                <input type="number" id="worker-id-input" placeholder="Type here" class="text-number-input" required>
+                <p class="bold">Day Of The Week</p>
+                <label for="sunday">
+                    Sunday
+                    <input type="radio" name="day-of-week-option" id="sunday" value="Sunday" class="day-of-week-input">
+                </label>
+                <label for="monday">
+                    Monday
+                    <input type="radio" name="day-of-week-option" id="monday" value="Monday" class="day-of-week-input">
+                </label>
+                <label for="tueday">
+                    Tuesday
+                    <input type="radio" name="day-of-week-option" id="tueday" value="Tueday" class="day-of-week-input">
+                </label>
+                <label for="wednesday">
+                    Wednesday
+                    <input type="radio" name="day-of-week-option" id="sunday" value="Sunday" class="day-of-week-input">
+                </label>
+                <label for="thursday">
+                    Thursday
+                    <input type="radio" name="day-of-week-option" id="thursday" value="Thursday" class="day-of-week-input">
+                </label>
+                <label for="friday">
+                    Friday
+                    <input type="radio" name="day-of-week-option" id="friday" value="Friday" class="day-of-week-input">
+                </label>
+                <label for="saturday">
+                    Saturday
+                    <input type="radio" name="day-of-week-option" id="saturday" value="Saturday" class="day-of-week-input">
+                </label>
+                <div id="time-div">
+                    <div id="start-time-div">
+                        <label for="start-time-input" class="bold">Start Time</label>    
+                        <input type="time" id="start-time-input" placeholder="Type here" class="text-number-input">
+                    </div>
+                    <div id="end-time-div">
+                        <label for="end-time-input" class="bold" >End Time</label>
+                        <input type="time" id="end-time-input"placeholder="Type here" class="text-number-input">
+                    </div>
                 </div>
-                <div id="end-time-div">
-                    <label for="end-time-input" class="bold" >End Time</label>
-                    <input type="time" id="end-time-input"placeholder="Type here" class="text-number-input">
+                <button class="green-btn">Add Restriction</button>
+            </form>
+        </div>
+
+        <div id="find-restriction-div" class="specified-hidden container">
+            <form id="find-restriction-form">
+                <div id="restriction-ids-div">
+                    <label for="restriction-id" class="bold">
+                        ID
+                        <input type="radio" id="restriction-id" name="column-input">
+                    </label>
+                    <label for="restriction-worker-id" class="bold">
+                        Worker ID
+                        <input type="radio" id="restriction-worker-id" name="column-input">
+                    </label>
                 </div>
-            </div>
-            <button class="green-btn">Add Restriction</button>
-        </form>
+                <label for="id-value-input" class="bold">
+                    ID Value
+                    <input type="text" id="id-value-input" placeholder="Type here">
+                </label>
+                <button class="green-btn">Search</button>
+            </form>
+        </div>
     </div>
 
-    <div id="find-restriction-div" class="specified-hidden container">
-        <form id="find-restriction-form">
-            <div id="restriction-ids-div">
-                <label for="restriction-id" class="bold">
-                    ID
-                    <input type="radio" id="restriction-id" name="column-input">
-                </label>
-                <label for="restriction-worker-id" class="bold">
-                    Worker ID
-                    <input type="radio" id="restriction-worker-id" name="column-input">
-                </label>
-            </div>
-            <label for="id-value-input" class="bold">
-                ID Value
-                <input type="text" id="id-value-input" placeholder="Type here">
-            </label>
-            <button class="green-btn">Search</button>
-        </form>
-    </div>
-
-    
     <p id="error-tag" style="color: red;"></p>
     
     <script type="module" src="../views/days-off/main.js"></script>
