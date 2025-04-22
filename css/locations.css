@@ -1,4 +1,4 @@
-.main-container,li,#add-location-div{
+.main-container,.custom-list,#add-location-div{
     display: flex;
     align-items: center;
 }
@@ -13,7 +13,7 @@
     width: 100vw;
 }
 
-li{
+.custom-list{
     justify-content: space-between;
     margin-bottom: -10px;
 }

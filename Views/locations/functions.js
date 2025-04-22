@@ -23,6 +23,7 @@ export async function loadLocations(){
     
     locations.forEach(data=>{
         const listItem = document.createElement("li")
+        listItem.classList.add("custom-list")
         const text = document.createTextNode(data.location)
 
         const deleteBtn = document.createElement("button")
