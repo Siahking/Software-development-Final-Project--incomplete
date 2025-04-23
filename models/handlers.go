@@ -76,6 +76,7 @@ type Occupancy struct {
 	Note      string `json:"note"`
 }
 
+//retrieve all locations
 func GetLocations(c *gin.Context, db *sql.DB) {
 	rows, err := db.Query("SELECT id, location FROM locations")
 
@@ -104,6 +105,7 @@ func GetLocations(c *gin.Context, db *sql.DB) {
 	c.IndentedJSON(http.StatusOK, locations)
 }
 
+//find location by id or name
 func FindLocation(c *gin.Context, db *sql.DB) {
 	var query string
 	var rows *sql.Rows
@@ -148,6 +150,7 @@ func FindLocation(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, locations)
 }
 
+//add a new location
 func AddLocation(c *gin.Context, db *sql.DB) {
 	newLocation := c.Param("location")
 
@@ -172,6 +175,7 @@ func AddLocation(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Location added successfully"})
 }
 
+//function used to delete a worker or a location
 func DeleteEntry(c *gin.Context, db *sql.DB) {
 	table := strings.TrimSpace(c.Param("table"))
 	id := strings.TrimSpace(c.Param("id"))
@@ -210,6 +214,7 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//create a new worker
 func AddWorker(c *gin.Context, db *sql.DB) {
 	var worker Worker
 	if err := c.ShouldBindJSON(&worker); err != nil {
@@ -248,6 +253,7 @@ func AddWorker(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Worker added successfully"})
 }
 
+//find a worker by firstname,lasatname,middlename ,id number or id
 func FindWorker(c *gin.Context, db *sql.DB) {
 	baseString := "SELECT * FROM workers WHERE "
 	id := c.Query("id")
@@ -335,6 +341,7 @@ func FindWorker(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//retrieve all workers
 func GetWorkers(c *gin.Context, db *sql.DB) {
 	rows, err := db.Query("SELECT * FROM workers")
 
@@ -379,6 +386,7 @@ func GetWorkers(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//assign workers to location using workerid and locationid
 func AssignWorkerToLocation(c *gin.Context, db *sql.DB) {
 	workerIdStr := c.Param("worker_id")
 	locationIdStr := c.Param("location_id")
@@ -415,6 +423,7 @@ func AssignWorkerToLocation(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Connection added successfully"})
 }
 
+//retrieve all connections between workers and locations based on workerid or location id
 func GetWorkerLocationConnections(c *gin.Context, db *sql.DB) {
 	column := strings.TrimSpace(c.Param("column"))
 	valueStr := c.Param("id")
@@ -462,6 +471,7 @@ func GetWorkerLocationConnections(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, connections)
 }
 
+//remove worker to locations connection based on the connection id, worker id or location id
 func RemoveConnection(c *gin.Context, db *sql.DB) {
 	column := c.Param("column")
 	valueStr := c.Param("id")
@@ -544,7 +554,7 @@ func CreateConstrant(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Successful entry"})
 }
 
-// code to search for constraint and return if constraint exists or not
+// find constraint based on worker's firstname and last name
 func FindConstraint(c *gin.Context, db *sql.DB) {
 	advancedSearch := false
 	var query string
@@ -611,7 +621,7 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 
 	defer rows.Close()
 
-	if (advancedSearch == true){
+	if advancedSearch{
 		var results []AdvancedConstraintSearch
 
 		for rows.Next() {
@@ -619,7 +629,7 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 			innerError := rows.Scan(&constraint.ID, &constraint.Worker1FirstName, &constraint.Worker1LastName,
 				&constraint.Worker2FirstName,&constraint.Worker2LastName,&constraint.Note)
 			if innerError != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + err.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + innerError.Error()})
 				return
 			}
 			results = append(results, constraint)
@@ -638,7 +648,7 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 			var constraint Constraint
 			innerError := rows.Scan(&constraint.ID, &constraint.Worker1, &constraint.Worker2, &constraint.Note)
 			if innerError != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + err.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while scanning location\n" + innerError.Error()})
 				return
 			}
 			constraints = append(constraints, constraint)
@@ -653,6 +663,7 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//edit constraints by changing constraints between different workers and reason behind why the constraint exists
 func EditConstraints(c *gin.Context, db *sql.DB) {
 	var constraint Constraint
 	idStr := c.Param("id")
@@ -700,6 +711,7 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Constraint modified successfully"})
 }
 
+//delete constraint using constraint id
 func DeleteConstraint(c *gin.Context, db *sql.DB) {
 	idStr := c.Param("id")
 
@@ -731,6 +743,7 @@ func DeleteConstraint(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//create a new day off field
 func AddDaysOff(c *gin.Context, db *sql.DB) {
 	var daysOff DaysOff
 
@@ -783,6 +796,7 @@ func AddDaysOff(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Days off added successfully"})
 }
 
+//retrieve all dayoffs values, or retrieve values based on worker_id or break_id
 func GetDaysOff(c *gin.Context, db *sql.DB) {
 	var rows *sql.Rows
 	var err error
@@ -828,6 +842,7 @@ func GetDaysOff(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, dayOffs)
 }
 
+//remove dayoff data based on break_id
 func RemoveDaysOff(c *gin.Context, db *sql.DB) {
 	idStr := c.Param("id")
 
@@ -860,6 +875,7 @@ func RemoveDaysOff(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//create a new permanent restriction
 func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 	var permanentRestriction PermanentRestriction
 
@@ -916,6 +932,7 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Restriction created"})
 }
 
+//retrieve all permanent restrictions
 func GetRestrictions(c *gin.Context, db *sql.DB) {
 	var restrictions []PermanentRestriction
 	rows, err := db.Query("SELECT * FROM permanent_restrictions")
@@ -944,6 +961,7 @@ func GetRestrictions(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, restrictions)
 }
 
+//find permanent retstriction based on worker_id or id (permanent restriction id)
 func FindRestriction(c *gin.Context, db *sql.DB) {
 	var restrictions []PermanentRestriction
 	column := strings.TrimSpace(c.Param("column"))
@@ -985,6 +1003,7 @@ func FindRestriction(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, restrictions)
 }
 
+//delete permanent restriction using restriction id
 func DeleteRestriction(c *gin.Context, db *sql.DB) {
 	id := strings.TrimSpace(c.Param("id"))
 
@@ -1010,6 +1029,8 @@ func DeleteRestriction(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//create a new occupancy field
+//occupancy is used to store which days workers are assigned to when they are assigned to different days to work
 func CreateNewOccupancy(c *gin.Context, db *sql.DB) {
 	var occupancy Occupancy
 
@@ -1044,6 +1065,7 @@ func CreateNewOccupancy(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated,gin.H{"message":"Occupancy added successfully"})
 }
 
+//retrieve all occupancies or retrieve occupancies by worker_id,event_date or note
 func RetrieveOccupancies(c *gin.Context, db *sql.DB){
 	var occupancies []Occupancy
 	var rows *sql.Rows
@@ -1092,6 +1114,7 @@ func RetrieveOccupancies(c *gin.Context, db *sql.DB){
 	c.JSON(http.StatusOK,occupancies)
 }
 
+//remove occupancyby occupancy id
 func RemoveOccupancy(c *gin.Context, db *sql.DB) {
 	idStr := c.Param("id")
 
@@ -1123,6 +1146,7 @@ func RemoveOccupancy(c *gin.Context, db *sql.DB) {
 	}
 }
 
+//delete all stored records from the occupancy table
 func EmptyOccupancies(c *gin.Context, db *sql.DB){
 	query := "DELETE FROM occupancy"
 
@@ -1136,6 +1160,7 @@ func EmptyOccupancies(c *gin.Context, db *sql.DB){
 }
 
 // info retrieval functions
+//retrieve all worker data for workers working at a specific location and retrieve all location data for locations where a worker might work
 func RetrieveWorkersOrLocation(c *gin.Context, db *sql.DB) {
 	column := strings.TrimSpace(c.Param("column"))
 	valueStr := c.Param("id")
@@ -1199,7 +1224,7 @@ func RetrieveWorkersOrLocation(c *gin.Context, db *sql.DB) {
 			if hoursJSON != "" {
 				conversionErr := json.Unmarshal([]byte(hoursJSON), &worker.Hours)
 				if conversionErr != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in decoding hours JSON\n" + err.Error()})
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in decoding hours JSON\n" + conversionErr.Error()})
 					return
 				}
 			} else {

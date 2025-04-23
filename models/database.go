@@ -16,7 +16,7 @@ func InitializeDB() (*sql.DB, error) {
 
 	//Test database connection
 	if err = db.Ping(); err != nil {
-		return nil, fmt.Errorf("Cannot connect to the database: ", err)
+		return nil, fmt.Errorf("cannot connect to the database: %v", err)
 	}
 
 	fmt.Println("Connection established successfully!")

@@ -24,14 +24,8 @@ func RegisterRoutes(router *gin.Engine, db *sql.DB) {
 
 func htmlRoutes(router *gin.Engine) {
 	// routes for html pages
-	router.GET("/", func(c *gin.Context) {
+	router.GET("/", func(c *gin.Context) { //homepage
 		c.HTML(http.StatusOK, "home.html", nil)
-	})
-	router.GET("/add-worker", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "add-worker.html", nil)
-	})
-	router.GET("/remove-worker", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "remove-worker.html", nil)
 	})
 	router.GET("/find-locations", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "find-locations.html", nil)
@@ -150,37 +144,46 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	})
 
 	//restriction routes
+	//create a new restriction
 	router.POST("/create-restriction", func(c *gin.Context) {
 		CreatePermanentRestriction(c, db)
 	})
+	//get all restrictions
 	router.GET("/get-restrictions", func(c *gin.Context) {
 		GetRestrictions(c, db)
 	})
+	//find restrictions using data
 	router.GET("/find-restriction/:column/:id", func(c *gin.Context) {
 		FindRestriction(c,db)
 	})
+	//delete restriction
 	router.DELETE("/delete-restriction/:id",func(c *gin.Context) {
 		DeleteRestriction(c,db)
 	})
 
 	//occupancy routes
+	//create a new occupancy
 	router.POST("/create-occupancy",func(c *gin.Context) {
 		CreateNewOccupancy(c,db)
 	})
+	//find occuoancy data using other given data 
 	router.GET("/retrieve-occupancies/:column/:value",func(c *gin.Context) {
 		RetrieveOccupancies(c,db)
 	})
+	//retrieve all occupancies
 	router.GET("/retrieve-occupancies",func(c *gin.Context) {
 		RetrieveOccupancies(c,db)
 	})
+	//delete occuoancies
 	router.DELETE("/delete-occupancy/:id",func(c *gin.Context) {
 		RemoveOccupancy(c,db)
 	})
+	//delete all occupancies
 	router.DELETE("/clear-occupancies",func(c *gin.Context) {
 		EmptyOccupancies(c,db)
 	})
 
-	//search routes
+	//find worker data for locations of find locations data for workers
 	router.GET("/retrieve-workers-locations/:column/:id",func(c *gin.Context) {
 		RetrieveWorkersOrLocation(c,db)
 	})
