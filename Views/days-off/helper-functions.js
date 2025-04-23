@@ -1,5 +1,7 @@
 import * as apiFuncs from "../backend.js"
 
+/*function that checks to make sure there are enough workers for the shift of the current worker
+before creating a new day off field input */
 export async function validateCoverage(locationId, startDate, endDate, targetWorker){
     const workersForLocation = await apiFuncs.retrieveWorkerOrLocations("location_id",locationId)
     const daysOff = await apiFuncs.getDaysOff()
@@ -65,7 +67,6 @@ export async function validateCoverage(locationId, startDate, endDate, targetWor
             return specifiedCheck(targetWorker, availableWorkers)
         }else{
             shiftWorkers = availableWorkers.filter(worker => worker.availability === targetWorker.availability)
-            console.log(targetWorker)
             if (shiftWorkers.length < 3)return false
         }
 
@@ -75,6 +76,7 @@ export async function validateCoverage(locationId, startDate, endDate, targetWor
     return true
 }
 
+//function that checks for specific shifts
 export function specifiedCheck(targetWorker, availableWorkers) {
     const shiftCount = {}
 

@@ -75,7 +75,7 @@ tr:last-child td {
     transition: 0.3s ease-in-out;
 }
 
-.hidden,.specified-hidden{
+.specified-hidden{
     opacity: 0;
     max-height: 0;
     overflow: hidden;

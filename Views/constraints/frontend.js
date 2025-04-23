@@ -3,13 +3,13 @@ const worker2Input = document.getElementById("worker2Id-input")
 const summary = document.getElementById("summary-input")
 
 export function toogleDiv(currentDiv,otherDivs){
-    if (currentDiv.classList.contains("hidden")){
-        currentDiv.classList.remove("hidden")
+    if (currentDiv.classList.contains("specified-hidden")){
+        currentDiv.classList.remove("specified-hidden")
         otherDivs.forEach(div => {
-            div.classList.add("hidden")
+            div.classList.add("specified-hidden")
         });
     }else{
-        currentDiv.classList.add("hidden")
+        currentDiv.classList.add("specified-hidden")
     }
 }
 

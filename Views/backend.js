@@ -1,5 +1,8 @@
+import objectCheck from "./general-helper-funcs.js";
+
 const BASEURL = "http://localhost:8080/"
 
+//function to manage general api calls
 async function apiRequest(endpoint, method = "GET", body = null){
     const url = `${BASEURL}${endpoint}`
     const options = {
@@ -101,7 +104,16 @@ export async function createConstraint(worker1IdStr,worker2IdStr,note=""){
         worker1_id = parseInt(worker1IdStr)
         worker2_id = parseInt(worker2IdStr)
     }catch{
-        return "Please Insert Valid Values" 
+        return {"error":"Please Insert Valid Values"}
+    }
+
+    const check = await getConstraints("",worker2_id,worker1_id)
+    if(!objectCheck(check)){
+        return {"error":"Duplicate entry, constraint already exists"}
+    }
+
+    if (worker1_id === worker2_id){
+        return {"error":"Constraint between the same worker cannot exist"}
     }
 
     return apiRequest("create-constraint","POST",{
@@ -110,11 +122,14 @@ export async function createConstraint(worker1IdStr,worker2IdStr,note=""){
 }
 
 export async function getConstraints(
-    id=null,worker1FirstName=null,worker1LastName=null,worker2FirstName=null,worker2LastName=null
-){ //complete
+    id=null,worker1Id=null,worker2Id=null,worker1FirstName=null,worker1LastName=null,worker2FirstName=null,worker2LastName=null
+){
     let result
     const url = new URL(`${BASEURL}find-constraints`)
-    // if (id || worker1 || worker2){
+    if (worker1Id && worker2Id){
+        url.searchParams.append("worker1_id",worker1Id)
+        url.searchParams.append("worker2_id",worker2Id)
+    }
     if (id){
         url.searchParams.append("id",id)
     }else {
@@ -169,14 +184,14 @@ export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""
     return apiRequest(url,"PATCH",jsonValues)
 }
 
-export async function deleteConstraints(id){ //working
+export async function deleteConstraints(id){
     if (!id)return {"error":"No parameter provided!"}
 
     const url = `delete-constraint/${id}`
     return apiRequest(url,"DELETE")
 }
 
-export async function addDaysOff(workerIdStr,start_date,end_date){ //working
+export async function addDaysOff(workerIdStr,start_date,end_date){
     let worker_id
     try{
         worker_id = parseInt(workerIdStr)
@@ -188,7 +203,7 @@ export async function addDaysOff(workerIdStr,start_date,end_date){ //working
     })
 }
 
-export async function getDaysOff(column="",value=""){ //working
+export async function getDaysOff(column="",value=""){
     let url
     if (column && value){
         url = `${BASEURL}get-days-off/${column}/${value}`
@@ -202,7 +217,7 @@ export async function getDaysOff(column="",value=""){ //working
     return data
 }
 
-export async function removeDaysOff(breakId){ //complete
+export async function removeDaysOff(breakId){
     const url = `remove-days/${breakId}`
 
     if (!breakId){
@@ -285,9 +300,9 @@ export async function clearOccupancies(){
     return apiRequest("clear-occupancies","DELETE")
 }
 
-// async function tester() {
-//     const result = await getConstraints("","william","evans","sophia","brown")
-//     console.log(result)
-// }
+async function tester() {
+    const result = await getConstraints("",1,2)
+    console.log(result)
+}
 
-// tester()
+tester()

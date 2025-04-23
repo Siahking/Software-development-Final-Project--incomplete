@@ -17,7 +17,7 @@ export async function loadLocations(){
     const locations = await apiFuncs.getLocations();
 
     if (Object.keys(locations).includes("error")){
-        locationsErrorTag.classList.remove("hidden")
+        locationsErrorTag.classList.remove("specified-hidden")
         return
     }
     

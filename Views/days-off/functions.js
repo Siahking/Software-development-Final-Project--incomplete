@@ -1,5 +1,6 @@
 import * as apiFuncs from "../backend.js"
 import * as helperFuncs from "./helper-functions.js"
+import objectCheck from "../general-helper-funcs.js"
 
 const table = document.getElementById("table")
 const errorTag = document.getElementById("error-tag")
@@ -24,7 +25,7 @@ for (const worker of workers){
 export async function displayDaysOff(){
     const results = await apiFuncs.getDaysOff()
 
-    if (Object.keys(results).includes("error")){
+    if (objectCheck(results)){
         emptyTableTag.classList.remove("specified-hidden")
         return
     }else{
@@ -88,7 +89,7 @@ export async function newDaysOff(event){
 
     const result = await apiFuncs.addDaysOff(workerId,startDate,endDate)
 
-    if (Object.keys(result).includes("error")){
+    if (objectCheck(result)){
         errorTag.innerText = result.error
         return
     }
@@ -102,7 +103,7 @@ export async function deleteDaysOff(event){
 
     const result = await apiFuncs.removeDaysOff(breakId)
 
-    if (Object.keys(result).includes("error")){
+    if (objectCheck(result)){
         errorTag.innerText = result.error
         return
     }
@@ -125,7 +126,7 @@ export async function findDaysOff(event){
         return
     }
 
-    if (Object.keys(result).includes("error")){
+    if (objectCheck(result)){
         errorTag.innerText = result.error
         return
     }
@@ -133,23 +134,3 @@ export async function findDaysOff(event){
     localStorage.setItem("DaysOff",JSON.stringify(result))
     window.location.href = "/find-days-off"
 }
-
-// function specificiedCheck(worker,workers){
-//     const array = []
-//     for (const hour of worker.hours){
-//         for (const worker of workers){
-//             const tempArray = []
-//             if (worker.hours.includes(hour)){
-//                 tempArray.push(worker)
-//             }
-//             array.push(tempArray)
-//         }
-//     }
-
-//     for (const innerArray of array){
-//         if (innerArray.length < 3){
-//             return false
-//         }
-//     }
-//     return true
-// }

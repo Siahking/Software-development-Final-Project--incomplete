@@ -540,7 +540,7 @@ func CreateConstrant(c *gin.Context, db *sql.DB) {
 			case 3819:
 				errMsg = "Can't use the same worker value for both params"
 			case 1062:
-				errMsg = "Duplicate constraint entry,Constraint already exists"
+				errMsg = "Duplicate entry, Constraint already exists"
 			default:
 				errMsg = "Database error"
 			}
@@ -561,6 +561,9 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 	var rows *sql.Rows
 	var err error
 	var id int
+
+	worker1Id := c.Query("worker1_id")
+	worker2Id := c.Query("worker2_id")
 
 	idStr := c.Query("id")
 	worker1FirstName := c.Query("worker1_firstname")
@@ -585,7 +588,10 @@ func FindConstraint(c *gin.Context, db *sql.DB) {
 		}
 	}
 
-	if id == 0 && worker1FirstName == "" && worker1LastName == "" && worker2FirstName == "" {
+	if worker1Id != "" && worker2Id != ""{
+		query = baseString2 + " WHERE worker1_id = ? AND worker2_id = ?"
+		rows, err = db.Query(query, worker1Id,worker2Id)
+	}else if id == 0 && worker1FirstName == "" && worker1LastName == "" && worker2FirstName == "" {
 		rows, err = db.Query(baseString2)
 	} else if id > 0 {
 		query = baseString2 + " WHERE id = ?"

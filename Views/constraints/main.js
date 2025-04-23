@@ -28,8 +28,7 @@ editBtn.addEventListener("click",()=>
 )
 
 addConstraintForm.addEventListener("submit",(event)=>{
-    event.preventDefault()
-    backendFuncs.addConstraint()
+    backendFuncs.addConstraint(event)
 })
 
 findConstraintForm.addEventListener("submit",(event)=>

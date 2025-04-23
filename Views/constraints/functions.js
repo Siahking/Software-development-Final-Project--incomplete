@@ -1,20 +1,19 @@
 import * as apiFuncs from "../backend.js";
+import objectCheck from "../general-helper-funcs.js";
 
 const table = document.getElementById("table")
 const errorTag = document.getElementById("error-tag")
 const worker1Id = document.getElementById("worker1")
 const worker2Id = document.getElementById("worker2")
 const summary = document.getElementById("summary")
-const searchWorker1Id = document.getElementById("worker1-id")
-const searchWorker2Id = document.getElementById("worker2-id")
 const constraintId = document.getElementById("constraint-id")
 const worker1IdInput = document.getElementById("worker1Id-input")
 const worker2IdInput = document.getElementById("worker2Id-input")
 const tableErrorTag = document.getElementById("constraint-table-tag")
 
-async function removeConstraint(id){
+export async function removeConstraint(id){
     const result = await apiFuncs.deleteConstraints(id)
-    if (Object.keys(result).includes("error")){
+    if (objectCheck(result)){
         errorTag.innerText = result.error
     }else{
         sessionStorage.setItem("Message",result.message)
@@ -22,10 +21,12 @@ async function removeConstraint(id){
     }
 }
 
-export async function addConstraint(){
+export async function addConstraint(event){
+
+    event.preventDefault()
 
     const result = await apiFuncs.createConstraint(worker1Id.value,worker2Id.value,summary.value)
-    if (Object.keys(result).includes("error")){
+    if (objectCheck(result)){
         errorTag.innerText = result.error
         return
     }
@@ -37,8 +38,8 @@ export async function addConstraint(){
 export async function displayConstraints(){
     const results = await apiFuncs.getConstraints()
 
-    if (Object.keys(results).includes("error")){
-        tableErrorTag.classList.remove("hidden")
+    if (objectCheck(results)){
+        tableErrorTag.classList.remove("specified-hidden")
         return
     }
 
@@ -114,7 +115,7 @@ export async function findConstraint(event){
         return
     }
 
-    if (Object.keys(results).includes("error")){
+    if (objectCheck(results)){
         errorTag.innerText = results.error
         return
     }
@@ -133,8 +134,7 @@ export async function changeConstraint(event){
     }
     const result = await apiFuncs.editConstraints(constraintId.value,worker1IdInput.value,worker2IdInput.value)
 
-    console.log(result)
-    if (Object.keys(result).includes("error")){
+    if (objectCheck(result)){
         errorTag.innerText = result.error
         return
     }

@@ -70,9 +70,9 @@ export function toogleDisplay(div,otherDiv=""){
 
 export function displayHours(event){
     if (event.target.id === "specified-option"){
-        hoursDiv.classList.remove("hidden")
+        hoursDiv.classList.remove("specified-hidden")
     }else{
-        hoursDiv.classList.add("hidden")
+        hoursDiv.classList.add("specified-hidden")
         for (const checkbox of hoursOptions){
             checkbox.checked = false
         }

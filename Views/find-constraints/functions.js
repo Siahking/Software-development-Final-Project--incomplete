@@ -1,16 +1,6 @@
-import * as apiFuncs from "../backend.js"
+import { removeConstraint } from "../constraints/functions.js"
 
 const table = document.getElementById("constraints-data")
-
-async function removeConstraint(id){
-    const result = await apiFuncs.deleteConstraints(id)
-    if (Object.keys(result).includes("error")){
-        errorTag.innerText = result.error
-    }else{
-        sessionStorage.setItem("Message",result.message)
-        window.location.href = "/"
-    }
-}
 
 export async function displayConstraints(){
     const constraints = JSON.parse(localStorage.getItem("Constraints"));
