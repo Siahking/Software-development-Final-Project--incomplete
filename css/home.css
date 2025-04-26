@@ -71,3 +71,17 @@ a:hover,button:hover{
     border-color: #808080;
     transform: scale(1.1);
 }
+
+#roster-form,#locations-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#roster-form p{
+    margin-bottom: 3px;
+}
+
+#roster-form label{
+    margin-bottom: 3px;
+}

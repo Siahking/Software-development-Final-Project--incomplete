@@ -92,6 +92,9 @@
             </div>
         </form>
     </div>
+    <div class="specified-hidden error-container" id="days-off-error-container">
+        <p id="days-off-error-tag" class="error-tag"></p>
+    </div>
 
     <div class="table-div">
         <h1>Permanent Restrictions</h1>
@@ -182,7 +185,9 @@
         </div>
     </div>
 
-    <p id="error-tag" style="color: red;"></p>
+    <div class="specified-hidden error-container" id="restriction-error-container">
+        <p id="restriction-error-tag" class="error-tag"></p>
+    </div>
     
     <script type="module" src="../views/days-off/main.js"></script>
     <script type="module" src="../views/days-off/functions.js"></script>

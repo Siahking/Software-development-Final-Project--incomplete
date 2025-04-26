@@ -1,12 +1,13 @@
 import * as apiFuncs from "../backend.js";
+import { displayError, objectCheck } from "../general-helper-funcs.js";
 
 const tableHeadArray = ["ID","FirstName","LastName","MiddleName","Gender","Address",
                         "Contact","Age","Id Number","Availability","Hours","Locations"]
 
+const errorTagId = "workers-error"
 const table = document.getElementById("table");
 const firstRow = document.createElement("tr");
 const showLocationsDiv = document.getElementById('locations-input')
-const errorTag = document.getElementById('error-tag')
 const idInput = document.getElementById("id-input")
 const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
@@ -31,7 +32,7 @@ function assignHours(){
             option = value
             break
         }else{
-            errorTag.innerText = "Please select a valid availability option"
+            displayError(errorTagId,"Please select a valid availability option")
             return
         }
     }
@@ -53,7 +54,7 @@ function assignHours(){
                 }
             }
             if (!hours.length){
-                errorTag.innerText = "Need to select hours to work after selecting specified"
+                displayError(errorTagId,"Need to select hours to work after selecting specified")
                 return [false,[]]
             }
     }
@@ -90,8 +91,8 @@ export async function displayLocations(){
 export async function showWorkers (){
     const workers = await apiFuncs.getWorkers();
 
-    if (Object.keys(workers).includes("error")){
-        errorTag.innerText = workers.error
+    if (objectCheck(workers)){
+        displayError(errorTagId,workers.error)
         return
     }
 
@@ -129,7 +130,7 @@ export async function showWorkers (){
         const locationsRow = document.createElement("td")
         const locationResults = await apiFuncs.workerLocationSearch("worker_id",worker.id)
 
-        if (!Object.keys(locationResults).includes('error')){
+        if (!objectCheck(locationResults)){
             const tempArr = []
             for (const location of locationResults){
                 const locationInfo = await apiFuncs.findLocation("id",location.location_id)
@@ -173,8 +174,8 @@ export async function addWorkerHandler(event){
     const result = await apiFuncs.addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber,availability,hours)
     const selectedLocations = []
 
-    if (Object.keys(result).includes("error")){
-        errorTag.innerText = result.error
+    if (objectCheck(result)){
+        displayError(errorTagId,result.error)
         return
     }
 
@@ -217,14 +218,13 @@ export async function findWorkers(event){
     }
 
     if (!emptyValues){
-        errorTag.innerText = "Please Fillout atleast one field to search for workers"
+        displayError(errorTagId,"Please Fillout atleast one field to search for workers")
         return
     }
 
     const results = await apiFuncs.findWorker(firstName,lastName,middleName,idNumber,id)
-    if (Object.keys(results).includes("error")){
-        console.log("passed here")
-        errorTag.innerText = results.error
+    if (objectCheck(results)){
+        displayError(errorTagId,results.error)
         return
     }
 
@@ -244,7 +244,7 @@ export async function deleteWorker(event){
         sessionStorage.setItem("Message",result.message)
         window.location.href = '/'
     }else{
-        errorTag.innerText = "Failed to delete worker"
+        displayError(errorTagId,"Operation Cancled")
     }
 }
 

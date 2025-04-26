@@ -1,5 +1,6 @@
 import * as apiFuncs from '../backend.js'
 import { deleteWorker } from "../../views/workers/functions.js"
+import objectCheck from '../general-helper-funcs.js';
 
 export async function showWorkers (){
 
@@ -28,7 +29,7 @@ export async function showWorkers (){
         const locationsRow = document.createElement("td")
         const locationsResults = await apiFuncs.workerLocationSearch("worker_id",worker.id)
 
-        if (!Object.keys(locationsResults).includes('error')){
+        if (!objectCheck(locationsResults)){
             const tempArr = []
             for (const location of locationsResults){
                 const locationInfo = await apiFuncs.findLocation("id",location.location_id)

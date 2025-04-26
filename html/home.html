@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/main.css">
     <title>HomePage</title>
 </head>
 <body>
@@ -20,14 +21,22 @@
     </div>
 
     <div id="roster-div" class="hidden">
-        <form id="roster-form">
-        <label for="date">
-            Month
+        <form id="roster-form" class="specified-hidden">
+            <label for="date" class="bold">
+                Month/Year
+            </label>
             <input type="month" id="date" required>
-        </label>
-
+            <p class="bold">Locations</p>
+            <div id="locations-div"></div>
+            <button type="submit">Create Roster</button>
         </form>
-        <p id="error-tag" style="color: red;"></p>
+        <p class="specified-hidden error-tag" id="locations-error">
+            No Locations Found
+        </p>
+    </div>
+
+    <div class="error-container specified-hidden" id="home-error-container">
+        <p class="error-tag" id="home-error-tag"></p>
     </div>
     
     <script type="module" src="../views/home/main.js"></script>

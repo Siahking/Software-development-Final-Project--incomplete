@@ -43,7 +43,7 @@
             </ul>
         </div>
 
-        <p id="locations-error-tag" class="specified-hidden">No Locations Found</p>
+        <p id="no-results-error-tag" class="specified-hidden">No Locations Found</p>
 
         <div class="buttons-div">
             <button id="add-location" class="grey-btn">Add Location</button>
@@ -62,8 +62,9 @@
           </div>
         </div>
         
-        <p id="error-tag" style="color: red;"></p>
-    
+    </div>
+    <div class="specified-hidden error-container" id="locations-error-container">
+      <p class="error-tag" id="locations-error-tag"></p>
     </div>
 
     <script type="module" src="../views/locations/frontend.js"></script>

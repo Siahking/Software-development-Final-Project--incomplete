@@ -1,7 +1,8 @@
 import * as apiFuncs from '../backend.js'
+import { objectCheck,displayError, deleteConfirmation } from '../general-helper-funcs.js'
 import validateCoverage from './helper-functions.js'
 
-const errorTag = document.getElementById("error-tag")
+const errorTagId = "restriction-error"
 const emptyTableTag = document.getElementById("restriction-table-tag")
 const workerId = document.getElementById("worker-id-input")
 const dayOfWeek = document.getElementById("day-of-week-input")
@@ -17,7 +18,7 @@ export async function displayRestrictions(){
     const table = document.getElementById("restriction-table")
     const results = await apiFuncs.getPermanentRestrictions()
 
-    if (Object.keys(results).includes("error")){
+    if (objectCheck(results)){
         emptyTableTag.classList.remove("specified-hidden")
         return
     }else{
@@ -69,12 +70,12 @@ export async function findRestriction() {
     } else if (idRadio.checked){
         results = await apiFuncs.findPermanentRestrictions("id",idValue.value)
     } else{
-        errorTag.innerText = "Please select an id to search from"
+        errorHandlers.displayError(errorTagId,"Please select an id to search from")
         return 
     }
 
-    if(Object.keys(results).includes("error")){
-        errorTag.innerText = results.error
+    if(objectCheck(results)){
+        displayError(errorTagId,results.error)
         return
     }
 
@@ -105,14 +106,14 @@ export async function addRestriction(){
     const check = await validateCoverage(locationId[0].location_id,dayOfWeek,workerId)
 
     if (!check){
-        errorTag.innerText = "Insufficient Workers to set permanent day off"
+        errorHandlers.displayError(errorTagId,"Insufficient Workers to set permanent day off")
         return
     }
 
     const result = await apiFuncs.createRestriction(workerId,dayOfWeek,startTime,endTime)
 
-    if (Object.keys(result).includes("error")){
-        errorTag.innerText = result.error
+    if (objectCheck(result)){
+        displayError(errorTagId,"Insufficient Workers to set permanent day off")
         return
     }
 
@@ -121,13 +122,17 @@ export async function addRestriction(){
 }
 
 export async function deleteRestriction(id){
-    const result = await apiFuncs.deletePermanentRestrictions(id)
+    if (deleteConfirmation("restriction")){
+        const result = await apiFuncs.deletePermanentRestrictions(id)
 
-    if (Object.keys(result).includes("error")){
-        errorTag.innerText = result.error
-        return
+        if (objectCheck(result)){
+            displayError(errorTagId,result.error)
+            return
+        }
+
+        sessionStorage.setItem("Message",result.message)
+        window.location.href = "/"
+    }else{
+        displayError(errorTagId,"Operation Cancled")
     }
-
-    sessionStorage.setItem("Message",result.message)
-    window.location.href = "/"
 }

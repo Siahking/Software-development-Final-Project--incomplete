@@ -1,4 +1,4 @@
-#add-constraints-form,#edit-constraint-form,#find-constraint-data-div,#find-constraint-button-div,#find-constraint-form,.worker-data label{
+#add-constraints-form,#edit-constraint-form,#find-constraint-data-div,#find-constraint-button-div,#find-constraint-form,.worker-data label,#message-container{
     display: flex;
 }
 
@@ -10,7 +10,7 @@
     align-items: center;
 }
 
-#add-constraint-form,#edit-constraint-form,#find-constraint-form,#find-constraint-data-div,#find-constraint-button-div{
+#add-constraint-form,#edit-constraint-form,#find-constraint-form,#find-constraint-data-div,#find-constraint-button-div,#message-container{
     justify-content: center;
 }
 
@@ -47,7 +47,7 @@ input{
     width: 350px;
 }
 
-#find-constraint-data-div{
+#find-constraint-data-div,#message-container{
     width: 100%;
 }
 

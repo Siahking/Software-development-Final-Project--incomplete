@@ -1,4 +1,4 @@
-import objectCheck from "./general-helper-funcs.js";
+import { objectCheck } from "./general-helper-funcs.js";
 
 const BASEURL = "http://localhost:8080/"
 
@@ -300,9 +300,9 @@ export async function clearOccupancies(){
     return apiRequest("clear-occupancies","DELETE")
 }
 
-async function tester() {
-    const result = await getConstraints("",1,2)
-    console.log(result)
-}
+// async function tester() {
+//     const result = await getConstraints("",1,2)
+//     console.log(result)
+// }
 
-tester()
+// tester()

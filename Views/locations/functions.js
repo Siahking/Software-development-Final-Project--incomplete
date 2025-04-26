@@ -1,13 +1,14 @@
 import * as apiFuncs from "../backend.js"
+import { deleteConfirmation, displayError, objectCheck } from "../general-helper-funcs.js";
 
-const errorTag = document.getElementById("error-tag")
+const errorTagId = "locations-error"
 const input = document.getElementById("location-input")
 const list = document.getElementById("list");
-const locationsErrorTag = document.getElementById("locations-error-tag")
+const locationsErrorTag = document.getElementById("no-results-error-tag")
 
 const valueCheck = ()=>{
     if (!input.value){
-        errorTag.innerText = "Please insert a valid search param"
+        displayError(errorTagId,"Please insert a valid search param")
         return false
     }
     return true
@@ -16,7 +17,7 @@ const valueCheck = ()=>{
 export async function loadLocations(){
     const locations = await apiFuncs.getLocations();
 
-    if (Object.keys(locations).includes("error")){
+    if (objectCheck(locations)){
         locationsErrorTag.classList.remove("specified-hidden")
         return
     }
@@ -44,20 +45,25 @@ export async function loadLocations(){
 }
 
 export async function deleteLocation(id){
-    const result = await apiFuncs.removeEntry(id,"locations")
-    if (Object.keys(result).includes("error")){
-        errorTag.innerText = result.error
+    if (deleteConfirmation("location")){
+        const result = await apiFuncs.removeEntry(id,"locations")
+        if (objectCheck(result)){
+            displayError(errorTagId,result.error)
+        }else{
+            sessionStorage.setItem("Message",result.message)
+            window.location.href = "/"
+        }
     }else{
-        sessionStorage.setItem("Message",result.message)
-        window.location.href = "/"
+        console.log("passed here")
+        displayError(errorTagId,"Operation Cancled")
     }
 }
 
 export async function newLocation(){
     if (!valueCheck())return false
     const result = await apiFuncs.addLocation(input.value)
-    if (Object.keys(result).includes("error")){
-        errorTag.innerText = result.error
+    if (objectCheck(result)){
+        displayError(errorTagId,result.error)
     }else{
         sessionStorage.setItem("Message",result.message)
         window.location.href = "/"
@@ -67,8 +73,8 @@ export async function newLocation(){
 export async function findlocation(){
     if (!valueCheck())return false
     const results = await apiFuncs.findLocation("location",input.value)
-    if (Object.keys(results).includes("error")){
-        errorTag.innerText = results.error
+    if (objectCheck(results)){
+        displayError(errorTagId,results.error)
         return
     }
     localStorage.setItem("locationsData",JSON.stringify(results))

@@ -1,5 +1,9 @@
 import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
+import {objectCheck} from "../general-helper-funcs.js"
+
+const errorTag = document.getElementById("error-tag")
+
 
 export async function generateCalender(month,year){
     await apiFuncs.clearOccupancies()
@@ -11,10 +15,10 @@ export async function generateCalender(month,year){
     let daysOff = await apiFuncs.getDaysOff()
     const constraintsArray = await apiFuncs.getConstraints()
     const restrictionsArray = await apiFuncs.getPermanentRestrictions()
-    if (Object.keys(daysOff).includes("error")){
+    if (objectCheck(daysOff)){
         daysOff = []
     }
-    if (!Object.keys(constraintsArray).includes("error")){
+    if (!objectCheck(constraintsArray)){
         for (const constraint of constraintsArray){
             const worker1Key = constraint.worker1_id
             const worker2Key = constraint.worker2_id
@@ -38,7 +42,7 @@ export async function generateCalender(month,year){
             
         }
     }
-    if (!Object.keys(restrictionsArray).includes("error")){  
+    if (!objectCheck(restrictionsArray)){  
         for (const restriction of restrictionsArray){
             const key = restriction.worker_id
             const restrictionObject = {
@@ -63,13 +67,14 @@ export async function generateCalender(month,year){
         const results = await apiFuncs.workerLocationSearch("location_id",location.id)
         const headerContainer = document.createElement("div")
         const locationName = document.createElement("h2")
-        const errorTag = document.createElement("p")
+        const locationErrorTag = document.createElement("p")
+        locationErrorTag.classList.add("error-tag")
         locationName.innerText = location.location
         headerContainer.appendChild(locationName)
         headerContainer.classList.add("location-header-div")
-        if (Object.keys(results).includes("error")){
-            errorTag.innerText = "No workers found for this Location"
-            headerContainer.appendChild(errorTag)
+        if (objectCheck(results)){
+            locationErrorTag.innerText = "No workers found for this Location"
+            headerContainer.appendChild(locationErrorTag)
             container.appendChild(headerContainer)
             continue
         }
@@ -137,9 +142,9 @@ export async function generateCalender(month,year){
             }
 
             const results = await funcs.assignWorkers(assignWorkerParams)
-            if (Object.keys(results).includes("error")){
-                errorTag.innerText = results.error
-                headerContainer.appendChild(errorTag)
+            if (objectCheck(results)){
+                locationErrorTag.innerText = results.error
+                headerContainer.appendChild(locationErrorTag)
                 container.appendChild(headerContainer)
                 return
             }

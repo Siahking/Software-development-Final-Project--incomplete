@@ -1,23 +1,27 @@
 import * as apiFuncs from "../backend.js";
-import objectCheck from "../general-helper-funcs.js";
+import { objectCheck,displayError,deleteConfirmation } from "../general-helper-funcs.js";
 
+const errorTagId = "constraints-error"
 const table = document.getElementById("table")
-const errorTag = document.getElementById("error-tag")
 const worker1Id = document.getElementById("worker1")
 const worker2Id = document.getElementById("worker2")
 const summary = document.getElementById("summary")
 const constraintId = document.getElementById("constraint-id")
 const worker1IdInput = document.getElementById("worker1Id-input")
 const worker2IdInput = document.getElementById("worker2Id-input")
-const tableErrorTag = document.getElementById("constraint-table-tag")
+const tableErrorTag = document.getElementById("message-container")
 
 export async function removeConstraint(id){
     const result = await apiFuncs.deleteConstraints(id)
-    if (objectCheck(result)){
-        errorTag.innerText = result.error
+    if (deleteConfirmation("constraint")){
+        if (objectCheck(result)){
+            displayError(errorTagId,result.error)
+        }else{
+            sessionStorage.setItem("Message",result.message)
+            window.location.href = "/"
+        }
     }else{
-        sessionStorage.setItem("Message",result.message)
-        window.location.href = "/"
+        displayError(errorTagId,"Opertaion Canceled")
     }
 }
 
@@ -27,7 +31,7 @@ export async function addConstraint(event){
 
     const result = await apiFuncs.createConstraint(worker1Id.value,worker2Id.value,summary.value)
     if (objectCheck(result)){
-        errorTag.innerText = result.error
+        displayError(errorTagId,result.error)
         return
     }
 
@@ -94,29 +98,29 @@ export async function findConstraint(event){
 
     if (worker1FirstName && worker2FirstName){
         if (!worker1LastName || !worker2LastName){
-            errorTag.innerText = errorMessage
+            displayError(errorTagId,errorMessage)
         }else{
             results = await apiFuncs.getConstraints("",worker1FirstName,worker1LastName,worker2FirstName,worker2LastName)
         }
     }else if (worker2FirstName){
         if (!worker2LastName){
-            errorTag.innerText = errorMessage
+            displayError(errorTagId,errorMessage)
         }else{
             results = await apiFuncs.getConstraints("",worker2FirstName,worker2LastName)
         }
     }else if (worker1FirstName){
         if (!worker1LastName){
-            errorTag.innerText = errorMessage
+            displayError(errorTagId,errorMessage)
         }else{
             results = await apiFuncs.getConstraints("",worker1FirstName,worker1LastName)
         }
     }else{
-        errorTag.innerText = errorMessage
+        displayError(errorTagId,errorMessage)
         return
     }
 
     if (objectCheck(results)){
-        errorTag.innerText = results.error
+        displayError(errorTagId,results.error)
         return
     }
 
@@ -129,13 +133,13 @@ export async function changeConstraint(event){
     event.preventDefault()
 
     if (!constraintId.value){
-        errorTag.innerText = "Constraint ID Required"
+        displayError(errorTagId,"Constraint ID Required")
         return
     }
     const result = await apiFuncs.editConstraints(constraintId.value,worker1IdInput.value,worker2IdInput.value)
 
     if (objectCheck(result)){
-        errorTag.innerText = result.error
+        displayError(errorTagId,result.error)
         return
     }
 

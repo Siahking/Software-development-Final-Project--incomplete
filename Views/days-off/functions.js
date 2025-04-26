@@ -1,13 +1,14 @@
 import * as apiFuncs from "../backend.js"
 import * as helperFuncs from "./helper-functions.js"
-import objectCheck from "../general-helper-funcs.js"
+import { objectCheck,displayError, deleteConfirmation } from "../general-helper-funcs.js"
 
+const errorTagId = "days-off-error"
 const table = document.getElementById("table")
-const errorTag = document.getElementById("error-tag")
 const emptyTableTag = document.getElementById("empty-table")
 const workerIdCheckbox = document.getElementById("workerid-radio")
 const breakIdCheckbox = document.getElementById("breakid-radio")
 const valueInput = document.getElementById("value")
+let message
 
 const workers = await apiFuncs.getWorkers()
 const SHIFTOBJECT = {}
@@ -57,7 +58,7 @@ export async function displayDaysOff(){
             if (confirmation){
                 deleteDaysOff(event)
             }else{
-                errorTag.innerText = "Operation Canceled"
+                displayError(errorTagId,"Operation Canceled")
                 return
             }
         })
@@ -82,7 +83,8 @@ export async function newDaysOff(event){
     for(const result of workerLocations){
         const checkResults = await helperFuncs.validateCoverage(result.location_id,startDate,endDate,workerDetails[0])
         if (!checkResults){
-            errorTag.innerText = "Insufficient workers, cannot request day off"
+            message = "Insufficient workers, cannot request day off"
+            displayError(errorTagId,message)
             return
         }
     }
@@ -90,7 +92,7 @@ export async function newDaysOff(event){
     const result = await apiFuncs.addDaysOff(workerId,startDate,endDate)
 
     if (objectCheck(result)){
-        errorTag.innerText = result.error
+        displayError(errorTagId,result.error)
         return
     }
 
@@ -101,15 +103,19 @@ export async function newDaysOff(event){
 export async function deleteDaysOff(event){
     const breakId = event.target.value
 
-    const result = await apiFuncs.removeDaysOff(breakId)
+    if (deleteConfirmation("worker")){
+        const result = await apiFuncs.removeDaysOff(breakId)
 
-    if (objectCheck(result)){
-        errorTag.innerText = result.error
-        return
+        if (objectCheck(result)){
+            displayError(errorTagId,result.error)
+            return
+        }
+
+        sessionStorage.setItem("Message",result.message)
+        window.location.href = "/"
+    }else{
+        displayError(errorTagId,"Operation Cancleded")
     }
-
-    sessionStorage.setItem("Message",result.message)
-    window.location.href = "/"
 }
 
 export async function findDaysOff(event){
@@ -122,12 +128,12 @@ export async function findDaysOff(event){
     }else if (breakIdCheckbox.checked){
         result = await apiFuncs.getDaysOff("break_id",valueInput.value)
     }else{
-        errorTag.innerText = "Unknown search value"
+        displayError(errorTagId,"Unknown search value")
         return
     }
 
     if (objectCheck(result)){
-        errorTag.innerText = result.error
+        displayDaysOff(errorTagId,result.error)
         return
     }
 

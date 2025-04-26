@@ -1,4 +1,5 @@
 import * as apiFuncs from "../backend.js"
+import objectCheck from "../general-helper-funcs.js"
 
 export function retrieveWorkers(day,month,year,workers,daysOff,restrictions,hours){
     let array = []
@@ -146,7 +147,7 @@ function restrictionCheck(day,worker,hours,restrictions){
         }
     }
 
-    if (!Object.keys(occupancies).includes("error")){
+    if (!objectCheck(occupancies)){
         for (const occupancy of occupancies){
             obj[occupancy.worker_id] = true;
         }
@@ -167,7 +168,7 @@ export async function setWorkerForShift(workerArray,date,shiftWorkersArray,const
         const worker = workerArray.pop()
         const result = await apiFuncs.createOccupancy(worker.id,date,"Work") 
         setWorkerToUnavailable(worker.id,shiftWorkersArray,constraints)
-        if (!Object.keys(result).includes("error")){
+        if (!objectCheck(result)){
             return worker
         }
     }

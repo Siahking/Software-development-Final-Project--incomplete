@@ -48,7 +48,9 @@
             </tr>
         </table>
     </div>
-    <p id="constraint-table-tag" class="specified-hidden">No constraints Found</p>
+    <div id="message-container" class="specified-hidden">
+        <p>No constraints Found</p>
+    </div>
 
     <div class="buttons-div">
         <button id="add-constraint-btn" class="grey-btn">Add Constraint</button>
@@ -132,9 +134,10 @@
                 </form>
             </div>
     
-            <div id="error-div">
-                <p id="error-tag" style="color: red;"></p>
-            </div>
+        </div>
+
+        <div id="constraints-error-container" class="specified-hidden error-container">
+            <p id="constrains-error-tag" class="error-tag"></p>
         </div>
          
     <script type="module" src="../views/constraints/frontend.js"></script>

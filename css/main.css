@@ -4,7 +4,7 @@
     --input-grey:#BEBEBE;
 }
 
-.buttons-div,.nav-container,#error-div,.data-input-container{
+.buttons-div,.nav-container,#error-div,.data-input-container,.error-container{
     display: flex;
 }
 
@@ -12,7 +12,7 @@
     width: 100% !important;
 }
 
-.buttons-div,.data-input-container,#error-div{
+.buttons-div,.data-input-container,#error-div,.error-container{
     justify-content: center;
 }
 
@@ -134,6 +134,7 @@ tr:last-child td {
 .data-input-container{
     padding-top: 0;
     margin-top: 0;
+    margin-bottom: 0;
 }
 
 .navbar-brand {
@@ -141,4 +142,8 @@ tr:last-child td {
     padding-bottom: 8px;
     display: flex;
     align-items: center;
+}
+
+.error-tag{
+    color: red;
 }

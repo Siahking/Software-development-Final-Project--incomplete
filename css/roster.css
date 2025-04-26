@@ -2,7 +2,7 @@
     display: flex;
 }
 
-.calendar-item,.shift-block{
+.calendar-item,.shift-block,.location-header-div{
     align-items: center;
 }
 
@@ -40,6 +40,7 @@
 
 .location-header-div{
     width: 100%;
+    flex-direction: column;
 }
 
 .day-number {
@@ -101,4 +102,9 @@
 #home-tag:hover{
     transition: 0.3s ease;
     color: var(--teal);
+}
+
+.error-tag{
+    color: red;
+    margin: 0;
 }

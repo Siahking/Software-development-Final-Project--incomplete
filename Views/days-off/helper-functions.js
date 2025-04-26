@@ -1,4 +1,5 @@
 import * as apiFuncs from "../backend.js"
+import { objectCheck } from "../general-helper-funcs.js"
 
 /*function that checks to make sure there are enough workers for the shift of the current worker
 before creating a new day off field input */
@@ -6,8 +7,8 @@ export async function validateCoverage(locationId, startDate, endDate, targetWor
     const workersForLocation = await apiFuncs.retrieveWorkerOrLocations("location_id",locationId)
     const daysOff = await apiFuncs.getDaysOff()
     const restrictions = await apiFuncs.getPermanentRestrictions()
-    const emptyDaysOff = Object.keys(daysOff).includes("error")
-    const emptyRestrictions = Object.keys(restrictions).includes("error")
+    const emptyDaysOff =  objectCheck(daysOff)
+    const emptyRestrictions =  objectCheck(restrictions)
 
     if (emptyDaysOff && emptyRestrictions)return true
 

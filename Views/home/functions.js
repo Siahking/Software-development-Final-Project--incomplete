@@ -1,19 +1,20 @@
 import * as apiFuncs from "../backend.js"
+import { objectCheck,displayError } from "../general-helper-funcs.js"
 
+const errorTagId = "home-error"
+const locationsErrorTag = document.getElementById("locations-error")
 const rosterForm = document.getElementById("roster-form")
-const errorTag = document.getElementById("error-tag")
+const locationsDiv = document.getElementById("locations-div")
 
-export async function loadLocations(){
+export async function loadContents(){
     const locations = await apiFuncs.getLocations()
 
-    if (Object.keys(locations).includes("error")){
-        errorTag.innerText = "No locations found"
+    if (objectCheck(locations)){
+        locationsErrorTag.classList.remove("specified-hidden")
         return
     }
+    rosterForm.classList.remove("specified-hidden")
 
-    const submitBtn = document.createElement("button")
-    submitBtn.setAttribute("type","submit")
-    submitBtn.innerText = "submit"
     for (const location of locations){
         const label = document.createElement("label")
         const input = document.createElement("input")
@@ -29,12 +30,12 @@ export async function loadLocations(){
 
         label.appendChild(input)
         label.appendChild(labelText)
-        rosterForm.appendChild(label)
+        locationsDiv.appendChild(label)
     }
-    rosterForm.appendChild(submitBtn)
 }
 
 export function saveDateAndLocations(){
+
     const locationsInput = document.getElementsByClassName("location-option")
     const dateInput = document.getElementById("date")
     const locations = []
@@ -52,12 +53,12 @@ export function saveDateAndLocations(){
     currentDate.setDate(1)
 
     if (selectedDate <= currentDate) {
-        errorTag.innerText = "Please select a subsequent month."
+        displayError(errorTagId,"Please select a subsequent month.")
         return;
     }
 
     if (locations.length === 0){
-        errorTag.innerText = "Please select atleast one location"
+        displayError(errorTagId,"Please select atleast one location")
         return
     }
 

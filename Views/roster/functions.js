@@ -1,4 +1,5 @@
 import * as helperFuncs from "./helper-functions.js"
+import objectCheck from "../general-helper-funcs.js"
 
 export async function assignWorkers({ 
     dayNumber, month, year, WORKERS, daysOff, restrictions,constraints,dayBlock,afternoonBlock,
@@ -6,9 +7,10 @@ export async function assignWorkers({
  }){
     let shift1,shift2
     const results = await rosterWorkers(dayNumber,month,year,WORKERS,daysOff,restrictions,constraints)
-    if (Object.keys(results).includes("error")){
+    if (objectCheck(results)){
         return results
     }
+    //results returns an object with success as the key and the values as the value or an error object
     [shift1,shift2] = results.success
 
     const container = document.createElement("div")
@@ -23,6 +25,7 @@ export async function assignWorkers({
     
     dayWorker1 = helperFuncs.setDayNightWorker(dayWorker1,"dayWorker",shift1,"day")
     dayWorker2 = helperFuncs.setDayNightWorker(dayWorker2,"dayWorker",shift2,"day")
+    //manually sets afternoon workers if the shifts ends up being 8 hr shifts
     if (shift1["afternoonWorker"]){
         afternoonWorker1 = helperFuncs.setAfternoonWorker(afternoonWorker1,shift1)
     }
@@ -73,7 +76,7 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
     ]
 
     for (const check of checkArray){
-        if(Object.keys(check).includes("error")){
+        if(objectCheck(check)){
             return check
         }
     }
@@ -93,12 +96,6 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
         const nightWorker = await helperFuncs.setWorkerForShift(
             tenToSixArray,dateStr,[sixToSixNightArray,tenToSixArray],constraints
         )
-
-        // for (const occupancy of [dayOccupancy,afterNoonOccupancy,nightOccupancy]){
-        //     if (Object.keys(occupancy).includes("error")){
-        //         return occupancy
-        //     }
-        // }
     
         shiftOne = {
             "shift":"8hr",
@@ -115,12 +112,6 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
             sixToSixNightArray,dateStr,[tenToSixArray,twoToTenArray,sixToSixNightArray],constraints
         )
 
-        // for (const occupancy of [dayOccupancy,nightOccupancy]){
-        //     if (Object.keys(occupancy).includes("error")){
-        //         return occupancy
-        //     }
-        // }
-
         shiftOne = {
             "shift":"12hr",
             "dayWorker":dayWorker,
@@ -128,7 +119,6 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
         }
 
     }
-    console.log(shiftOne)
  
     if (shiftTwoShift== "8hr"){
         const dayWorker = await helperFuncs.setWorkerForShift(

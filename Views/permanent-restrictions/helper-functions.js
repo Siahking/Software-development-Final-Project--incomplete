@@ -1,11 +1,12 @@
 import * as apiFuncs from "../backend.js"
 import { specifiedCheck } from "../days-off/helper-functions.js"
+import { objectCheck } from "../general-helper-funcs.js"
 
 export default async function validateCoverage(locationId,day,workerId){
     const targetWorker = (await apiFuncs.findWorker("","","","",workerId))[0]
     const workersForLocation = await apiFuncs.retrieveWorkerOrLocations("location_id",locationId)
     const restrictions = await apiFuncs.getPermanentRestrictions()
-    const emptyRestrictions = Object.keys(restrictions).includes("error")
+    const emptyRestrictions = objectCheck(restrictions)
 
     const availableWorkers = workersForLocation.filter(worker => {
         if (worker.id === targetWorker.id) return false
