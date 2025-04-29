@@ -54,7 +54,6 @@ export async function deleteLocation(id){
             window.location.href = "/"
         }
     }else{
-        console.log("passed here")
         displayError(errorTagId,"Operation Cancled")
     }
 }

@@ -14,8 +14,6 @@ for (const btn of [addLocationBtn,findLocationBtn]){
 }
 
 locationForm.addEventListener("submit",(event)=>{
-    console.log("submitted")
-    console.log(frontend.toogleStates)
     event.preventDefault()
     if(frontend.toogleStates["add-location"]){
         funcs.newLocation()

@@ -1,5 +1,5 @@
 import * as helperFuncs from "./helper-functions.js"
-import objectCheck from "../general-helper-funcs.js"
+import { objectCheck } from "../general-helper-funcs.js"
 
 export async function assignWorkers({ 
     dayNumber, month, year, WORKERS, daysOff, restrictions,constraints,dayBlock,afternoonBlock,
@@ -7,7 +7,7 @@ export async function assignWorkers({
  }){
     let shift1,shift2
     const results = await rosterWorkers(dayNumber,month,year,WORKERS,daysOff,restrictions,constraints)
-    if (objectCheck(results)){
+    if (objectCheck(results) || Object.keys(results).includes("Insufficient Workers")){
         return results
     }
     //results returns an object with success as the key and the values as the value or an error object
@@ -59,12 +59,13 @@ export async function assignWorkers({
 
 export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,constraints){ 
     const shifts = ["8hr","12hr"] //randomly selects a shift for the workers
+    const locationsError = []
     const dateStr = helperFuncs.dateToString(day,month,year)
-    const sixToSixDayArray = helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-6pm")
-    const sixToTwoArray = helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-2pm")
-    const twoToTenArray = helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"2pm-10pm")
-    const sixToSixNightArray = helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6pm-6am")
-    const tenToSixArray = helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"10pm-6am")
+    const sixToSixDayArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-6pm")
+    const sixToTwoArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-2pm")
+    const twoToTenArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"2pm-10pm")
+    const sixToSixNightArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6pm-6am")
+    const tenToSixArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"10pm-6am")
     let shiftOne,shiftTwo
 
     const checkArray = [
@@ -77,22 +78,32 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
 
     for (const check of checkArray){
         if(objectCheck(check)){
-            return check
+            locationsError.push(check.error)
         }
+    }
+
+    if (locationsError.length > 0){
+        return {"Insufficient Workers":locationsError}
     }
 
     const shiftOneShift = shifts[Math.floor(Math.random() * shifts.length)]
     const shiftTwoShift = shifts[Math.floor(Math.random() * shifts.length)]
 
     if (shiftOneShift== "8hr"){
+        console.log("six to two array length is " + sixToTwoArray.length)
+        console.log(sixToTwoArray)
         const dayWorker = await helperFuncs.setWorkerForShift(
             sixToTwoArray,dateStr,[sixToSixDayArray,sixToTwoArray],constraints
         )
         
+        console.log("two to ten array is " + twoToTenArray.length)
+        console.log(twoToTenArray)
         const afternoonWorker = await helperFuncs.setWorkerForShift(
             twoToTenArray,dateStr,[sixToSixDayArray,sixToSixNightArray,twoToTenArray],constraints
         )
     
+        console.log("ten to six array is "+  + tenToSixArray.length)
+        console.log(tenToSixArray)
         const nightWorker = await helperFuncs.setWorkerForShift(
             tenToSixArray,dateStr,[sixToSixNightArray,tenToSixArray],constraints
         )
@@ -104,10 +115,14 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
             "nightWorker":nightWorker,
         }
     }else{
+        console.log("six to six day array is " + sixToSixDayArray.length)
+        console.log(sixToSixDayArray)
         const dayWorker = await helperFuncs.setWorkerForShift(
             sixToSixDayArray,dateStr,[sixToTwoArray,twoToTenArray,sixToSixDayArray],constraints
         )
 
+        console.log("six to six night array is " + sixToSixNightArray.length)
+        console.log(sixToSixNightArray)
         const nightWorker = await helperFuncs.setWorkerForShift(
             sixToSixNightArray,dateStr,[tenToSixArray,twoToTenArray,sixToSixNightArray],constraints
         )

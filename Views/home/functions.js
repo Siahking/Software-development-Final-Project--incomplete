@@ -34,7 +34,9 @@ export async function loadContents(){
     }
 }
 
-export function saveDateAndLocations(){
+export function saveDateAndLocations(event){
+
+    event.preventDefault()
 
     const locationsInput = document.getElementsByClassName("location-option")
     const dateInput = document.getElementById("date")

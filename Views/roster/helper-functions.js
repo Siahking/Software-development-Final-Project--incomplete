@@ -1,9 +1,9 @@
 import * as apiFuncs from "../backend.js"
-import objectCheck from "../general-helper-funcs.js"
+import { objectCheck } from "../general-helper-funcs.js"
 
-export function retrieveWorkers(day,month,year,workers,daysOff,restrictions,hours){
+export async function retrieveWorkers(day,month,year,workers,daysOff,restrictions,hours){
     let array = []
-    const excludedWorkers = dayOffCheck(day,month,year,daysOff)
+    const excludedWorkers = await dayOffCheck(day,month,year,daysOff)
     const stringDay = getDayName(`${year}-${month}-${day}`)
 
     for (const worker of workers){
@@ -69,7 +69,7 @@ export function setWorkerToUnavailable(workerId,arrayOfArrays,constraints){
 
 export function checkShifts(strShift,shift){
     if (shift.length < 3){
-        return {"error":`Insufficient workers for ${strShift}`}
+        return {"error":strShift}
     }
     return {"success":""}
 }
@@ -164,12 +164,25 @@ export function dateToString(day,month,year){
 }
 
 export async function setWorkerForShift(workerArray,date,shiftWorkersArray,constraints){
+    console.log("worker array is")
+    console.log(workerArray)
+    console.log(`for shift ${workerArray}`)
     while(true){
         const worker = workerArray.pop()
+        if (!worker){
+            console.log("worker is undefined")
+            console.log(workerArray)
+            return worker
+        }
         const result = await apiFuncs.createOccupancy(worker.id,date,"Work") 
         setWorkerToUnavailable(worker.id,shiftWorkersArray,constraints)
         if (!objectCheck(result)){
             return worker
         }
     }
+}
+
+export function displayDataDiv(dataDiv,loadDiv){
+    dataDiv.classList.remove("specified-hidden")
+    loadDiv.classList.add("specified-hidden")
 }

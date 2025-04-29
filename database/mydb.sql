@@ -131,8 +131,8 @@ INSERT INTO workers (first_name, last_name, middle_name, gender, address, contac
 ('Olivia', 'Davis', NULL, 'Female', '101 Maple St', '555-4444', 26, 20004, 'Specified', JSON_ARRAY('2pm-10pm', '10pm-6am')),
 ('William', 'Evans', 'Lee', 'Male', '202 Birch St', '555-5555', 45, 20005, 'Day', JSON_ARRAY('6am-2pm', '6am-6pm')),
 ('Emma', 'Foster', NULL, 'Female', '303 Elm St', '555-6666', 27, 20006, 'Night', JSON_ARRAY('6pm-6am', '10pm-6am')),
-('David', 'Garcia', 'Ray', 'Male', '404 Redwood St', '555-7777', 33, 20007, 'Eclipse', JSON_ARRAY('24hrs')),
-('Ava', 'Harris', NULL, 'Female', '505 Spruce St', '555-8888', 29, 20008, 'Specified', JSON_ARRAY('10pm-6am'));
+('David', 'Garcia', 'Ray', 'Male', '404 Redwood St', '555-7777', 33, 20007, 'Eclipse', JSON_ARRAY('24hrs'));
+-- ('Ava', 'Harris', NULL, 'Female', '505 Spruce St', '555-8888', 29, 20008, 'Specified', JSON_ARRAY('10pm-6am')),
 -- ('Noah', 'Iverson', 'James', 'Male', '606 Poplar St', '555-9999', 38, 20009, 'Day', JSON_ARRAY('6am-2pm', '6am-6pm')),
 -- ('Liam', 'Jackson', NULL, 'Male', '707 Fir St', '555-1010', 32, 20010, 'Night', JSON_ARRAY('6pm-6am', '10pm-6am')),
 -- ('Ella', 'Johnson', 'Rose', 'Female', '808 Pine St', '555-1112', 29, 20011, 'Day', JSON_ARRAY('6am-2pm', '6am-6pm')),

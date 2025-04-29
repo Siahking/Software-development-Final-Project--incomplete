@@ -1,9 +1,13 @@
 import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
-import {objectCheck} from "../general-helper-funcs.js"
+import { objectCheck } from "../general-helper-funcs.js"
 
-const errorTag = document.getElementById("error-tag")
-
+const loadingContainer = document.createElement("div")
+const loadingMessage = document.createElement("p")
+loadingMessage.innerText = "Loading"
+loadingMessage.classList.add("loading-message")
+loadingContainer.classList.add("loading-container")
+loadingContainer.appendChild(loadingMessage)
 
 export async function generateCalender(month,year){
     await apiFuncs.clearOccupancies()
@@ -78,6 +82,8 @@ export async function generateCalender(month,year){
             container.appendChild(headerContainer)
             continue
         }
+
+        headerContainer.appendChild(loadingContainer)
         
         for (const result of results){
             const worker = await apiFuncs.findWorker("","","","",result.worker_id)
@@ -85,6 +91,7 @@ export async function generateCalender(month,year){
         }
 
         const calendarContainer = document.createElement("div")
+        calendarContainer.classList.add("specified-hidden")
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const date = new Date(year, month - 1, 1);
         const firstDayOfWeek = date.getDay();
@@ -146,6 +153,21 @@ export async function generateCalender(month,year){
                 locationErrorTag.innerText = results.error
                 headerContainer.appendChild(locationErrorTag)
                 container.appendChild(headerContainer)
+                loadingContainer.classList.add("specified-hidden")
+                container.appendChild()
+                return
+            }else if(Object.keys(results).includes("Insufficient Workers")){
+                locationErrorTag.innerText = "Insufficient Workers for locations:"
+                const unorderedList = document.createElement("ul")
+                for (const location of results["Insufficient Workers"]){
+                    const li = document.createElement("li")
+                    li.innerText = location
+                    unorderedList.appendChild(li)
+                }
+                headerContainer.appendChild(locationErrorTag)
+                headerContainer.appendChild(unorderedList)
+                loadingContainer.classList.add("specified-hidden")
+                container.appendChild(headerContainer)
                 return
             }
 
@@ -160,5 +182,8 @@ export async function generateCalender(month,year){
             container.appendChild(headerContainer)
             container.appendChild(calendarContainer)
         }
+        calendarContainer.classList.remove("specified-hidden")
+        loadingContainer.classList.add("specified-hidden")
+        console.log("completed")
     }
 }
