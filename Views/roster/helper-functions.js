@@ -135,7 +135,8 @@ function restrictionCheck(day,worker,hours,restrictions){
  async function dayOffCheck(day,month,year,daysOff){
     const occupancies = await apiFuncs.retrieveOccupancies("event_date",`${year}-${month}-${day}`)
 
-    //add workers to be excluded for this day to the object
+    //stores all workers off on this day
+    //stores the workers which requested days off first
     const obj = {}
     for (const result of daysOff){
         const startDate = new Date(result.start_date)
@@ -147,12 +148,13 @@ function restrictionCheck(day,worker,hours,restrictions){
         }
     }
 
+    //stores all workers already working on this day
     if (!objectCheck(occupancies)){
         for (const occupancy of occupancies){
             obj[occupancy.worker_id] = true;
         }
     }
-    
+
     return obj
 }
 
@@ -164,20 +166,21 @@ export function dateToString(day,month,year){
 }
 
 export async function setWorkerForShift(workerArray,date,shiftWorkersArray,constraints){
-    console.log("worker array is")
-    console.log(workerArray)
-    console.log(`for shift ${workerArray}`)
     while(true){
         const worker = workerArray.pop()
+        console.log("worker being processed is")
+        console.log(worker)
         if (!worker){
             console.log("worker is undefined")
-            console.log(workerArray)
             return worker
         }
         const result = await apiFuncs.createOccupancy(worker.id,date,"Work") 
         setWorkerToUnavailable(worker.id,shiftWorkersArray,constraints)
         if (!objectCheck(result)){
             return worker
+        }else{
+            console.log("worker is unavailable")
+            console.log(result)
         }
     }
 }
