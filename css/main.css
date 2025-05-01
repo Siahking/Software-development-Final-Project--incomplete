@@ -4,15 +4,15 @@
     --input-grey:#BEBEBE;
 }
 
-.buttons-div,.nav-container,#error-div,.data-input-container,.error-container{
+.buttons-div,.nav-container,.data-input-container,.error-container{
     display: flex;
 }
 
-#table-div,.buttons-div,#error-div,.data-input-container{
+.data-input-container{
     width: 100% !important;
 }
 
-.buttons-div,.data-input-container,#error-div,.error-container{
+.buttons-div,.data-input-container,.error-container{
     justify-content: center;
 }
 
@@ -123,10 +123,6 @@ tr:last-child td {
     outline: none;
 }
 
-#error-div{
-    margin-top: 10px;
-}
-
 .bold{
     font-weight: 600;
 }
@@ -146,4 +142,13 @@ tr:last-child td {
 
 .error-tag{
     color: red;
+}
+
+.buttons-div{
+    width: 100%;
+    min-width: 900px;
+}
+
+.nav-container{
+    min-width: 900px;
 }

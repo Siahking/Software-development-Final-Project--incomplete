@@ -9,6 +9,7 @@
 }
 
 .table-div{
+    min-width: 900px;
     padding: 10px;
 }
 
@@ -56,4 +57,12 @@
 
 #add-days-off-form button{
     margin-top: 0;
+}
+
+#table-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 110px;
 }

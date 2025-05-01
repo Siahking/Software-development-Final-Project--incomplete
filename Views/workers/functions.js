@@ -26,15 +26,19 @@ table.appendChild(firstRow)
 
 function assignHours(){
     let option
+    let availabilitySelected = false
     const hours = []
     for (const value of availabilityOptions){
         if (value.checked){
+            availabilitySelected = true
             option = value
             break
-        }else{
-            displayError(errorTagId,"Please select a valid availability option")
-            return
         }
+    }
+
+    if (!availabilitySelected){
+        displayError(errorTagId,"Please select a valid availability option")
+        return
     }
 
     switch (option.value){
@@ -171,14 +175,7 @@ export async function addWorkerHandler(event){
     const [availability,hours] = assignHours()
     if (!availability)return
 
-    const result = await apiFuncs.addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber,availability,hours)
     const selectedLocations = []
-
-    if (objectCheck(result)){
-        displayError(errorTagId,result.error)
-        return
-    }
-
     const locationsArr = document.querySelectorAll(".location-check")
     locationsArr.forEach(location=>{
         if (location.checked){
@@ -186,14 +183,24 @@ export async function addWorkerHandler(event){
         };
     });
 
-    if (selectedLocations.length>0) {
-        //find the worker using the idNumber then assign the worker to a location using worker and location id
-        const newWorker = await apiFuncs.findWorker("","","",idNumber)
-        const newWorkerId = newWorker[0].id
-        selectedLocations.forEach((location)=>{
-            apiFuncs.linkWorkerLocations(newWorkerId,location.id)
-        })
-    }    
+    if (selectedLocations.length === 0){
+        displayError(errorTagId,"Worker needs to be assigned to a location")
+        return
+    }
+
+    const result = await apiFuncs.addWorker(firstName,middleName,lastName,gender,address,contact,age,idNumber,availability,hours)
+
+    if (objectCheck(result)){
+        displayError(errorTagId,result.error)
+        return
+    }
+
+    //find the worker using the idNumber then assign the worker to a location using worker and location id
+    const newWorker = await apiFuncs.findWorker("","","",idNumber)
+    const newWorkerId = newWorker[0].id
+    selectedLocations.forEach((location)=>{
+        apiFuncs.linkWorkerLocations(newWorkerId,location.id)
+    })  
 
     sessionStorage.setItem("Message",result.message)
 
@@ -247,4 +254,3 @@ export async function deleteWorker(event){
         displayError(errorTagId,"Operation Cancled")
     }
 }
-

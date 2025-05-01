@@ -106,7 +106,7 @@ export async function addRestriction(){
     const check = await validateCoverage(locationId[0].location_id,dayOfWeek,workerId)
 
     if (!check){
-        errorHandlers.displayError(errorTagId,"Insufficient Workers to set permanent day off")
+        displayError(errorTagId,"Insufficient Workers to set permanent day off")
         return
     }
 

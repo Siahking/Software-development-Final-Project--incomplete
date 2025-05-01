@@ -1,13 +1,7 @@
 import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
+import { setLoadingContainer } from "./helper-functions.js"
 import { objectCheck } from "../general-helper-funcs.js"
-
-const loadingContainer = document.createElement("div")
-const loadingMessage = document.createElement("p")
-loadingMessage.innerText = "Loading"
-loadingMessage.classList.add("loading-message")
-loadingContainer.classList.add("loading-container")
-loadingContainer.appendChild(loadingMessage)
 
 export async function generateCalender(month,year){
     await apiFuncs.clearOccupancies()
@@ -83,6 +77,7 @@ export async function generateCalender(month,year){
             continue
         }
 
+        const loadingContainer = setLoadingContainer()
         headerContainer.appendChild(loadingContainer)
         
         for (const result of results){

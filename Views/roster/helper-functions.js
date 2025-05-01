@@ -186,3 +186,13 @@ export function displayDataDiv(dataDiv,loadDiv){
     dataDiv.classList.remove("specified-hidden")
     loadDiv.classList.add("specified-hidden")
 }
+
+export function setLoadingContainer(){
+    const loadingContainer = document.createElement("div")
+    const loadingMessage = document.createElement("p")
+    loadingMessage.innerText = "Loading"
+    loadingMessage.classList.add("loading-message")
+    loadingContainer.classList.add("loading-container")
+    loadingContainer.appendChild(loadingMessage)
+    return loadingContainer
+}

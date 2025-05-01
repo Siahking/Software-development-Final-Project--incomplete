@@ -73,13 +73,12 @@ tr:last-child td {
 #add-worker-div,
 #find-worker-div {
     width: 61%; /* Adjust width as needed */
-    max-width: 600px; /* Prevents stretching too wide */
-    min-width: 500px;
+    max-width: 550px; /* Prevents stretching too wide */
     padding: 30px;
     background: #f8f8f8; /* Optional: Adds slight background for visibility */
     border-radius: 8px; /* Optional: Rounded corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Slight shadow effect */
-    margin: 50px;
+    margin: 40px;
 }
 
 #add-age-input{
@@ -104,4 +103,20 @@ tr:last-child td {
 
 #add-address-input{
     width: 200px;
+}
+
+#worker-buttons-container{
+    min-width: 1270px;
+}
+
+.nav-container{
+    min-width: 1270px !important;
+}
+
+.data-input-container,.error-container{
+    min-width: 1270px !important;
+}
+
+#contact-id-info-div,.error-container{
+    margin-top: 10px;
 }

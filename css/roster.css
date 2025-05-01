@@ -18,6 +18,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
+    min-width: 1000px;
 }
 
 .calendar-item {
@@ -39,7 +40,7 @@
 }
 
 .location-header-div{
-    width: 100%;
+    min-width: 1000px;
     flex-direction: column;
 }
 
@@ -85,7 +86,7 @@
 }
 
 #home-div{
-    width: 100%;
+    min-width: 1000px;
 }
 
 #home-tag{
@@ -133,5 +134,3 @@ li{
         text-shadow: 0 0 8px #97BC62, 0 0 16px #97BC62, 0 0 24px #97BC62;
     }
 }
-
-  

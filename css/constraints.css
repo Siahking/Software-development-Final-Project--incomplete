@@ -54,3 +54,7 @@ input{
 #find-constraint-button-div button{
     margin-bottom: 0;
 }
+
+#message-container{
+    min-width: 900px;
+}
