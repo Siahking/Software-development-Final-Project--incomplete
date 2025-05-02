@@ -168,19 +168,10 @@ export function dateToString(day,month,year){
 export async function setWorkerForShift(workerArray,date,shiftWorkersArray,constraints){
     while(true){
         const worker = workerArray.pop()
-        console.log("worker being processed is")
-        console.log(worker)
-        if (!worker){
-            console.log("worker is undefined")
-            return worker
-        }
         const result = await apiFuncs.createOccupancy(worker.id,date,"Work") 
         setWorkerToUnavailable(worker.id,shiftWorkersArray,constraints)
         if (!objectCheck(result)){
             return worker
-        }else{
-            console.log("worker is unavailable")
-            console.log(result)
         }
     }
 }

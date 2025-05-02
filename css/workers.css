@@ -1,10 +1,10 @@
-#table-container,#add-worker-div,#find-worker-div,#name-info-div,#gender-address-info-div,
+#table-container,#find-worker-div,#name-info-div,#gender-address-info-div,#add-worker-form,#buttons-container,
 #gender-address-info-div label,#availability-div,#hours-div,#workerSearchForm,#locations-input,
 #contact-id-info-div,#contact-info-div label,.buttons-div,.text-input-label{
     display: flex;
 }
 
-.text-input-label,#add-worker-div,#find-worker-div,#gender-address-info-div label,#hours-div,#workerSearchForm{
+.text-input-label,#add-worker-div,#find-worker-div,#gender-address-info-div label,#hours-div,#workerSearchForm,#add-worker-form{
     flex-direction: column;
 }
 
@@ -12,7 +12,7 @@
     align-items: center;
 }
 
-.buttons-div,#add-worker-div,#find-worker-div,#table-container{
+.buttons-div,#add-worker-div,#find-worker-div,#table-container,#buttons-container{
     justify-content: center;
 }
 
@@ -105,15 +105,7 @@ tr:last-child td {
     width: 200px;
 }
 
-#worker-buttons-container{
-    min-width: 1270px;
-}
-
-.nav-container{
-    min-width: 1270px !important;
-}
-
-.data-input-container,.error-container{
+#worker-buttons-container,.nav-container,.data-input-container,.error-container{
     min-width: 1270px !important;
 }
 

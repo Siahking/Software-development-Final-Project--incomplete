@@ -4,10 +4,6 @@ import validateCoverage from './helper-functions.js'
 
 const errorTagId = "restriction-error"
 const emptyTableTag = document.getElementById("restriction-table-tag")
-const workerId = document.getElementById("worker-id-input")
-const dayOfWeek = document.getElementById("day-of-week-input")
-const startTime = document.getElementById("start-time-input")
-const endTime = document.getElementById("end-time-input")
 
 export async function getWorker(workerId){
     const workerData = await apiFuncs.findWorker("","","","",workerId)
@@ -70,7 +66,7 @@ export async function findRestriction() {
     } else if (idRadio.checked){
         results = await apiFuncs.findPermanentRestrictions("id",idValue.value)
     } else{
-        errorHandlers.displayError(errorTagId,"Please select an id to search from")
+        displayError(errorTagId,"Please select an id to search from")
         return 
     }
 

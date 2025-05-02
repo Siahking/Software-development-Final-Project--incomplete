@@ -112,7 +112,6 @@ export async function generateCalender(month,year){
 
         // Add day numbers and shift blocks
         for (let day = 1; day <= daysInMonth; day++) {
-            console.log(`day is ${day}`)
             const dayCell = document.createElement("div");
             dayCell.className = "calendar-item calendar-day";
 
@@ -180,6 +179,5 @@ export async function generateCalender(month,year){
         }
         calendarContainer.classList.remove("specified-hidden")
         loadingContainer.classList.add("specified-hidden")
-        console.log("completed")
     }
 }

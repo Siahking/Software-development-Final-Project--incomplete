@@ -68,3 +68,50 @@ OPTIROSTER is a full stack project developed entirely from scratch.It utilises C
    - frontend.js
     Displays the calendar interface and populates it with shift data.
 
+## Webpages
+ - **Create Roster**
+   Allows the user to select a future month, year, and location to dynamically generate a roster.
+
+ - **Workers**
+   Displays all workers stored in the database,including their assigned locations.
+   Features:
+    - Add Worker
+        - Inputs:First name *(required)*, Middle Name, Last Name *(required)*,     Gender, Address *(required)*, Age *(required)*, Contact, ID Number *(required)*, Availability *(required)*,Assigned Locations *(required)*
+        - Creates a new worker entry.
+    - Find Worker
+        - Search by ID, ID Number, First Name, Last Name, or Middle Name
+
+ - **Locations**
+   Displays all stored locations.
+   Features:
+    - Add Location
+        - Inputs:Location Name
+        - Creates a new location
+    - Find Location
+        - Search by location name
+
+ - **Constraints**
+   Displays all stored worker constraints.
+   Features:
+    - Add Constraint
+        - Inputs: Worker 1 ID *(required)*, Worker 2 ID *(required)*, Summary
+        - Creates a new constraint indicating why the two workers shouldn't be scheduled together.
+    - Find Constraint
+        - Search using first/last name of Worker 1 and/or Worker 2
+    - Edit Constraint
+        - Inputs: Constraint ID, fields to be updated (Worker 1 ID, Worker 2 ID, or Summary)
+
+ - **Days Off & Restrictions**
+   Displays both temporary and permanent days off.
+   Features:
+    - Add Days Off
+        - Inputs: Worker ID, Start Date, End Date
+        - Creates a temporary day-off record
+    - Find Days Off
+        - Search by Worker ID or Break ID
+    - Add Restriction
+        - Inputs: Worker ID, Day of Week, (Optional) Start Time, End Time
+        - Creates a permanent restriction
+    - Find Restriction
+        - Search by restriction ID or Worker ID.
+
