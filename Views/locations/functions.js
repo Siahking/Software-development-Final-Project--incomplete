@@ -8,7 +8,7 @@ const locationsErrorTag = document.getElementById("no-results-error-tag")
 
 const valueCheck = ()=>{
     if (!input.value){
-        displayError(errorTagId,"Please insert a valid search param")
+        displayError(errorTagId,"Please insert a valid value")
         return false
     }
     return true

@@ -114,7 +114,7 @@ export async function showWorkers (){
             if (field){
                 tableData.innerText = field
             }else{
-                tableData.innerText = "Null"
+                tableData.innerText = "---"
             }
 
             switch (index){
