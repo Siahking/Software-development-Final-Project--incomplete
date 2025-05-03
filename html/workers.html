@@ -37,11 +37,14 @@
 
         <h1>Workers</h1>
     </div>
-    <table id="table">
+    <div id="loading-container">
+        <p class="loading-message">Loading</p>
+    </div>
+    <table id="table" class="specified-hidden">
 
     </table>
 
-    <div class="buttons-div" id="worker-buttons-container">
+    <div class="buttons-div specified-hidden" id="worker-buttons-container">
         <button id="add-worker" class="grey-btn">Add Worker</button>
         <button id="find-worker" class="grey-btn">Find Worker</button>
     </div>
@@ -50,7 +53,7 @@
         <p id="workers-error-tag" class="error-tag"></p>
     </div>
 
-    <div class="data-input-container">
+    <div class="data-input-container specified-hidden">
         <div class="specified-hidden" id="add-worker-div">
             <form id="add-worker-form">
                 <div id="name-info-div">

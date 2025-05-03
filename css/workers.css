@@ -112,3 +112,9 @@ tr:last-child td {
 #contact-id-info-div,.error-container{
     margin-top: 10px;
 }
+
+#loading-container{
+    min-width: 1270px;
+    display: flex;
+    justify-content: center;
+}

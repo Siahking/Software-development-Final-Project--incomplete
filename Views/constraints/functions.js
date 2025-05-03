@@ -29,6 +29,11 @@ export async function addConstraint(event){
 
     event.preventDefault()
 
+    if (worker1Id.value === worker2Id.value){
+        displayError(errorTagId,"Constraints require two workers to be created")
+        return
+    }
+
     const result = await apiFuncs.createConstraint(worker1Id.value,worker2Id.value,summary.value)
     if (objectCheck(result)){
         displayError(errorTagId,result.error)
@@ -73,7 +78,7 @@ export async function displayConstraints(){
         IDData.innerText = constraint.id
         worker1Data.innerText = worker1Info
         worker2Data.innerText = worker2Info
-        summaryData.innerText = constraint.note
+        summaryData.innerText = constraint.note === "" ? "---" : constraint.note
 
         for (const value of [IDData,worker1Data,worker2Data,summaryData]){
             tableRow.appendChild(value)

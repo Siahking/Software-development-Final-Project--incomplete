@@ -1,5 +1,3 @@
-const showLocationsBtn = document.getElementById('toogle-btn')
-const selectLocationsDiv = document.getElementById('locations-input')
 const idCheckbox = document.getElementById("id")
 const firstNameCheckbox = document.getElementById("first-name")
 const lastNameCheckbox = document.getElementById("last-name")

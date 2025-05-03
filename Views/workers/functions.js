@@ -6,6 +6,9 @@ const tableHeadArray = ["ID","FirstName","LastName","MiddleName","Gender","Addre
 
 const errorTagId = "workers-error"
 const table = document.getElementById("table");
+const buttonContainer = document.getElementById("worker-buttons-container")
+const dataInputContainer = document.querySelector(".data-input-container")
+const loadingContainer = document.getElementById("loading-container")
 const firstRow = document.createElement("tr");
 const showLocationsDiv = document.getElementById('locations-input')
 const idInput = document.getElementById("id-input")
@@ -157,6 +160,10 @@ export async function showWorkers (){
 
         tableRow.append(deleteBtn)
         table.append(tableRow)
+    }
+    loadingContainer.classList.add("specified-hidden")
+    for (const container of [table,buttonContainer,dataInputContainer]){
+        container.classList.remove("specified-hidden")
     }
 }
 
