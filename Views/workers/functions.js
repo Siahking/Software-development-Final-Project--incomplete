@@ -100,6 +100,7 @@ export async function showWorkers (){
 
     if (objectCheck(workers)){
         displayError(errorTagId,workers.error)
+        loadingContainer.classList.add("specified-hidden")
         return
     }
 

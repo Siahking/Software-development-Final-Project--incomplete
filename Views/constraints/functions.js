@@ -102,22 +102,23 @@ export async function findConstraint(event){
     const worker2LastName = document.getElementById("worker2-lastname").value
 
     if (worker1FirstName && worker2FirstName){
+        console.log("passed here")
         if (!worker1LastName || !worker2LastName){
             displayError(errorTagId,errorMessage)
         }else{
-            results = await apiFuncs.getConstraints("",worker1FirstName,worker1LastName,worker2FirstName,worker2LastName)
+            results = await apiFuncs.getConstraints("","","",worker1FirstName,worker1LastName,worker2FirstName,worker2LastName)
         }
     }else if (worker2FirstName){
         if (!worker2LastName){
             displayError(errorTagId,errorMessage)
         }else{
-            results = await apiFuncs.getConstraints("",worker2FirstName,worker2LastName)
+            results = await apiFuncs.getConstraints("","","",worker2FirstName,worker2LastName)
         }
     }else if (worker1FirstName){
         if (!worker1LastName){
             displayError(errorTagId,errorMessage)
         }else{
-            results = await apiFuncs.getConstraints("",worker1FirstName,worker1LastName)
+            results = await apiFuncs.getConstraints("","","",worker1FirstName,worker1LastName)
         }
     }else{
         displayError(errorTagId,errorMessage)

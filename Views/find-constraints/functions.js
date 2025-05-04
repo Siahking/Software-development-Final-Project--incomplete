@@ -1,6 +1,6 @@
 import { removeConstraint } from "../constraints/functions.js"
 
-const table = document.getElementById("constraints-data")
+const table = document.getElementById("table")
 
 export async function displayConstraints(){
     const constraints = JSON.parse(localStorage.getItem("Constraints"));

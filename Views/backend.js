@@ -301,7 +301,7 @@ export async function clearOccupancies(){
 }
 
 // async function tester() {
-//     const result = await getConstraints("",1,2)
+//     const result = await getConstraints("","","","James","Anderson","Sophia","Brown")
 //     console.log(result)
 // }
 

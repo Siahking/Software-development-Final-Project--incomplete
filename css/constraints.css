@@ -15,7 +15,7 @@
 }
 
 #table-div{
-    padding: 10px;
+    padding-left: 60px;
 }
 
 input{
@@ -56,5 +56,9 @@ input{
 }
 
 #message-container{
+    min-width: 900px;
+}
+
+.data-input-container,.error-container{
     min-width: 900px;
 }

@@ -66,3 +66,7 @@
     align-items: center;
     margin-left: 110px;
 }
+
+.data-input-container,.error-container{
+    min-width: 900px;
+}
