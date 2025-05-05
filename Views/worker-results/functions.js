@@ -1,6 +1,6 @@
 import * as apiFuncs from '../backend.js'
 import { deleteWorker } from "../../views/workers/functions.js"
-import objectCheck from '../general-helper-funcs.js';
+import { objectCheck } from '../general-helper-funcs.js';
 
 export async function showWorkers (){
 

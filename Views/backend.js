@@ -165,6 +165,12 @@ export async function editConstraints(id,worker1IdStr="",worker2IdStr="",note=""
         return
     }
 
+    if (worker1Id === worker2Id){
+        return {"error":"Constraints must be created between two workers"}
+    }
+
+    if (!note)note = null
+
     const jsonValues = {}
     const inputValues = [
         {"worker1_id":worker1Id},

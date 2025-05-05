@@ -61,6 +61,7 @@ export async function generateCalender(month,year){
     const container = document.getElementById("container")
 
     for (const location of locations){
+        let errorFound = false
         const WORKERS = []
         const results = await apiFuncs.workerLocationSearch("location_id",location.id)
         const headerContainer = document.createElement("div")
@@ -150,9 +151,10 @@ export async function generateCalender(month,year){
                 container.appendChild(headerContainer)
                 loadingContainer.classList.add("specified-hidden")
                 container.appendChild()
-                return
+                errorFound = true
+                break
             }else if(Object.keys(results).includes("Insufficient Workers")){
-                locationErrorTag.innerText = "Insufficient Workers for locations:"
+                locationErrorTag.innerText = "Insufficient Workers for shifts:"
                 const unorderedList = document.createElement("ul")
                 for (const location of results["Insufficient Workers"]){
                     const li = document.createElement("li")
@@ -163,7 +165,8 @@ export async function generateCalender(month,year){
                 headerContainer.appendChild(unorderedList)
                 loadingContainer.classList.add("specified-hidden")
                 container.appendChild(headerContainer)
-                return
+                errorFound = true
+                break
             }
 
             // Append elements inside the day cell
@@ -177,6 +180,7 @@ export async function generateCalender(month,year){
             container.appendChild(headerContainer)
             container.appendChild(calendarContainer)
         }
+        if (errorFound)continue
         calendarContainer.classList.remove("specified-hidden")
         loadingContainer.classList.add("specified-hidden")
     }
