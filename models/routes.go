@@ -92,6 +92,10 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.POST("/workers/add-worker", func(c *gin.Context) {
 		AddWorker(c, db)
 	})
+	//edit worker
+	router.PATCH("/workers/edit-worker/:id",func(c *gin.Context) {
+		EditWorker(c, db)
+	})
 
 	//WORKER_LOCATION ROUTES
 	//assign a worker to a route

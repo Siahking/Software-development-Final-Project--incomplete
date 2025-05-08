@@ -5,21 +5,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 )
 
 type Worker struct {
-	ID           int      `json:"id"`
-	FirstName    string   `json:"first_name"`
-	LastName     string   `json:"last_name"`
+	ID           *int      `json:"id"`
+	FirstName    *string   `json:"first_name"`
+	LastName     *string   `json:"last_name"`
 	MiddleName   *string  `json:"middle_name"`
 	Gender       *string  `json:"gender"`
-	Address      string   `json:"address"`
+	Address      *string   `json:"address"`
 	Contact      *string  `json:"contact"`
-	Age          int      `json:"age"`
-	ID_Number    int      `json:"id_number"`
+	Age          *int      `json:"age"`
+	ID_Number    *int      `json:"id_number"`
 	Availability *string  `json:"availability"`
 	Hours        []string `json:"hours"`
 }
@@ -32,8 +33,8 @@ func AddWorker(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	if worker.FirstName == "" || worker.LastName == "" || worker.Address == "" ||
-		worker.Age == 0 || worker.ID_Number == 0 {
+	if *worker.FirstName == "" || *worker.LastName == "" || *worker.Address == "" ||
+		*worker.Age == 0 || *worker.ID_Number == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing params"})
 		return
 	}
@@ -194,4 +195,73 @@ func GetWorkers(c *gin.Context, db *sql.DB) {
 	} else {
 		c.IndentedJSON(http.StatusOK, employees)
 	}
+}
+
+func EditWorker(c *gin.Context, db *sql.DB){
+	var worker Worker
+	var hoursJSON interface{}
+	idStr := c.Param("id")
+
+	id, conversonErr := strconv.Atoi(idStr)
+
+	if conversonErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&worker); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		fmt.Print(err)
+		return
+	}
+
+	if worker.Hours == nil{
+		hoursJSON = nil
+	}else{
+		value, err := json.Marshal(worker.Hours)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to convert hours to JSON: \n" + err.Error()})
+			return
+		}
+		hoursJSON = value
+	}
+
+	query := `UPDATE workers SET
+			first_name = COALESCE(?, first_name),
+			last_name = COALESCE(?, last_name),
+			middle_name = COALESCE(?, middle_name),
+			gender = COALESCE(?, gender),
+			address = COALESCE(?, address),
+			contact = COALESCE(?, contact),
+			age = COALESCE(?, age),
+			id_number = COALESCE(?, id_number),
+			availability = COALESCE(?, availability),
+			hours = COALESCE(?, hours) 
+			WHERE id = ?`
+	
+	_,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName,worker.Gender,
+			worker.Address,worker.Contact,worker.Age,worker.ID_Number,worker.Availability,
+			hoursJSON,id)
+
+	if err != nil {
+		var errMsg string
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			switch mysqlErr.Number {
+			case 1452:
+				errMsg = "Worker with this ID does not exist"
+			case 3819:
+				errMsg = "Can't use the same worker value for both params"
+			case 1062:
+				errMsg = "Duplicate Entry, a constraint for these workers already exists"
+			default:
+				fmt.Print(err)
+			}
+		} else {
+			errMsg = "Unknown error occurred"
+		}
+		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Worker modified successfully"})
 }

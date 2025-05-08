@@ -178,7 +178,7 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 	id, conversonErr := strconv.Atoi(idStr)
 
 	if conversonErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
 		return
 	}
 
