@@ -7,11 +7,12 @@ import(
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"strings"
+	"strconv"
 )
 
 type Location struct {
 	ID       int    `json:"id"`
-	Location string `json:"location"`
+	Location *string `json:"location"`
 }
 
 //retrieve all locations
@@ -150,4 +151,43 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
+}
+
+func EditLocation(c *gin.Context,db *sql.DB){
+	var location Location
+	idStr := c.Param("id")
+
+	id, conversionErr := strconv.Atoi(idStr)
+
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&location); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if *location.Location == ""{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid location input"})
+		return
+	}
+
+	query := `UPDATE locations SET location = COALESCE(?, location) WHERE id = ?`
+
+	result,err := db.Exec(query, location.Location, id)
+
+	if err != nil{
+		c.JSON(http.StatusConflict, gin.H{"error": "Location with this name already exists"})
+		return
+	}
+
+	rowsAffected,_ := result.RowsAffected()
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Location edited successfully"})
 }

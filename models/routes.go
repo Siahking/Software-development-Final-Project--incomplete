@@ -78,6 +78,10 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.POST("/locations/:location", func(c *gin.Context) {
 		AddLocation(c, db)
 	})
+	//edit location
+	router.PATCH("/edit-location/:id", func(c *gin.Context) {
+		EditLocation(c, db)
+	})
 
 	//WORKER ROUTES
 	//get all workers
@@ -146,6 +150,10 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.DELETE("remove-days/:id", func(c *gin.Context) {
 		RemoveDaysOff(c, db)
 	})
+	//edit days off
+	router.PATCH("edit-dayoff/:id", func(c *gin.Context) {
+		EditDayOff(c, db)
+	})
 
 	//restriction routes
 	//create a new restriction
@@ -163,6 +171,10 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	//delete restriction
 	router.DELETE("/delete-restriction/:id",func(c *gin.Context) {
 		DeleteRestriction(c,db)
+	})
+	//edit restirction
+	router.PATCH("edit-restriction/:id",func(c *gin.Context) {
+		EditRestriction(c,db)
 	})
 
 	//occupancy routes

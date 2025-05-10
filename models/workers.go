@@ -239,27 +239,25 @@ func EditWorker(c *gin.Context, db *sql.DB){
 			hours = COALESCE(?, hours) 
 			WHERE id = ?`
 	
-	_,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName,worker.Gender,
+	result,err := db.Exec(query, worker.FirstName,worker.LastName,worker.MiddleName,worker.Gender,
 			worker.Address,worker.Contact,worker.Age,worker.ID_Number,worker.Availability,
 			hoursJSON,id)
 
 	if err != nil {
-		var errMsg string
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
-			switch mysqlErr.Number {
-			case 1452:
-				errMsg = "Worker with this ID does not exist"
-			case 3819:
-				errMsg = "Can't use the same worker value for both params"
-			case 1062:
-				errMsg = "Duplicate Entry, a constraint for these workers already exists"
-			default:
-				fmt.Print(err)
+			if mysqlErr.Number == 1062 {
+				c.JSON(http.StatusConflict, gin.H{"error": "Worker with this id number already exists"})
+				return
 			}
 		} else {
-			errMsg = "Unknown error occurred"
+			c.JSON(http.StatusConflict, gin.H{"error": "Unknown error occured"})
+			return
 		}
-		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
+	}
+
+	rowsAffected,_ := result.RowsAffected()
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made"})
 		return
 	}
 

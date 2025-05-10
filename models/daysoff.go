@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -12,7 +14,7 @@ import (
 
 type DaysOff struct {
 	BreakId   int     `json:"break_id"`
-	WorkerId  int     `json:"worker_id"`
+	WorkerId  *int     `json:"worker_id"`
 	StartDate *string `json:"start_date"`
 	EndDate   *string `json:"end_date"`
 }
@@ -147,4 +149,76 @@ func RemoveDaysOff(c *gin.Context, db *sql.DB) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
+}
+
+func EditDayOff(c *gin.Context, db *sql.DB) {
+	var dayOff DaysOff
+	idStr := c.Param("id")
+
+	id, conversonErr := strconv.Atoi(idStr)
+
+	if conversonErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&dayOff); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if err := checkDates(dayOff); err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error":err.Error()})
+		return
+	}
+
+	query := `UPDATE days_off SET
+			worker_id = COALESCE(?, worker_id),
+			start_date = COALESCE(?, start_date),
+			end_date = COALESCE(?, end_date)
+			WHERE break_id = ?`
+
+	_, err := db.Exec(query, dayOff.WorkerId,dayOff.StartDate,dayOff.EndDate,id)
+
+	if err != nil {
+		var errMsg string
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			switch mysqlErr.Number {
+			case 1452:
+				errMsg = "Worker with this ID does not exist"
+			case 3819:
+				errMsg = "Can't use the same worker value for both params"
+			case 1062:
+				errMsg = "Duplicate Entry, a constraint with this ID Number already exists"
+			default:
+				fmt.Print(err)
+			}
+		} else {
+			errMsg = "Unknown error occurred"
+		}
+		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Day Off modified successfully"})
+}
+
+func checkDates(dayOff DaysOff)error{
+	layout := "2006-01-02"
+
+	startDate, startDateErr := time.Parse(layout, *dayOff.StartDate)
+	endDate, endDateErr := time.Parse(layout, *dayOff.EndDate)
+	if startDateErr != nil || endDateErr != nil {
+		return errors.New(" Invalid date time format")
+	}
+
+	if startDate.Before(time.Now()) {
+		return errors.New(" Start date must be in the future")
+	}
+
+	if endDate.Before(startDate) {
+		return errors.New(" End Date must be after the start date")
+	}
+
+	return nil
 }

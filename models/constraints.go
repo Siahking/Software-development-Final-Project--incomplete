@@ -175,9 +175,9 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 	var constraint Constraint
 	idStr := c.Param("id")
 
-	id, conversonErr := strconv.Atoi(idStr)
+	id, conversionErr := strconv.Atoi(idStr)
 
-	if conversonErr != nil {
+	if conversionErr != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
 		return
 	}
@@ -193,7 +193,7 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 			note = COALESCE(?, note) 
 			WHERE id = ?`
 
-	_, err := db.Exec(query, constraint.Worker1, constraint.Worker2, constraint.Note, id)
+	result, err := db.Exec(query, constraint.Worker1, constraint.Worker2, constraint.Note, id)
 
 	if err != nil {
 		var errMsg string
@@ -204,7 +204,7 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 			case 3819:
 				errMsg = "Can't use the same worker value for both params"
 			case 1062:
-				errMsg = "Duplicate Entry, a constraint for these workers already exists"
+				errMsg = "Duplicate Entry, a constraint with this ID Number already exists"
 			default:
 				fmt.Print(err)
 			}
@@ -212,6 +212,12 @@ func EditConstraints(c *gin.Context, db *sql.DB) {
 			errMsg = "Unknown error occurred"
 		}
 		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
+		return
+	}
+
+	rowsAffected,_ := result.RowsAffected()
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made"})
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,11 +12,11 @@ import (
 )
 
 type PermanentRestriction struct {
-	ID        int    `json:"id"`
-	WorkerId  int    `json:"worker_id"`
-	DayOfWeek string `json:"day_of_week"`
-	StartTime string `json:"start_time"`
-	EndTime   string `json:"end_time"`
+	ID        int     `json:"id"`
+	WorkerId  int     `json:"worker_id"`
+	DayOfWeek string  `json:"day_of_week"`
+	StartTime *string `json:"start_time"`
+	EndTime   *string `json:"end_time"`
 }
 
 // create a new permanent restriction
@@ -32,24 +33,24 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 	endTime := permanentRestriction.EndTime
 
 	if dayOfWeek == "Any" {
-		if startTime == "" && endTime == "" {
+		if *startTime == "" && *endTime == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid time values"})
 			return
 		}
-	} else if startTime == "" && endTime != "" || endTime == "" && startTime != "" {
+	} else if *startTime == "" && *endTime != "" || *endTime == "" && *startTime != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Please insert a start time and a end time"})
 		return
 	}
 
-	if startTime == "" {
-		startTime = "00:00:00"
-	} else if startTime == "00:00" {
-		startTime = "24:00:00"
+	if *startTime == "" {
+		*startTime = "00:00:00"
+	} else if *startTime == "00:00" {
+		*startTime = "24:00:00"
 	}
-	if endTime == "" {
-		endTime = "00:00:00"
-	} else if endTime == "00:00" {
-		endTime = "24:00:00"
+	if *endTime == "" {
+		*endTime = "00:00:00"
+	} else if *endTime == "00:00" {
+		*endTime = "24:00:00"
 	}
 
 	query := "INSERT INTO permanent_restrictions (worker_id,day_of_week,start_time,end_time) VALUES (?,?,?,?)"
@@ -170,4 +171,55 @@ func DeleteRestriction(c *gin.Context, db *sql.DB) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
+}
+
+func EditRestriction(c *gin.Context, db *sql.DB) {
+	var restriction PermanentRestriction
+	idStr := c.Param("id")
+
+	id, conversionErr := strconv.Atoi(idStr)
+
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&restriction); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	query := `UPDATE permanent_restrictions SET 
+			worker_id = COALESCE(?, worker_id),
+			day_of_week = COALESCE(?, day_of_week),
+			start_time = COALESCE(?, start_time),
+			end_time = COALESCE(?, end_time)
+			WHERE id = ?`
+
+	result, err := db.Exec(query, restriction.WorkerId, restriction.DayOfWeek, restriction.StartTime, restriction.EndTime, id)
+
+	if err != nil {
+
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			switch mysqlErr.Number {
+			case 1265:
+				c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid day value for day of the week field"})
+				return
+			case 1292:
+				c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid time value for start time or end time"})
+				return
+			default:
+				c.JSON(http.StatusInternalServerError,gin.H{"error":"Internal server error \n"+err.Error()})
+				return
+			}
+		}
+	}
+
+	rowsAffected,_:= result.RowsAffected()
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No changes made"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Restriction modified successfully"})
 }
