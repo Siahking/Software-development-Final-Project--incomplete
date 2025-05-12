@@ -97,7 +97,7 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 		AddWorker(c, db)
 	})
 	//edit worker
-	router.PATCH("/workers/edit-worker/:id",func(c *gin.Context) {
+	router.PATCH("/edit-worker/:id",func(c *gin.Context) {
 		EditWorker(c, db)
 	})
 
@@ -111,8 +111,12 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 		GetWorkerLocationConnections(c, db)
 	})
 	//remove a worker from a location
-	router.DELETE("/remove-connection/:column/:id", func(c *gin.Context) {
+	router.DELETE("/remove-connection", func(c *gin.Context) {
 		RemoveConnection(c, db)
+	})
+	//edit worker or location in connection
+	router.PATCH("edit-connection/:id", func(c *gin.Context){
+		EditConnection(c, db)
 	})
 
 	//CONTRAINTS ROUTES

@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 )
 
 type WorkerLocation struct {
 	ID         int `json:"id"`
-	WorkerID   int `json:"worker_id"`
-	LocationID int `json:"location_id"`
+	WorkerID   *int `json:"worker_id"`
+	LocationID *int `json:"location_id"`
 }
 
 //assign workers to location using workerid and locationid
@@ -103,33 +103,33 @@ func GetWorkerLocationConnections(c *gin.Context, db *sql.DB) {
 
 //remove worker to locations connection based on the connection id, worker id or location id
 func RemoveConnection(c *gin.Context, db *sql.DB) {
-	column := c.Param("column")
-	valueStr := c.Param("id")
-	validQueries := map[string]string{
-		"worker_id":   "DELETE FROM worker_locations WHERE worker_id = ?",
-		"location_id": "DELTE FROM worker_locations WHERE location_id = ?",
-		"id":          "DELETE FROM worker_locations WHERE id = ?",
-	}
+	var query string
+	var result sql.Result
+	var err error
 
-	value, conversionErr := strconv.Atoi(valueStr)
-	if conversionErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Id"})
-		return
-	}
+	workerID := c.Query("worker_id")
+	locationID := c.Query("location_id")
+	Id := c.Query("id")
 
-	query, exists := validQueries[column]
-	if !exists {
+	if Id != ""{
+		query = "DELETE FROM worker_locations WHERE id = ?"
+		result,err = db.Exec(query,Id)
+	}else if workerID != "" && locationID != ""{
+		query = "DELETE FROM worker_locations WHERE worker_id = ? AND location_id = ?"
+		result,err = db.Exec(query,workerID,locationID)
+	}else if workerID != ""{
+		query = "DELETE FROM worker_locations WHERE worker_id = ?"
+		result,err = db.Exec(query,workerID)
+	}else if locationID != ""{
+		query = "DELETE FROM worker_locations WHERE location_id = ?"
+		result,err = db.Exec(query,locationID)
+	}else{
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid column input"})
 		return
 	}
 
-	var result sql.Result
-	var err error
-
-	result, err = db.Exec(query, value)
-
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in getting rows " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in deleting values " + err.Error()})
 		return
 	}
 
@@ -144,4 +144,51 @@ func RemoveConnection(c *gin.Context, db *sql.DB) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
+}
+
+func EditConnection(c *gin.Context,db *sql.DB){
+	var connection WorkerLocation
+	idStr := c.Param("id")
+
+	id, conversionErr := strconv.Atoi(idStr)
+
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&connection); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	query := `UPDATE worker_locations SET
+			worker_id = COALESCE(?, worker_id),
+			location_id = COALESCE(?, location_id)
+			WHERE id = ?`
+
+	result, err := db.Exec(query, connection.WorkerID,connection.LocationID,id)
+	if  err != nil{
+		var errMsg string
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			switch mysqlErr.Number {
+			case 1452:
+				errMsg = "Worker or Location with this ID does not exist"
+			case 1062:
+				errMsg = "Duplicate Entry, a connection with this worker and location params already exists"
+			default:
+				fmt.Print(err)
+			}
+		} else {
+			errMsg = "Unknown error occurred"
+		}
+		c.JSON(http.StatusConflict, gin.H{"error": errMsg})
+		return
+	}
+	rowsAffected,_ := result.RowsAffected()
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made,either Connection ID does not exist or there are no changes to be made"})
+		return
+	}
+	c.JSON(http.StatusCreated,gin.H{"message": "Connection modified successfully"})
 }

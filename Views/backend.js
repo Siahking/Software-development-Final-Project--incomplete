@@ -37,6 +37,23 @@ export async function addLocation(locationName) {
     return apiRequest(url,"POST")
 };
 
+export async function findLocation(column,value){
+    const url = `locations/${column}/${value}`
+    return apiRequest(url)
+}
+
+export async function editLocation(idStr,location){
+    let id
+    try{
+        id = parseInt(idStr)
+    }catch{
+        return {"error":"Invalid ID param, id needs to be a number"}
+    }
+
+    const url = `edit-location/${id}`
+    return apiRequest(url,"PATCH",{location})
+}
+
 export async function addWorker(first_name,middle_name,last_name,gender,address,contact,age,id_number,availability,hours){
     const neededValuesArr = [first_name,last_name,gender,address,age,id_number,availability,hours]
     for (const value of neededValuesArr){
@@ -48,11 +65,6 @@ export async function addWorker(first_name,middle_name,last_name,gender,address,
     return apiRequest("workers/add-worker","POST",{
         first_name,last_name,middle_name,gender,address,contact,age,id_number,availability,hours
     })
-}
-
-export async function findLocation(column,value){
-    const url = `locations/${column}/${value}`
-    return apiRequest(url)
 }
 
 export async function getWorkers(){
@@ -77,6 +89,23 @@ export async function findWorker(firstName="",lastName="",middleName="",idNumber
     return data
 }
 
+export async function editWorker(
+    idStr,first_name=null,last_name=null,middle_name=null,gender=null,address=null,contact=null,id_number=null,availability=null,hours=null
+){
+    let id
+    try{
+        id = parseInt(idStr)
+    }catch{
+        return {"error":"Invalid ID param, id needs to be a number"}
+    }
+
+    const url = `edit-worker/${id}`
+
+    return apiRequest(url,"PATCH",{
+        first_name,last_name,middle_name,gender,address,contact,id_number,availability,hours
+    })
+}
+
 export async function removeEntry(id,table){
     if (!id || !table)return {"error":"ID and Table required"}
     const url = `delete/${table}/${id}`
@@ -93,8 +122,42 @@ export async function workerLocationSearch(column,id){
     return apiRequest(url)
 }
 
-export async function removeConnections(column,id){
-    const url = `remove-connection/${column}/${id}`
+export async function editConnection(idStr,worker_id=null,location_id=null){
+    let id
+    try{
+        id = parseInt(idStr)
+    }catch{
+        return {"error":"Invalid ID param"}
+    }
+
+    if (!worker_id && !location_id){
+        return {"error":"Either worker or location ids are required"}
+    }
+
+    const url = `edit-connection/${id}`
+    return apiRequest(url,"PATCH",{
+        location_id,worker_id
+    })
+}
+
+export async function removeConnections(idStr="",worker_id="",location_id=""){
+    let url = `remove-connection?`
+    let id
+    if (idStr){
+        try{
+            id = parseInt(idStr)
+        }catch{
+            return{"error":"Invalid ID Param"}
+        }
+
+        url += `id=${id}`
+    }else if (worker_id && location_id){
+        url += `worker_id=${worker_id}&location_id=${location_id}`
+    }else if (worker_id){
+        url += `worker_id=${worker_id}`
+    }else{
+        url += `location_id=${location_id}`
+    }
     return apiRequest(url,"DELETE")
 }
 
@@ -307,7 +370,7 @@ export async function clearOccupancies(){
 }
 
 // async function tester() {
-//     const result = await getConstraints("","","","James","Anderson","Sophia","Brown")
+//     const result = await editConnection(8,4,null)
 //     console.log(result)
 // }
 
