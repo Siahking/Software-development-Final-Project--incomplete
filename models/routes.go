@@ -207,4 +207,10 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.GET("/retrieve-workers-locations/:column/:id",func(c *gin.Context) {
 		RetrieveWorkersOrLocation(c,db)
 	})
+
+	//roster endpoints
+	//save a roster
+	router.POST("/save-roster", func(c *gin.Context) {
+		SaveRoster(c,db)
+	})
 }

@@ -146,8 +146,10 @@ func RemoveDaysOff(c *gin.Context, db *sql.DB) {
 
 	if rowsAffected == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No Entry found"})
+		return
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
+		return
 	}
 }
 

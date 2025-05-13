@@ -77,3 +77,34 @@ CREATE TABLE occupancy (
     FOREIGN KEY (worker_id) REFERENCES workers(id) ON DELETE CASCADE,
     CONSTRAINT unique_occupancy UNIQUE (worker_id,event_date)
 );
+
+--@block 
+CREATE TABLE roster (
+    roster_id INT AUTO_INCREMENT PRIMARY KEY,
+    location_id INT NOT NULL,
+    month INT NOT NULL,
+    FOREIGN KEY (location_id) REFERENCES locations(id),
+    UNIQUE (location_id,month)
+);
+
+--@block
+CREATE TABLE roster_entries(
+    entry_id INT AUTO_INCREMENT PRIMARY KEY,
+    roster_id INT NOT NULL,
+    worker_id INT NOT NULL,
+    shift_date DATE NOT NULL,
+    shift_type VARCHAR(10) NOT NULL,
+    FOREIGN KEY (worker_id) REFERENCES workers(id),
+    FOREIGN KEY (roster_id) REFERENCES roster(roster_id) ON DELETE CASCADE
+);
+
+--@block
+INSERT INTO roster (location_id, month) VALUES (1,3);
+
+--@block
+INSERT INTO roster_entries (roster_id,worker_id,shift_date,shift_type) VALUES (1,4,"2025-10-21","6am-6pm");
+
+--@block
+SELECT * FROM roster;
+--@block
+SELECT * FROM roster_entries;
