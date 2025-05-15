@@ -135,7 +135,7 @@ func RemoveConnection(c *gin.Context, db *sql.DB) {
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "No rows affected" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in checking rows" + err.Error()})
 		return
 	}
 

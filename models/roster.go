@@ -307,5 +307,64 @@ func EditRosterEntry(c *gin.Context, db *sql.DB){
 }
 
 func DeleteRosterEntry(c *gin.Context, db *sql.DB){
+	var query string
+	var result sql.Result
+	var deleteErr error
+	entryId := c.Query("entry_id")
+	rosterId := c.Query("roster_id")
+	workerId := c.Query("worker_id")
+	shift_date := c.Query("shift_date")
+	shift_type := c.Query("shift_type")
 
+	if entryId != ""{
+		query = "DELETE * FROM roster_entries WHERE entry_id = ?"
+		result,deleteErr = db.Exec(query,entryId)
+	}else{
+		baseQuery := "DELETE * FROM roster_entries WHERE "
+		var conditions []string
+		var args []interface{}
+		if rosterId != ""{
+			conditions = append(conditions, "roster_id = ?")
+			args = append(args, rosterId)
+		}
+		if workerId != ""{
+			conditions = append(conditions, "worker_id = ?")
+			args = append(args, workerId)
+		}
+		if shift_date != ""{
+			conditions = append(conditions, "shift_date = ?")
+			args = append(args, shift_date)
+		}
+		if shift_type != ""{
+			conditions = append(conditions, "shift_type = ?")
+			args = append(args, shift_type)
+		}
+
+		if len(conditions) == 0{
+			c.JSON(http.StatusBadRequest,gin.H{"error":"No filter parameters provided"})
+			return
+		}
+
+		whereClause := strings.Join(conditions, " AND ")
+		finalQuery := baseQuery + " WHERE " + whereClause 
+
+		result, deleteErr = db.Exec(finalQuery, args...)
+	}
+
+	if deleteErr != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in extracting values\n" + deleteErr.Error()})
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in checking rows\n"+err.Error()})
+		return
+	}
+
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Entry found"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
+	}
 }

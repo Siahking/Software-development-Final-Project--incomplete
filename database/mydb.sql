@@ -98,6 +98,13 @@ CREATE TABLE roster_entries(
     FOREIGN KEY (roster_id) REFERENCES roster(roster_id) ON DELETE CASCADE
 );
 
+CREATE TABLE user_accounts(
+    account_id INT AUTO INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    UNIQUE(username)
+)
+
 --@block
 INSERT INTO roster (location_id, month) VALUES (1,3);
 
