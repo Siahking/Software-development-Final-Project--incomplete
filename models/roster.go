@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-
+	"strconv"
+	"strings"
 	"github.com/gin-gonic/gin"
 )
 
@@ -45,6 +46,91 @@ func SaveRoster(c *gin.Context, db *sql.DB) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Roster added successfully"})
+}
+
+func RetrieveRosters(c *gin.Context, db *sql.DB){
+	var query string
+	var results *sql.Rows
+	var searchError error
+	var rosters []Roster
+	rosterId := c.Query("roster_id")
+	locationId := c.Query("location_id")
+	month := c.Query("month")
+
+	if rosterId == "" && locationId == "" && month == ""{
+		results,searchError = db.Query("SELECT * FROM roster")
+	}else if rosterId != ""{
+		query = "SELECT * FROM roster WHERE roster_id = ?"
+		results,searchError = db.Query(query,rosterId)
+	}else if locationId != "" && month != ""{
+		query = "SELECT * FROM roster WHERE location_id = ? AND month = ?"
+		results,searchError = db.Query(query,locationId,month)
+	}else if month != ""{
+		query = "SELECT * FROM roster WHERE month = ?"
+		results, searchError = db.Query(query,month)
+	}else if locationId != ""{
+		query = "SELECT * FROM roster WHERE location_id = ?"
+		results,searchError = db.Query(query,locationId)
+	}else{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid param"})
+		return
+	}
+
+	if searchError != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in retrieving rosters"})
+		return
+	}
+	defer results.Close()
+
+	for results.Next() {
+		var roster Roster
+
+		if err := results.Scan(&roster.RosterId,&roster.LocationId,&roster.Month); err != nil {
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in retrieving values\n" + err.Error()})
+			return
+		}
+
+		rosters = append(rosters, roster)
+	}
+
+	if len(rosters) == 0 {
+		c.JSON(http.StatusNotFound,gin.H{"error":"No roster found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, rosters)
+}
+
+func EditRoster(c *gin.Context, db *sql.DB){
+	var roster Roster
+	idStr := c.Param("id")
+
+	id, conversionErr := strconv.Atoi(idStr)
+
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&roster); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	query := `UPDATE roster SET
+			location_id = COALESCE(?, location_id),
+			month = COALESCE(?, month)
+			WHERE roster_id = ?
+	`
+
+	_,err := db.Exec(query, roster.LocationId,roster.Month,id)
+
+	if err != nil{
+		fmt.Print(err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{"message":"Roster Modified successfully"})
 }
 
 func DeleteRoster(c *gin.Context, db *sql.DB){
@@ -117,4 +203,109 @@ func RosterEntryHandler(c *gin.Context, db *sql.DB){
 	c.JSON(http.StatusCreated,gin.H{"error":"Roster entry added successfully"})
 }
 
+func RestrieveRosterEntries(c *gin.Context, db *sql.DB){
+	var query string
+	var rows *sql.Rows
+	var extractionErr error
+	var entries []RosterEntry
+	entryId := c.Query("entry_id")
+	rosterId := c.Query("roster_id")
+	workerId := c.Query("worker_id")
+	shift_date := c.Query("shift_date")
+	shift_type := c.Query("shift_type")
 
+	if entryId != ""{
+		query = "SELECT * FROM roster_entries WHERE entry_id = ?"
+		rows,extractionErr = db.Query(query,entryId)
+	}else{
+		baseQuery := "SELECT * FROM roster_entries WHERE "
+		var conditions []string
+		var args []interface{}
+		if rosterId != ""{
+			conditions = append(conditions, "roster_id = ?")
+			args = append(args, rosterId)
+		}
+		if workerId != ""{
+			conditions = append(conditions, "worker_id = ?")
+			args = append(args, workerId)
+		}
+		if shift_date != ""{
+			conditions = append(conditions, "shift_date = ?")
+			args = append(args, shift_date)
+		}
+		if shift_type != ""{
+			conditions = append(conditions, "shift_type = ?")
+			args = append(args, shift_type)
+		}
+
+		if len(conditions) == 0{
+			c.JSON(http.StatusBadRequest,gin.H{"error":"No filter parameters provided"})
+			return
+		}
+
+		whereClause := strings.Join(conditions, " AND ")
+		finalQuery := baseQuery + " WHERE " + whereClause 
+
+		rows, extractionErr = db.Query(finalQuery, args...)
+	}
+
+	if extractionErr != nil{
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in extracting values\n" + extractionErr.Error()})
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var entry RosterEntry
+		if err := rows.Scan(&entry.EntryId, &entry.RosterId, &entry.WorkerId,&entry.ShiftDate, &entry.ShiftType); err != nil{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in retrieving values\n"+err.Error()})
+			return
+		}
+		entries = append(entries, entry)
+	}
+
+	if len(entries) == 0 {
+		c.JSON(http.StatusNotFound,gin.H{"error":"No entries found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, entries)
+}
+
+func EditRosterEntry(c *gin.Context, db *sql.DB){
+	var rosterEntry RosterEntry
+	idStr := c.Param("id")
+
+	id, conversionErr := strconv.Atoi(idStr)
+
+	if conversionErr != nil {
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid Id Input"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&rosterEntry); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		fmt.Print(err)
+		return
+	}
+
+	query := `UPDATE roster_entries SET
+			roster_id = COALESCE(?, roster_id),
+			worker_id = COALESCE(?, worker_id),
+			shift_date = COALESCE(?, shift_date),
+			shift_type = COALESCE(?, shift_type)
+			WHERE id = ?`
+
+	_,err := db.Exec(query, rosterEntry.RosterId,rosterEntry.WorkerId,rosterEntry.ShiftDate,rosterEntry.ShiftType,id)
+
+	if err != nil{
+		fmt.Print(err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{"error":"Entry edited successfully "})
+}
+
+func DeleteRosterEntry(c *gin.Context, db *sql.DB){
+
+}
