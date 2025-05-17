@@ -148,7 +148,7 @@ func FindWorker(c *gin.Context, db *sql.DB) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No Workers found"})
 		return
 	} else {
-		c.IndentedJSON(http.StatusOK, workers)
+		c.JSON(http.StatusOK, workers)
 	}
 }
 
@@ -261,5 +261,5 @@ func EditWorker(c *gin.Context, db *sql.DB){
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Worker modified successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Worker modified successfully"})
 }

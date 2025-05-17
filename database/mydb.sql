@@ -82,7 +82,7 @@ CREATE TABLE occupancy (
 CREATE TABLE roster (
     roster_id INT AUTO_INCREMENT PRIMARY KEY,
     location_id INT NOT NULL,
-    month INT NOT NULL,
+    month INT NOT NULL CHECK (month >= 1 AND month <= 12),
     FOREIGN KEY (location_id) REFERENCES locations(id),
     UNIQUE (location_id,month)
 );
@@ -95,11 +95,13 @@ CREATE TABLE roster_entries(
     shift_date DATE NOT NULL,
     shift_type VARCHAR(10) NOT NULL,
     FOREIGN KEY (worker_id) REFERENCES workers(id),
-    FOREIGN KEY (roster_id) REFERENCES roster(roster_id) ON DELETE CASCADE
+    FOREIGN KEY (roster_id) REFERENCES roster(roster_id) ON DELETE CASCADE,
+    UNIQUE( roster_id,worker_id,shift_date,shift_type )
 );
 
+--@block
 CREATE TABLE user_accounts(
-    account_id INT AUTO INCREMENT PRIMARY KEY,
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     UNIQUE(username)

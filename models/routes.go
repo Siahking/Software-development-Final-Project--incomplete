@@ -213,4 +213,52 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.POST("/save-roster", func(c *gin.Context) {
 		SaveRoster(c,db)
 	})
+	//retrieve rosters
+	router.GET("/retrieve-rosters", func(c *gin.Context) {
+		RetrieveRosters(c,db)
+	})
+	//edit roster
+	router.PATCH("/edit-roster/:id", func(c *gin.Context){
+		EditRoster(c,db)
+	})
+	//delete roster
+	router.DELETE("/delete-roster", func(c *gin.Context){
+		DeleteRoster(c,db)
+	})
+
+	//roster entries routes
+	//create entry
+	router.POST("/roster-entry", func(c *gin.Context){
+		RosterEntryHandler(c,db)
+	})
+	//retrieve roster entries
+	router.GET("/retrieve-entry", func(c *gin.Context){
+		RetrieveRosterEntries(c,db)
+	})
+	//edit roster entries
+	router.PATCH("/edit-entry/:id",func(c *gin.Context){
+		EditRosterEntry(c,db)
+	})
+	//delete roster entry
+	router.DELETE("/delete-entry", func(c *gin.Context){
+		DeleteRosterEntry(c,db)
+	})
+
+	//account routes
+	//create account
+	router.POST("/create-account",func(c *gin.Context){
+		CreateAccount(c,db)
+	})
+	//retrieve accounts
+	router.GET("/retrieve-account", func(c *gin.Context){
+		RetrieveAccounts(c,db)
+	})
+	//edit accounts
+	router.PATCH("/edit-account/:id", func(c *gin.Context){
+		EditAccount(c,db)
+	})
+	//delete account
+	router.DELETE("/delete-account", func(c *gin.Context){
+		DeleteAccount(c,db)
+	})
 }
