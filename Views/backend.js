@@ -369,9 +369,206 @@ export async function clearOccupancies(){
     return apiRequest("clear-occupancies","DELETE")
 }
 
-// async function tester() {
-//     const result = await editConnection(8,4,null)
-//     console.log(result)
-// }
+export async function saveRoster(location_id,month){
+    if (!location_id || !month){
+        return {"error":"Location ID and Month required"}
+    }
 
-// tester()
+    return apiRequest("save-roster","POST",{
+        location_id,month
+    })
+}
+
+export async function retrieveRosters(roster_id=null,location_id=null,month=null){
+    let url = 'retrieve-rosters'
+    const queryParams = []
+
+    if (roster_id){
+        url += `?roster_id=${roster_id}`
+    }else{
+        if (location_id){
+            queryParams.push(`location_id=${location_id}`)
+        }
+        if (month){
+            queryParams.push(`month=${month}`)
+        }
+
+        const newparams = queryParams.join("&")
+        url+=`?${newparams}`
+    }
+    
+    return apiRequest(url,"GET")
+}
+
+export async function editRoster(idStr,location_id,month){
+    const id = parseInt(idStr)
+
+    location_id = location_id ? location_id : null
+    month = month ? month : null
+
+    console.log(location_id,month)
+
+    return apiRequest(`edit-roster/${id}`,"PATCH",{
+        location_id,month
+    })
+}
+
+export async function deleteRoster(id,location_id,month){
+    let url = `delete-roster?`
+
+    if (id){
+        url += `roster_id=${id}`
+    }else{
+        const params = []
+        if (location_id){
+            params.push(`location_id=${location_id}`)
+        }
+        if (month){
+            params.push(`month=${month}`)
+        }
+
+        url += params.join("&")
+    }
+
+    return apiRequest(url,"DELETE")
+}
+
+export async function newRosterEntry(roster_id,worker_id,shift_date,shift_type){
+    const verifiedShifts = ["6am-6pm","6pm-6am","6am-2pm","2pm-10pm","10pm-6am"]
+
+    if (!verifiedShifts.includes(shift_type)){
+        return {"error":"Invalid shift type"}
+    }
+
+    return apiRequest("roster-entry","POST",{
+        roster_id,worker_id,shift_date,shift_type
+    })
+}
+
+export async function retrieveRosterEntries(entry_id,roster_id,worker_id,shift_date,shift_type){
+    let url = "retrieve-entry"
+
+    if (entry_id){
+        url += `?entry_id${entry_id}`
+    }else{
+        const params = []
+        if (roster_id){
+            params.push(`roster_id=${roster_id}`)
+        }
+        if (worker_id){
+            params.push(`worker_id=${worker_id}`)
+        }
+        if (shift_date){
+            params.push(`shift_date+${shift_date}`)
+        }
+        if (shift_type){
+            params.push(`shift_type=${shift_type}`)
+        }
+
+        url += ('?' + params.join("&"))
+    }
+
+    return apiRequest(url,"GET")
+}
+
+export async function editRosterEntry(entry_id,roster_id,worker_id,shift_date,shift_type){
+    if (!entry_id){
+        return {"error":"Invalid entry ID"}
+    }
+    roster_id = roster_id ? roster_id : null
+    worker_id = worker_id ? worker_id : null
+    shift_date = shift_date ? shift_date : null
+    shift_type = shift_type ? shift_type : null
+
+    if (shift_type){
+        const verifiedShifts = ["6am-6pm","6pm-6am","6am-2pm","2pm-10pm","10pm-6am"]
+
+        if (!verifiedShifts.includes(shift_type)){
+            return {"error":"Invalid shift type"}
+        }
+    }
+
+    return apiRequest(`edit-entry/${entry_id}`,"PATCH",{
+        roster_id,worker_id,shift_date,shift_type
+    })
+}
+
+export async function deleteRosterEntry(entry_id,roster_id,worker_id,shift_date,shift_type){
+    let url = "delete-entry?"
+
+    if (entry_id){
+        url += `entry_id=${entry_id}`
+    }else{
+        const params = []
+        if (roster_id){
+            params.push(`roster_id=${roster_id}`)
+        }
+        if (worker_id){
+            params.push(`worker_id=${worker_id}`)
+        }
+        if (shift_date){
+            params.push(`shift_date=${shift_date}`)
+        }if (shift_type){
+            params.push(`shift_type=${shift_type}`)
+        }
+
+        url += params.join("&")
+    }
+
+    return apiRequest(url,"DELETE")
+}
+
+export async function createAccount(username,password){
+
+    if (!username || !password){
+        return {"error":"Password and username required"}
+    }
+
+    return apiRequest("create-account","POST",{
+        username,password
+    })
+}
+
+export async function retrieveAccount(account_id,username){
+    let url = "retrieve-account"
+
+    if (account_id){
+        url += `?account_id=${account_id}`
+    }else if (username){
+        url += `?username=${username}`
+    }
+
+    return apiRequest(url,"GET")
+}
+
+export async function editAccount(account_id,username,password){
+    if (!account_id){
+        return {"error":"Account Id required"}
+    }
+
+    username = username ? username : null
+    password = password ? password : null
+
+    return apiRequest(`edit-account/${account_id}`,"PATCH",{
+        username,password
+    })
+}
+
+export async function deleteAccount(account_id,username){
+    let url = "delete-account"
+
+    if (account_id){
+        url += `?account_id=${account_id}`
+    }else if (username){
+        url += `?username=${username}`
+    }
+
+    return apiRequest(url,"DELETE")
+}
+
+async function tester() {
+    const result = await deleteAccount(4,"")
+    console.log(result)
+}
+
+tester()

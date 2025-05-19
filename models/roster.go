@@ -52,7 +52,7 @@ func SaveRoster(c *gin.Context, db *sql.DB) {
 				c.JSON(http.StatusInternalServerError,gin.H{"error":"This Location does not exist"})
 				return
 			case 1062:
-				c.JSON(http.StatusConflict,gin.H{"error":"A roster for this month and lcoation already exists"})
+				c.JSON(http.StatusConflict,gin.H{"error":"A roster for this month and location already exists"})
 				return
 			default:
 				fmt.Print(insertionErr)
@@ -125,7 +125,7 @@ func RetrieveRosters(c *gin.Context, db *sql.DB) {
 	}
 
 	if len(rosters) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No roster found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "No roster matches the current criteria"})
 		return
 	}
 
@@ -178,7 +178,7 @@ func EditRoster(c *gin.Context, db *sql.DB) {
 
 	rowsAffected,_ := result.RowsAffected()
 	if rowsAffected == 0{
-		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made"})
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made, Invalid IDs or entry is already in the state of change requested"})
 		return
 	}
 
@@ -393,7 +393,7 @@ func EditRosterEntry(c *gin.Context, db *sql.DB) {
 
 	rowsAffected,_ := result.RowsAffected()
 	if rowsAffected == 0{
-		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made"})
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made, Entry may not exist or is already up to date"})
 		return
 	}
 
@@ -411,7 +411,7 @@ func DeleteRosterEntry(c *gin.Context, db *sql.DB) {
 	shift_type := c.Query("shift_type")
 
 	if entryId != "" {
-		query = "DELETE * FROM roster_entries WHERE entry_id = ?"
+		query = "DELETE FROM roster_entries WHERE entry_id = ?"
 		result, deleteErr = db.Exec(query, entryId)
 	} else {
 		baseQuery := "DELETE FROM roster_entries WHERE "
@@ -469,7 +469,7 @@ func DeleteRosterEntry(c *gin.Context, db *sql.DB) {
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No Entry found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Entry found, Entry matching params does not exist"})
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 	}
