@@ -47,6 +47,7 @@
     <div class="buttons-div specified-hidden" id="worker-buttons-container">
         <button id="add-worker" class="grey-btn">Add Worker</button>
         <button id="find-worker" class="grey-btn">Find Worker</button>
+        <button id="edit-worker" class="grey-btn">Edit Worker</button>
     </div>
 
     <div class="specified-hidden error-container" id="workers-error-container">
@@ -119,7 +120,6 @@
                     </label>
                 </div>
                 <div id="hours-div" class="specified-hidden">
-                    Hours
                     <label for="6am-6pm" class="bold">
                         <input type="checkbox" id="6am-6pm" class="hours-options">
                         6am to 6pm
@@ -182,6 +182,95 @@
                     <input autocomplete="off" type="text" id="id-number-input" class="specified-hidden text-number-input" placeholder="Type Here">
                 </label>
                 <button id="search-button" class="green-btn">Search</button>
+            </form>
+        </div>
+        <div id="edit-worker-div" class="specified-hidden">
+            <form id="edit-worker-form">
+                <label for="target-id" class="bold">Worker ID</label>
+                <input type="text" id="target-id" autocomplete="off" placeholder="Type Here" class="text-number-input">
+                <label for="newFirstname" class="bold">
+                    <input type="checkbox" id="newFirstNameCheckbox">
+                    New Firstname
+                    <input type="text" id="newFirstName" autocomplete="off" placeholder="Type Here" class="specified-hidden text-number-input">
+                </label>
+                <label for="newFirstname" class="bold">
+                    <input type="checkbox" id="newLastNameCheckbox">
+                    New Lastname
+                    <input type="text" id="newLastName" autocomplete="off" placeholder="Type Here" class="specified-hidden text-number-input">
+                </label>
+                <label for="newMiddlename" class="bold">
+                    <input type="checkbox" id="newMiddleNameCheckbox">
+                    New Middlename
+                    <input type="text" id="newMiddleName" autocomplete="off" placeholder="Type Here" class="specified-hidden text-number-input">
+                </label>
+                <label for="newGender" class="bold">
+                    <input type="checkbox" id="newGenderCheckbox">
+                    New Gender
+                    <input type="text" id="newGender" autocomplete="off" placeholder="Type Here" class="specified-hidden text-number-input">
+                </label>
+                <label for="newAddress" class="bold">
+                    <input type="checkbox" id="newAddressCheckbox">
+                    New Address
+                    <input type="text" id="newAddress" autocomplete="off" placeholder="Type Here" class="specified-hidden text-number-input">
+                </label>
+                <label for="newContact" class="bold">
+                    <input type="checkbox" id="newContactCheckbox">
+                    New Contact
+                    <input type="text" id="newContact" autocomplete="off" placeholder="Type Here" class="specified-hidden text-number-input">
+                </label>
+                <label for="newIdNumber" class="bold">
+                    <input type="checkbox" id="newIdNumberCheckbox">
+                    New IdNumber
+                    <input type="text" id="newIdNumber" autocomplete="off" placeholder="Type Here" class="specified-hidden text-number-input">
+                </label>
+                <label for="newAvailablity" class="bold">
+                    <input type="checkbox" id="newAvailabilityCheckbox">
+                    New Availability
+                </label>
+                <div id="availabilities-container" class="specified-hidden">
+                    <label for="day-availability" class="bold">
+                        <input type="radio" id="day-availability" name="edit-availability" value="6am-6pm,6am-6pm">
+                        Day
+                    </label>
+                    <label for="day-availability" class="bold">
+                        <input type="radio" id="night-availability" name="edit-availability" value="6pm-6am,10pm-6am">
+                        Night
+                    </label>
+                    <label for="eclipse-availability" class="bold">
+                        <input type="radio" id="eclipse-availability" name="edit-availability" value="24hrs">
+                        Eclipse
+                    </label>
+                    <label for="day-availability" class="bold">
+                        <input type="radio" id="specified-availability" name="edit-availability">
+                        Specified
+                    </label>
+                </div>
+                <div id="hours-container" class="specified-hidden">
+                    <p class="bold">Hours</p>
+                    <div id="container"> 
+                        <label for="6am-6pm" class="bold">
+                            6am-6pm
+                            <input type="checkbox" id="6am-6pm" name="hour-option" value="6am-6pm"> 
+                        </label>
+                        <label for="6pm-6am" class="bold">
+                            6pm-6am
+                            <input type="checkbox" id="6pm-6am" name="hour-option" value="6pm-6am"> 
+                        </label>
+                        <label for="6am-2pm" class="bold">
+                            6am-2pm
+                            <input type="checkbox" id="6am-2pm" name="hour-option" value="6am-2pm"> 
+                        </label>
+                        <label for="2pm-10pm" class="bold">
+                            2pm-10pm
+                            <input type="checkbox" id="2pm-10pm" name="hour-option" value="2pm-10pm"> 
+                        </label>
+                        <label for="10pm-6pm" class="bold">
+                            10pm-6am
+                            <input type="checkbox" id="10pm-6am" name="hour-option" value="10pm-6am"> 
+                        </label>
+                    </div>
+                </div>
+                <button class="green-btn">Edit</button>
             </form>
         </div>
     </div>

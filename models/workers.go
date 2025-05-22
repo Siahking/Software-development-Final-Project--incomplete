@@ -257,7 +257,7 @@ func EditWorker(c *gin.Context, db *sql.DB){
 
 	rowsAffected,_ := result.RowsAffected()
 	if rowsAffected == 0{
-		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made"})
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made, Entry may not exist or is already up to date"})
 		return
 	}
 

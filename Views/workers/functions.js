@@ -259,6 +259,68 @@ export async function deleteWorker(event){
         sessionStorage.setItem("Message",result.message)
         window.location.href = '/'
     }else{
-        displayError(errorTagId,"Operation Cancled")
+        displayError(errorTagId,"Operation Canceled")
+    }
+}
+
+export async function editWorker(event){
+
+    event.preventDefault()
+
+    const idStr = document.getElementById("target-id").value
+    const newFirstName = document.getElementById("newFirstName").value
+    const newLastName = document.getElementById("newLastName").value
+    const newMiddleName = document.getElementById("newMiddleName").value
+    const newGender = document.getElementById("newGender").value
+    const newAddress = document.getElementById("newAddress").value
+    const newContact = document.getElementById("newContact").value
+    const newIdNumber = document.getElementById("newIdNumber").value
+    const availabilityOptions = document.querySelectorAll('[name="edit-availability"]')
+    const hourOptions = document.querySelectorAll('[name="hour-option"]')
+    let newAvailability = null
+    let newHours = []
+
+    if (!idStr){
+        displayError(errorTagId,"Please insert the valid worker ID for the worker to be modified")
+        return
+    }
+
+    availabilityOptions.forEach(option=>{
+        if (option.checked){
+            if(option.id === "specified-availability"){
+                newAvailability = "Specified"
+                hourOptions.forEach(hour=>{
+                    if(hour.checked){
+                        newHours.push(hour.value)
+                    }
+                })
+                if (newHours.length === 0){
+                    return {"error":"Please select the desired hours of the worker"}
+                }
+            }else{
+                switch(option.id){
+                    case "day-availability":
+                        newAvailability = "Day";
+                    case "night-availability":
+                        newAvailability = "Night";
+                    case "eclipse-availability":
+                        newAvailability = "Eclipse";
+                }
+                newHours = option.value.split(",")
+            }
+        }
+    })
+
+    const result = await apiFuncs.editWorker(
+        idStr,newFirstName,newLastName,newMiddleName,newGender,newAddress,newContact,newIdNumber,newAvailability,newHours
+    )
+
+    if (objectCheck(result)){
+        displayError(errorTagId,result.error)
+        return
+    }else{
+        sessionStorage.setItem("Message",result.message)
+        window.location.href = '/'
+        return
     }
 }

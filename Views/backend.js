@@ -90,7 +90,7 @@ export async function findWorker(firstName="",lastName="",middleName="",idNumber
 }
 
 export async function editWorker(
-    idStr,first_name=null,last_name=null,middle_name=null,gender=null,address=null,contact=null,id_number=null,availability=null,hours=null
+    idStr,first_name,last_name,middle_name,gender,address,contact,id_number,availability,hours
 ){
     let id
     try{
@@ -98,6 +98,16 @@ export async function editWorker(
     }catch{
         return {"error":"Invalid ID param, id needs to be a number"}
     }
+
+    first_name = first_name ? first_name : null
+    last_name = last_name ? last_name : null
+    middle_name = middle_name ? middle_name : null
+    gender = gender ? gender : null
+    address = address ? address : null
+    contact = contact ? contact : null
+    id_number = id_number ? id_number : null
+    availability = availability ?availability : null
+    hours = hours ? hours : null
 
     const url = `edit-worker/${id}`
 
@@ -566,9 +576,9 @@ export async function deleteAccount(account_id,username){
     return apiRequest(url,"DELETE")
 }
 
-async function tester() {
-    const result = await deleteAccount(4,"")
-    console.log(result)
-}
+// async function tester() {
+//     const result = await deleteAccount(4,"")
+//     console.log(result)
+// }
 
-tester()
+// tester()

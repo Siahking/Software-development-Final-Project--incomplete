@@ -187,7 +187,7 @@ func EditConnection(c *gin.Context,db *sql.DB){
 	}
 	rowsAffected,_ := result.RowsAffected()
 	if rowsAffected == 0{
-		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made,either Connection ID does not exist or there are no changes to be made"})
+		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made, Entry may not exist or is already up to date"})
 		return
 	}
 	c.JSON(http.StatusCreated,gin.H{"message": "Connection modified successfully"})

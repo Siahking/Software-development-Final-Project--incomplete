@@ -9,10 +9,31 @@ const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const hoursDiv = document.getElementById("hours-div")
 const hoursOptions = document.getElementsByClassName("hours-options")
+const hoursContainer = document.getElementById("hours-container")
 
 const unimportantCheckboxArr =[firstNameCheckbox,lastNameCheckbox,middleNameCheckbox]
 const unimportantInputArr = [firstNameInput,lastNameInput,middleNameInput]
 const fieldsArr = ['id','first-name','middle-name','last-name','id-number']
+
+const editIdArray = [
+    "newFirstName","newLastName","newMiddleName","newAddress","newContact","newIdNumber","newAvailability","newGender"
+]
+
+const availabilityOptions = document.querySelectorAll('[name="edit-availability"]')
+
+availabilityOptions.forEach(option=>{
+    option.addEventListener("click",()=>{
+        if (option.id === "specified-availability"){
+            hoursContainer.classList.remove("specified-hidden")
+        }else{
+            hoursContainer.classList.add("specified-hidden")
+        }
+    })
+})
+
+editIdArray.forEach(inputId=>{
+    toogleEditCheckboxes(inputId)
+})
 
 for (const field of fieldsArr){
     const checkbox = document.getElementById(field)
@@ -57,10 +78,14 @@ function toogleInputs(checkbox,input){
     }
 }
 
-export function toogleDisplay(div,otherDiv=""){
+export function toogleDisplay(div,otherDivs=""){
     if (div.classList.contains("specified-hidden")){
         div.classList.remove("specified-hidden")
-        if (otherDiv)otherDiv.classList.add("specified-hidden")
+        if (otherDivs){
+            otherDivs.forEach(div => {
+                div.classList.add("specified-hidden")
+            });
+        }
     }else{
         div.classList.add("specified-hidden")
     }
@@ -75,4 +100,28 @@ export function displayHours(event){
             checkbox.checked = false
         }
     }
+}
+
+function toogleEditCheckboxes(Id){
+    const checkbox = document.getElementById(Id + "Checkbox")
+    let toogleItem
+    if (Id === "newAvailability"){
+        toogleItem = document.getElementById("availabilities-container")
+    }else{
+        toogleItem = document.getElementById(Id)
+    }
+
+    checkbox.addEventListener("click",()=>{
+        if (checkbox.checked){
+            toogleItem.classList.remove("specified-hidden")
+        }else{
+            toogleItem.classList.add("specified-hidden")
+            if (checkbox.id === "newAvailabilityCheckbox"){
+                hoursContainer.classList.add("specified-hidden")
+                availabilityOptions.forEach(option=>{
+                    option.checked = false
+                })
+            }
+        }
+    })
 }
