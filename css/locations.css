@@ -32,7 +32,8 @@ a{
     margin-left: 20px;
 }
 
-#add-location-div {
+#add-location-div,
+#edit-location-div {
     justify-content: center;
     width: 450px; 
     max-width: 450px;
@@ -42,4 +43,19 @@ a{
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
     margin: 40px;
+}
+
+#locations-error-container{
+    min-width: 900px;
+    width: 100vw;
+}
+
+#edit-location-form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#edit-location-form label{
+    margin: 3px;
 }

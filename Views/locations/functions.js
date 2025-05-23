@@ -79,3 +79,30 @@ export async function findlocation(){
     localStorage.setItem("locationsData",JSON.stringify(results))
     window.location.href = "/find-locations"
 }
+
+export async function editLocation(event){
+
+    event.preventDefault()
+
+    console.log("passed in function")
+
+    const locationId = document.getElementById("targetId").value
+    const locationName = document.getElementById("newLocationName").value
+
+    if (!locationId){
+        displayError(errorTagId,"Location ID required")
+        return
+    }
+
+    console.log("pass the if statement")
+
+    const results =await  apiFuncs.editLocation(locationId,locationName)
+
+    console.log(results)
+
+    if(objectCheck(results)){
+        displayError(errorTagId,results.error)
+    }else{
+        console.log(results)
+    }
+}

@@ -4,6 +4,8 @@ import * as funcs from "./functions.js"
 const locationForm = document.getElementById("location-form")
 const addLocationBtn = document.getElementById("add-location")
 const findLocationBtn = document.getElementById("find-location")
+const editLocationBtn = document.getElementById("edit-location")
+const editLocationForm = document.getElementById("edit-location-form")
 
 funcs.loadLocations()
 
@@ -21,3 +23,7 @@ locationForm.addEventListener("submit",(event)=>{
         funcs.findlocation()
     }
 })
+
+editLocationBtn.addEventListener("click",frontend.toogleEditDiv)
+
+editLocationForm.addEventListener("submit",(event)=>funcs.editLocation(event))

@@ -48,6 +48,7 @@
         <div class="buttons-div">
             <button id="add-location" class="grey-btn">Add Location</button>
             <button id="find-location" class="grey-btn">Find Location</button>
+            <button id="edit-location" class="grey-btn">Edit Location</button>
         </div>
 
         <div class="data-input-container">
@@ -58,6 +59,20 @@
                     <input type="text" class="text-number-input" id="location-input" placeholder="Type here" autocomplete="off">
                 </label>
                 <button id="location-submit-btn" class="green-btn">Submit</button>
+            </form>
+          </div>
+
+          <div class="specified-hidden" id="edit-location-div">
+            <form id="edit-location-form">
+              <label for="locationId" class="bold">
+                Location ID
+                <input type="text" id="targetId" autocomplete="off" placeholder="Type Here" class="text-number-input">
+              </label>
+              <label for="locationName" class="bold">
+                Location Name
+                <input type="text" id="newLocationName" autocomplete="off" placeholder="Type Here" class="text-number-input">
+              </label>
+              <button class="green-btn">Edit</button>
             </form>
           </div>
         </div>

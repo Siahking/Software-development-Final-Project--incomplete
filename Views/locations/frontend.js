@@ -1,5 +1,6 @@
 const locationDiv = document.getElementById("add-location-div")
 const input = document.getElementById("location-input")
+const editLocationDiv = document.getElementById("edit-location-div")
 
 export const toogleStates = {
     "find-location":false,
@@ -7,6 +8,7 @@ export const toogleStates = {
 }
 
 export function toogleDiv(btnId){
+    editLocationDiv.classList.add("specified-hidden")
     if (btnId === "find-location"){
         if(toogleStates["add-location"]){
             toogleStates["add-location"] = false
@@ -24,4 +26,18 @@ export function toogleDiv(btnId){
         locationDiv.classList.remove("specified-hidden")
     }
     input.value = ""
+}
+
+export function toogleEditDiv(){
+    console.log("passed here")
+    toogleStates["add-location"] = false
+    toogleStates["find-location"] = false
+
+    locationDiv.classList.add("specified-hidden")
+
+    if(editLocationDiv.classList.contains("specified-hidden")){
+        editLocationDiv.classList.remove("specified-hidden")
+    }else{
+        editLocationDiv.classList.add("specified-hidden")
+    }
 }
