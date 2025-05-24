@@ -180,7 +180,7 @@ func EditDayOff(c *gin.Context, db *sql.DB) {
 			end_date = COALESCE(?, end_date)
 			WHERE break_id = ?`
 
-	_, err := db.Exec(query, dayOff.WorkerId,dayOff.StartDate,dayOff.EndDate,id)
+	result, err := db.Exec(query, dayOff.WorkerId,dayOff.StartDate,dayOff.EndDate,id)
 
 	if err != nil {
 		var errMsg string
@@ -189,7 +189,7 @@ func EditDayOff(c *gin.Context, db *sql.DB) {
 			case 1452:
 				errMsg = "Worker with this ID does not exist"
 			case 3819:
-				errMsg = "Can't use the same worker value for both params"
+				errMsg = "End Date must be after Start Date and Start Date Must be After the End Date"
 			case 1062:
 				errMsg = "Duplicate Entry, a constraint with this ID Number already exists"
 			default:
@@ -202,25 +202,40 @@ func EditDayOff(c *gin.Context, db *sql.DB) {
 		return
 	}
 
+	rowsAffected,_ := result.RowsAffected()
+	if rowsAffected == 0{
+		c.JSON(http.StatusNotFound,gin.H{"error":"No changes made, Entry may not exist or is already up to date"})
+		return
+	}
+
 	c.JSON(http.StatusCreated, gin.H{"message": "Day Off modified successfully"})
 }
 
 func checkDates(dayOff DaysOff)error{
 	layout := "2006-01-02"
+	var startDate, endDate time.Time
+	var err error
 
-	startDate, startDateErr := time.Parse(layout, *dayOff.StartDate)
-	endDate, endDateErr := time.Parse(layout, *dayOff.EndDate)
-	if startDateErr != nil || endDateErr != nil {
-		return errors.New(" Invalid date time format")
+	if dayOff.StartDate != nil{
+		startDate, err = time.Parse(layout, *dayOff.StartDate)
+
+		if err != nil{
+			return errors.New(" Invalid Start Date Format")
+		}
+
+		if startDate.Before(time.Now()){
+			return errors.New(" Start date must be in the future")
+		}
 	}
+	if dayOff.EndDate != nil{
+		endDate, err = time.Parse(layout, *dayOff.EndDate)
+		if err != nil{
+			return errors.New(" Invalid End Date Format")
+		}
 
-	if startDate.Before(time.Now()) {
-		return errors.New(" Start date must be in the future")
-	}
-
-	if endDate.Before(startDate) {
+		if dayOff.StartDate != nil && endDate.Before(startDate) {
 		return errors.New(" End Date must be after the start date")
 	}
-
+	}
 	return nil
 }

@@ -55,6 +55,7 @@
     <div class="buttons-div">
         <button id="add-days-off" class="grey-btn">Add Days Off</button>
         <button id="find-days-off" class="grey-btn">Find Days Off</button>
+        <button id="edit-days-off" class="grey-btn">Edit Days Off</button>
     </div>
 
     <div class="data-input-container">
@@ -93,6 +94,31 @@
                 <button class="green-btn">Search</button>
             </div>
         </form>
+
+        <div id="edit-days-off-div" class="specified-hidden">
+            <form id="edit-days-off-form">
+                <label for="breakId" class="bold">
+                    Break ID
+                </label>
+                <input type="number" id="breakId" autocomplete="off" placeholder="Type Here" class="text-number-input">
+                <label for="newWorkerId" class="bold">
+                    <input type="checkbox" id="newWorkerId" name="checkbox">
+                    New Worker ID
+                </label>
+                <input type="number" id="newWorkerId-value" placeholder="Type here" autocomplete="off" class="text-number-input specified-hidden">
+                <label for="newStartTime" class="bold">
+                    <input type="checkbox" id="newStartTime" name="checkbox">
+                    New StartDate
+                </label>
+                <input type="date" id="newStartTime-value" placeholder="Type Here" autocomplete="off" class="specified-hidden">
+                <label for="newEndTime" class="bold">
+                    <input type="checkbox" id="newEndTime" name="checkbox">
+                    New EndDate
+                </label>
+                <input type="date" id="newEndTime-value" placeholder="Type Here" autocomplete="off" class="specified-hidden">
+                <button class="green-btn">Edit</button>
+            </form>
+        </div>
     </div>
     <div class="specified-hidden error-container" id="days-off-error-container">
         <p id="days-off-error-tag" class="error-tag"></p>

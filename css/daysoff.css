@@ -29,7 +29,7 @@
     margin-top: 15px;
 }
 
-#add-restriction-div,#add-days-off-div,
+#add-restriction-div,#add-days-off-div,#edit-days-off-div,
 #find-restriction-div,#find-days-off-div {
     background: #f8f8f8;
     border-radius: 8px; 
@@ -69,4 +69,17 @@
 
 .data-input-container,.error-container{
     min-width: 900px;
+}
+
+#edit-days-off-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#edit-days-off-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 30px;
 }

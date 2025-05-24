@@ -140,3 +140,28 @@ export async function findDaysOff(event){
     localStorage.setItem("DaysOff",JSON.stringify(result))
     window.location.href = "/find-days-off"
 }
+
+export async function editDaysOff(event){
+
+    event.preventDefault()
+
+    const breakId = document.getElementById("breakId").value
+    const newWorker_Id = document.getElementById("newWorkerId-value").value
+    const newStartDate = document.getElementById("newStartTime-value").value
+    const newEndDate = document.getElementById("newEndTime-value").value
+
+    if (!breakId){
+        displayError(errorTagId,"Day Off ID Required")
+        return
+    }
+
+    const result = await apiFuncs.editDaysOff(breakId,newWorker_Id,newStartDate,newEndDate)
+
+    if(objectCheck(result)){
+        displayError(errorTagId,result.error)
+        return
+    }else{
+        sessionStorage.setItem("Message",result.message)
+        location.href = "/"
+    }
+}

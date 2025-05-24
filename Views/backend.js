@@ -306,6 +306,28 @@ export async function removeDaysOff(breakId){
     return apiRequest(url,"DELETE")
 }
 
+export async function editDaysOff(idStr,worker_id,start_date,end_date){
+    let id
+
+    try{
+        id = parseInt(idStr)
+    }catch{
+        return{"error":"Invalid ID param"}
+    }
+
+    const url = `edit-dayoff/${id}`
+
+    worker_id = worker_id ? parseInt(worker_id) : null
+    start_date = start_date ? start_date : null
+    end_date = end_date ? end_date : null
+
+    console.log(id,worker_id,start_date,end_date)
+
+    return apiRequest(url,"PATCH",{
+        id,worker_id,start_date,end_date
+    })
+}
+
 export async function createRestriction(worker_id,day_of_week,start_time,end_time){
     try{
         worker_id = parseInt(worker_id)
@@ -577,7 +599,7 @@ export async function deleteAccount(account_id,username){
 }
 
 // async function tester() {
-//     const result = await deleteAccount(4,"")
+//     const result = await editDaysOff(1,1,"","")
 //     console.log(result)
 // }
 
