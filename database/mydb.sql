@@ -64,8 +64,14 @@ CREATE TABLE permanent_restrictions (
     day_of_week ENUM('Any','Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday') DEFAULT 'Any',
     start_time TIME NULL,
     end_time TIME NULL,
+
+    start_time_normalized TIME GENERATED ALWAYS AS (IFNULL(start_time, "00:00:00")) STORED,
+    end_time_normalized TIME GENERATED ALWAYS AS (IFNULL(end_time, "00:00:00")) STORED,
+
+
     FOREIGN KEY (worker_id) REFERENCES workers(id) ON DELETE CASCADE,
-    CONSTRAINT unique_unavailability UNIQUE (worker_id, day_of_week, start_time, end_time)
+    CHECK (start_time IS NULL OR end_time IS NULL OR start_time <= end_time),
+    UNIQUE (worker_id,day_of_week,start_time_normalized,end_time_normalized)
 );
 
 --@block

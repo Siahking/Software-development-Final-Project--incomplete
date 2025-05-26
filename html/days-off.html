@@ -142,6 +142,7 @@
     <div class="buttons-div">
         <button id="add-restriction-btn" class="grey-btn">Add restriction</button>
         <button id="find-restriction-btn" class="grey-btn">Find restriction</button>
+        <button id="edit-restriction-btn" class="grey-btn">Edit restriction</button>
     </div>
 
     <div class="data-input-container">
@@ -209,6 +210,60 @@
                     <input type="text" id="id-value-input" placeholder="Type here" autocomplete="off">
                 </label>
                 <button class="green-btn">Search</button>
+            </form>
+        </div>
+
+        <div id="edit-restriction-div" class="specified-hidden">
+            <form id="edit-restriction-form">
+                <label for="restriction-target-id" class="bold">
+                    Restriction ID
+                </label>
+                <input type="number" id="restriction-target-id" autocomplete="off" placeholder="Type Here" class="text-number-input">
+                <label for="dayOfWeekCheckbox" class="bold">
+                    <input type="checkbox" id="dayOfWeekCheckbox">
+                    New Day Of Week
+                </label>
+                <div id="dayOfWeekOptions" class="specified-hidden">
+                    <label for="newSunday" class="bold">
+                        Sunday
+                        <input type="radio" id="newSunday" name="newDay" value="Sunday">
+                    </label>
+                    <label for="newMonday" class="bold">
+                        Monday
+                        <input type="radio" id="newMonday" name="newDay" value="Monday">
+                    </label>
+                    <label for="newTuesday" class="bold">
+                        Tuesday
+                        <input type="radio" id="newTuesday" name="newDay" value="Tueday">
+                    </label>
+                    <label for="newWednesday" class="bold">
+                        Wednesday
+                        <input type="radio" id="newWednesday" name="newDay" value="Wednesday">
+                    </label>
+                    <label for="newThursday" class="bold">
+                        Thursday
+                        <input type="radio" id="newThursday" name="newDay" value="Thursday">
+                    </label>
+                    <label for="newFriday" class="bold">
+                        Friday
+                        <input type="radio" id="newFriday" name="newDay" value="Friday">
+                    </label>
+                    <label for="newSaturday" class="bold">
+                        Saturday
+                        <input type="radio" id="newSaturday" name="newDay" value="Satruday">
+                    </label>
+                </div>
+                <label for="newStartTimeCheckbox" class="bold">
+                    <input type="checkbox" id="newStartTimeCheckbox">
+                    New StartTime
+                </label>
+                <input type="time" id="newRestrictionStart" class="specified-hidden">
+                <label for="newEndTimeCheckbox" class="bold">
+                    <input type="checkbox" id="newEndTimeCheckbox">
+                    New EndTime
+                </label>
+                <input type="time" id="newRestrictionEnd" class="specified-hidden">
+                <button class="green-btn">Edit</button>
             </form>
         </div>
     </div>

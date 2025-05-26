@@ -365,6 +365,27 @@ export async function deletePermanentRestrictions(id){
     return apiRequest(url,"DELETE")
 }
 
+export async function editPermanentRestriction(restrictionId,worker_id,day_of_week,start_time,end_time){
+    let id
+
+    try{
+        id = parseInt(restrictionId)
+    }catch{
+        return{"error":"Invalid ID parameter"}
+    }
+
+    const url = `edit-restriction/${id}`
+
+    day_of_week = day_of_week ? day_of_week : null
+    worker_id = worker_id ? parseInt(worker_id) : null
+    start_time = start_time ? start_time : null
+    end_time = end_time ? end_time : null
+
+    return apiRequest(url,"PATCH",{
+        id,worker_id,day_of_week,start_time,end_time
+    })
+}
+
 export async function retrieveWorkerOrLocations(column,id){
     const url = `retrieve-workers-locations/${column}/${id}`
     return apiRequest(url)
@@ -598,9 +619,9 @@ export async function deleteAccount(account_id,username){
     return apiRequest(url,"DELETE")
 }
 
-// async function tester() {
-//     const result = await editDaysOff(1,1,"","")
-//     console.log(result)
-// }
+async function tester() {
+    const result = await editPermanentRestriction(1,19,"Wednesday","","00:00:00")
+    console.log(result)
+}
 
-// tester()
+tester()

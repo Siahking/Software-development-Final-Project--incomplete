@@ -44,8 +44,8 @@ export async function displayRestrictions(){
         firstNameData.innerText = workerData.first_name
         lastNameData.innerText = workerData.last_name
         dayOfWeekData.innerText = restriction.day_of_week
-        startTimeData.innerText = restriction.start_time == "00:00:00" ?  "--" :  restriction.start_time
-        endTimeData.innerText = restriction.end_time == "00:00:00" ?  "--" :  restriction.end_time
+        startTimeData.innerText = restriction.start_time ?  "--" :  restriction.start_time
+        endTimeData.innerText = restriction.end_time ?  "--" :  restriction.end_time
         
         for (const data of [idData,firstNameData,lastNameData,dayOfWeekData,startTimeData,endTimeData,deleteBtn]){
             tableRow.appendChild(data)
@@ -131,4 +131,30 @@ export async function deleteRestriction(id){
     }else{
         displayError(errorTagId,"Operation Cancled")
     }
+}
+
+export async function editRestriction(event){
+
+    event.preventDefault()
+
+    let newDay = null
+
+    const newDayOptions = document.querySelectorAll('[name="newDay"]')
+
+    newDayOptions.forEach(option=>{
+        if (option.checked){
+            newDay = option.value
+            return
+        }
+    })
+
+    const restrictionId = document.getElementById("restriction-target-id") 
+    const newStartTime = document.getElementById("newRestrictionStart")
+    const newEndTime = document.getElementById("newRestrictionEnd")
+
+    if (!restrictionId){
+        return{"error":"Restriction ID required"}
+    }
+
+    const result = await apiFuncs
 }

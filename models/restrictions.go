@@ -37,24 +37,38 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide valid time values"})
 			return
 		}
-	} else if *startTime == "" && *endTime != "" || *endTime == "" && *startTime != "" {
+	} else if (startTime == nil || *startTime == "") != (endTime == nil || *endTime == ""){
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Please insert a start time and a end time"})
 		return
 	}
 
-	if *startTime == "" {
-		*startTime = "00:00:00"
-	} else if *startTime == "00:00" {
-		*startTime = "24:00:00"
-	}
-	if *endTime == "" {
-		*endTime = "00:00:00"
-	} else if *endTime == "00:00" {
-		*endTime = "24:00:00"
+	var startTimeSQL,endTimeSQL sql.NullString
+
+	if startTime != nil && *startTime != "" {
+		startTimeSQL = sql.NullString{String: *startTime, Valid: true}
+	}else{
+		startTimeSQL = sql.NullString{Valid: false}
 	}
 
+	if endTime != nil && *endTime != "" {
+		endTimeSQL = sql.NullString{String: *endTime, Valid:true}
+	}else{
+		endTimeSQL = sql.NullString{Valid:false}
+	}
+
+	// if *startTime == "" {
+	// 	*startTime = "00:00:00"
+	// } else if *startTime == "00:00" {
+	// 	*startTime = "24:00:00"
+	// }
+	// if *endTime == "" {
+	// 	*endTime = "00:00:00"
+	// } else if *endTime == "00:00" {
+	// 	*endTime = "24:00:00"
+	// }
+
 	query := "INSERT INTO permanent_restrictions (worker_id,day_of_week,start_time,end_time) VALUES (?,?,?,?)"
-	_, err := db.Exec(query, permanentRestriction.WorkerId, dayOfWeek, startTime, endTime)
+	_, err := db.Exec(query, permanentRestriction.WorkerId, dayOfWeek, startTimeSQL, endTimeSQL)
 
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
@@ -207,6 +221,9 @@ func EditRestriction(c *gin.Context, db *sql.DB) {
 				return
 			case 1292:
 				c.JSON(http.StatusBadRequest, gin.H{"error":"Invalid time value for start time or end time"})
+				return
+			case 3819:
+				c.JSON(http.StatusBadRequest,gin.H{"error":"End Time must always be Later than the Start Time"})
 				return
 			default:
 				c.JSON(http.StatusInternalServerError,gin.H{"error":"Internal server error \n"+err.Error()})
