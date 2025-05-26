@@ -219,38 +219,43 @@
                     Restriction ID
                 </label>
                 <input type="number" id="restriction-target-id" autocomplete="off" placeholder="Type Here" class="text-number-input">
+                <label for="newWorkerCheckbox" class="bold">
+                    <input type="checkbox" id="newWorkerCheckbox">
+                    New Worker
+                </label>
+                <input type="number" id="newWorker" class="specified-hidden text-number-input" placeholder="Type here">
                 <label for="dayOfWeekCheckbox" class="bold">
                     <input type="checkbox" id="dayOfWeekCheckbox">
                     New Day Of Week
                 </label>
                 <div id="dayOfWeekOptions" class="specified-hidden">
-                    <label for="newSunday" class="bold">
-                        Sunday
+                    <label for="newSunday">
                         <input type="radio" id="newSunday" name="newDay" value="Sunday">
+                        Sunday
                     </label>
-                    <label for="newMonday" class="bold">
-                        Monday
+                    <label for="newMonday">
                         <input type="radio" id="newMonday" name="newDay" value="Monday">
+                        Monday
                     </label>
-                    <label for="newTuesday" class="bold">
+                    <label for="newTuesday">
+                        <input type="radio" id="newTuesday" name="newDay" value="Tuesday">
                         Tuesday
-                        <input type="radio" id="newTuesday" name="newDay" value="Tueday">
                     </label>
-                    <label for="newWednesday" class="bold">
-                        Wednesday
+                    <label for="newWednesday">
                         <input type="radio" id="newWednesday" name="newDay" value="Wednesday">
+                        Wednesday    
                     </label>
-                    <label for="newThursday" class="bold">
-                        Thursday
+                    <label for="newThursday">
                         <input type="radio" id="newThursday" name="newDay" value="Thursday">
+                        Thursday
                     </label>
-                    <label for="newFriday" class="bold">
-                        Friday
+                    <label for="newFriday">
                         <input type="radio" id="newFriday" name="newDay" value="Friday">
+                        Friday
                     </label>
-                    <label for="newSaturday" class="bold">
+                    <label for="newSaturday">
+                        <input type="radio" id="newSaturday" name="newDay" value="Saturday">
                         Saturday
-                        <input type="radio" id="newSaturday" name="newDay" value="Satruday">
                     </label>
                 </div>
                 <label for="newStartTimeCheckbox" class="bold">
@@ -258,11 +263,19 @@
                     New StartTime
                 </label>
                 <input type="time" id="newRestrictionStart" class="specified-hidden">
+                <label id="removeStartLabel" for="removeStartCheckbox" class="bold specified-hidden">
+                    <input type="checkbox" id="removeStartCheckbox">
+                    Remove Start Time
+                </label>
                 <label for="newEndTimeCheckbox" class="bold">
                     <input type="checkbox" id="newEndTimeCheckbox">
                     New EndTime
                 </label>
                 <input type="time" id="newRestrictionEnd" class="specified-hidden">
+                <label id="removeEndLabel" for="removeEndCheckbox" class="bold specified-hidden">
+                    <input type="checkbox" id="removeEndCheckbox">
+                    Remove End Time
+                </label>
                 <button class="green-btn">Edit</button>
             </form>
         </div>

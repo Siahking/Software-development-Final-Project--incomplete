@@ -26,12 +26,14 @@ editRestrictionBtn.addEventListener("click",()=>
 )
 
 addRestrictionForm.addEventListener("submit",(event)=>{
-    event.preventDefault()
-    funcs.addRestriction()
+    funcs.addRestriction(event)
 })
 
 findRestrictionForm.addEventListener("submit",(event)=>{
-    event.preventDefault()
-    funcs.findRestriction()
+    funcs.findRestriction(event)
+})
+
+editRestrictionForm.addEventListener("submit",(event)=>{
+    funcs.editRestriction(event)
 })
 

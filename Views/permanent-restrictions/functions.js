@@ -44,8 +44,8 @@ export async function displayRestrictions(){
         firstNameData.innerText = workerData.first_name
         lastNameData.innerText = workerData.last_name
         dayOfWeekData.innerText = restriction.day_of_week
-        startTimeData.innerText = restriction.start_time ?  "--" :  restriction.start_time
-        endTimeData.innerText = restriction.end_time ?  "--" :  restriction.end_time
+        startTimeData.innerText = restriction.start_time ? restriction.start_time : "--"  
+        endTimeData.innerText = restriction.end_time ? restriction.end_time : "--"
         
         for (const data of [idData,firstNameData,lastNameData,dayOfWeekData,startTimeData,endTimeData,deleteBtn]){
             tableRow.appendChild(data)
@@ -55,7 +55,10 @@ export async function displayRestrictions(){
     }
 }
 
-export async function findRestriction() {
+export async function findRestriction(event) {
+
+    event.preventDefault()
+
     const workerIdRadio = document.getElementById("restriction-worker-id")
     const idRadio = document.getElementById("restriction-id")
     const idValue = document.getElementById("id-value-input")
@@ -79,7 +82,10 @@ export async function findRestriction() {
     window.location.href = "/find-restrictions"
 }
 
-export async function addRestriction(){
+export async function addRestriction(event){
+
+    event.preventDefault()
+
     let dayOfWeek
     let checked = false
     const options = document.querySelectorAll(".day-of-week-input")
@@ -148,13 +154,25 @@ export async function editRestriction(event){
         }
     })
 
-    const restrictionId = document.getElementById("restriction-target-id") 
-    const newStartTime = document.getElementById("newRestrictionStart")
-    const newEndTime = document.getElementById("newRestrictionEnd")
+    const restrictionId = document.getElementById("restriction-target-id") .value
+    const newWorker = document.getElementById("newWorker").value
+    let newStartTime = document.getElementById("newRestrictionStart").value
+    let newEndTime = document.getElementById("newRestrictionEnd").value
+    const removeStartTime = document.getElementById("removeStartCheckbox")
+    const removeEndTime = document.getElementById("removeEndCheckbox")
 
     if (!restrictionId){
         return{"error":"Restriction ID required"}
     }
 
-    const result = await apiFuncs
+    if (removeStartTime.checked){
+        newStartTime = "99:99:99"
+    }
+    if (removeEndTime.checked){
+        newEndTime = "99:99:99"
+    }
+
+    const result = await apiFuncs.editPermanentRestriction(restrictionId,newWorker,newDay,newStartTime,newEndTime)
+
+    console.log(result)
 }

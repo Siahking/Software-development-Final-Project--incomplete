@@ -619,9 +619,9 @@ export async function deleteAccount(account_id,username){
     return apiRequest(url,"DELETE")
 }
 
-async function tester() {
-    const result = await editPermanentRestriction(1,19,"Wednesday","","00:00:00")
-    console.log(result)
-}
+// async function tester() {
+//     const result = await editPermanentRestriction(1,19,"Wednesday","","00:00:00")
+//     console.log(result)
+// }
 
-tester()
+// tester()

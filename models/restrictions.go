@@ -56,17 +56,6 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 		endTimeSQL = sql.NullString{Valid:false}
 	}
 
-	// if *startTime == "" {
-	// 	*startTime = "00:00:00"
-	// } else if *startTime == "00:00" {
-	// 	*startTime = "24:00:00"
-	// }
-	// if *endTime == "" {
-	// 	*endTime = "00:00:00"
-	// } else if *endTime == "00:00" {
-	// 	*endTime = "24:00:00"
-	// }
-
 	query := "INSERT INTO permanent_restrictions (worker_id,day_of_week,start_time,end_time) VALUES (?,?,?,?)"
 	_, err := db.Exec(query, permanentRestriction.WorkerId, dayOfWeek, startTimeSQL, endTimeSQL)
 
@@ -93,7 +82,7 @@ func CreatePermanentRestriction(c *gin.Context, db *sql.DB) {
 // retrieve all permanent restrictions
 func GetRestrictions(c *gin.Context, db *sql.DB) {
 	var restrictions []PermanentRestriction
-	rows, err := db.Query("SELECT * FROM permanent_restrictions")
+	rows, err := db.Query("SELECT id,worker_id,day_of_week,start_time,end_time FROM permanent_restrictions")
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in retrieving values" + err.Error()})
@@ -130,7 +119,7 @@ func FindRestriction(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	query := fmt.Sprintf("SELECT * FROM permanent_restrictions WHERE %s = ?", column)
+	query := fmt.Sprintf("SELECT id,worker_id,day_of_week,start_time,end_time FROM permanent_restrictions WHERE %s = ?", column)
 	rows, err := db.Query(query, id)
 
 	if err != nil {
@@ -189,6 +178,9 @@ func DeleteRestriction(c *gin.Context, db *sql.DB) {
 
 func EditRestriction(c *gin.Context, db *sql.DB) {
 	var restriction PermanentRestriction
+	var query string
+	var result sql.Result
+	var err error
 	idStr := c.Param("id")
 
 	id, conversionErr := strconv.Atoi(idStr)
@@ -203,14 +195,42 @@ func EditRestriction(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	query := `UPDATE permanent_restrictions SET 
-			worker_id = COALESCE(?, worker_id),
-			day_of_week = COALESCE(?, day_of_week),
-			start_time = COALESCE(?, start_time),
-			end_time = COALESCE(?, end_time)
-			WHERE id = ?`
+	if *restriction.StartTime == "99:99:99" && *restriction.EndTime == "99:99:99"{
+		query = `UPDATE permanent_restrictions SET 
+				worker_id = COALESCE(?, worker_id),
+				day_of_week = COALESCE(?, day_of_week),
+				start_time = NULL,end_time = NULL WHERE id = ?`
 
-	result, err := db.Exec(query, restriction.WorkerId, restriction.DayOfWeek, restriction.StartTime, restriction.EndTime, id)
+		result,err = db.Exec(query,restriction.WorkerId,restriction.DayOfWeek,id)
+	}else{
+		if *restriction.StartTime == "99:99:99"{
+			query = `UPDATE permanent_restrictions SET 
+					worker_id = COALESCE(?, worker_id),
+					day_of_week = COALESCE(?, day_of_week),
+					start_time = NULL,
+					end_time = COALESCE(?, end_time)
+					WHERE id = ?`
+
+			result,err = db.Exec(query,restriction.WorkerId,restriction.DayOfWeek,restriction.EndTime,id)		
+		}else if *restriction.EndTime == "99:99:99"{
+			query = `UPDATE permanent_restrictions SET 
+					worker_id = COALESCE(?, worker_id),
+					day_of_week = COALESCE(?, day_of_week),
+					start_time = COALESCE(?, start_time),
+					end_time = NULL WHERE id = ?`
+
+			result,err = db.Exec(query,restriction.WorkerId,restriction.DayOfWeek,restriction.StartTime,id)		
+		}else{
+			query = `UPDATE permanent_restrictions SET 
+				worker_id = COALESCE(?, worker_id),
+				day_of_week = COALESCE(?, day_of_week),
+				start_time = COALESCE(?, start_time),
+				end_time = COALESCE(?, end_time)
+				WHERE id = ?`
+
+			result, err = db.Exec(query, restriction.WorkerId, restriction.DayOfWeek, restriction.StartTime, restriction.EndTime, id)
+		}
+	}
 
 	if err != nil {
 
