@@ -61,11 +61,13 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
     const shifts = ["8hr","12hr"]
     const locationsError = []
     const dateStr = helperFuncs.dateToString(day,month,year)
-    const sixToSixDayArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-6pm")
-    const sixToTwoArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-2pm")
-    const twoToTenArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"2pm-10pm")
-    const sixToSixNightArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6pm-6am")
-    const tenToSixArray = await helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"10pm-6am")
+    const [sixToSixDayArray,sixToSixNightArray,sixToTwoArray,twoToTenArray,tenToSixArray] = await Promise.all([
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-6pm"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6pm-6am"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-2pm"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"2pm-10pm"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"10pm-6am")
+    ])
     let shiftOne,shiftTwo
 
     const checkArray = [
@@ -91,17 +93,11 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
     const shiftTwoShift = shifts[Math.floor(Math.random() * shifts.length)]
 
     if (shiftOneShift== "8hr"){
-        const dayWorker = await helperFuncs.setWorkerForShift(
-            sixToTwoArray,dateStr,[sixToSixDayArray,sixToTwoArray],constraints
-        )
-        
-        const afternoonWorker = await helperFuncs.setWorkerForShift(
-            twoToTenArray,dateStr,[sixToSixDayArray,sixToSixNightArray,twoToTenArray],constraints
-        )
-    
-        const nightWorker = await helperFuncs.setWorkerForShift(
-            tenToSixArray,dateStr,[sixToSixNightArray,tenToSixArray],constraints
-        )
+        const [dayWorker,afternoonWorker,nightWorker] = await Promise.all([
+            helperFuncs.setWorkerForShift(sixToTwoArray,dateStr,[sixToSixDayArray,sixToTwoArray],constraints),
+            helperFuncs.setWorkerForShift(twoToTenArray,dateStr,[sixToSixDayArray,sixToSixNightArray,twoToTenArray],constraints),
+            helperFuncs.setWorkerForShift(tenToSixArray,dateStr,[sixToSixNightArray,tenToSixArray],constraints)
+        ])
     
         shiftOne = {
             "shift":"8hr",
@@ -110,14 +106,11 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
             "nightWorker":nightWorker,
         }
     }else{
-        const dayWorker = await helperFuncs.setWorkerForShift(
-            sixToSixDayArray,dateStr,[sixToTwoArray,twoToTenArray,sixToSixDayArray],constraints
-        )
-
-        const nightWorker = await helperFuncs.setWorkerForShift(
-            sixToSixNightArray,dateStr,[tenToSixArray,twoToTenArray,sixToSixNightArray],constraints
-        )
-
+        const [dayWorker,nightWorker] = await Promise.all([
+            helperFuncs.setWorkerForShift(sixToSixDayArray,dateStr,[sixToTwoArray,twoToTenArray,sixToSixDayArray],constraints),
+            helperFuncs.setWorkerForShift(sixToSixNightArray,dateStr,[tenToSixArray,twoToTenArray,sixToSixNightArray],constraints)
+        ])
+        
         shiftOne = {
             "shift":"12hr",
             "dayWorker":dayWorker,
@@ -127,17 +120,11 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
     }
  
     if (shiftTwoShift== "8hr"){
-        const dayWorker = await helperFuncs.setWorkerForShift(
-            sixToTwoArray,dateStr,[sixToSixDayArray,sixToTwoArray],constraints
-        )
-        
-        const afternoonWorker = await helperFuncs.setWorkerForShift(
-            twoToTenArray,dateStr,[sixToSixDayArray,sixToSixNightArray,twoToTenArray],constraints
-        )
-    
-        const nightWorker = await helperFuncs.setWorkerForShift(
-            tenToSixArray,dateStr,[sixToSixNightArray,tenToSixArray],constraints
-        )
+        const [dayWorker,afternoonWorker,nightWorker] = await Promise.all([
+            helperFuncs.setWorkerForShift(sixToTwoArray,dateStr,[sixToSixDayArray,sixToTwoArray],constraints),
+            helperFuncs.setWorkerForShift(twoToTenArray,dateStr,[sixToSixDayArray,sixToSixNightArray,twoToTenArray],constraints),
+            helperFuncs.setWorkerForShift(tenToSixArray,dateStr,[sixToSixNightArray,tenToSixArray],constraints)
+        ])
 
         shiftTwo = {
             "shift":"8hr",
@@ -146,13 +133,10 @@ export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,
             "nightWorker":nightWorker,
         }
     }else{
-        const dayWorker = await helperFuncs.setWorkerForShift(
-            sixToSixDayArray,dateStr,[sixToTwoArray,twoToTenArray,sixToSixDayArray],constraints
-        )
-
-        const nightWorker = await helperFuncs.setWorkerForShift(
-            sixToSixNightArray,dateStr,[tenToSixArray,twoToTenArray,sixToSixNightArray],constraints
-        )
+        const [dayWorker,nightWorker] = await Promise.all([
+            helperFuncs.setWorkerForShift(sixToSixDayArray,dateStr,[sixToTwoArray,twoToTenArray,sixToSixDayArray],constraints),
+            helperFuncs.setWorkerForShift(sixToSixNightArray,dateStr,[tenToSixArray,twoToTenArray,sixToSixNightArray],constraints)
+        ])
 
         shiftTwo = {
             "shift":"12hr",
