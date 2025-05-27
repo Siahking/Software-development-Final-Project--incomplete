@@ -5,10 +5,11 @@ const errorTagId = "constraints-error"
 const table = document.getElementById("table")
 const worker1Id = document.getElementById("worker1")
 const worker2Id = document.getElementById("worker2")
-const summary = document.getElementById("summary-input")
+const summary = document.getElementById("summary")
 const constraintId = document.getElementById("constraint-id")
 const worker1IdInput = document.getElementById("worker1Id-input")
 const worker2IdInput = document.getElementById("worker2Id-input")
+const newSummary = document.getElementById("new-summary-input")
 const tableErrorTag = document.getElementById("message-container")
 
 export async function removeConstraint(id){
@@ -141,7 +142,7 @@ export async function changeConstraint(event){
         displayError(errorTagId,"Constraint ID Required")
         return
     }
-    const result = await apiFuncs.editConstraints(constraintId.value,worker1IdInput.value,worker2IdInput.value,summary.value)
+    const result = await apiFuncs.editConstraints(constraintId.value,worker1IdInput.value,worker2IdInput.value,newSummary.value)
 
     if (objectCheck(result)){
         displayError(errorTagId,result.error)

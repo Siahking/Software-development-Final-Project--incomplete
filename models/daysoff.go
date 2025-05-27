@@ -58,7 +58,7 @@ func AddDaysOff(c *gin.Context, db *sql.DB) {
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				c.JSON(http.StatusConflict, gin.H{"error": "These days for this user already exists"})
+				c.JSON(http.StatusConflict, gin.H{"error": "This temporary leave for this worker already exists"})
 				return
 			} else if mysqlErr.Number == 1452 {
 				c.JSON(http.StatusConflict, gin.H{"error": "This worker does not exist"})

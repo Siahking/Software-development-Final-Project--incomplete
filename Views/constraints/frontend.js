@@ -1,6 +1,6 @@
 const worker1Input = document.getElementById("worker1Id-input")
 const worker2Input = document.getElementById("worker2Id-input")
-const summary = document.getElementById("summary-input")
+const summary = document.getElementById("new-summary-input")
 
 export function toogleDiv(currentDiv,otherDivs){
     if (currentDiv.classList.contains("specified-hidden")){

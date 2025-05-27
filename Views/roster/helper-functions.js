@@ -82,15 +82,18 @@ function getDayName(dateString){
 
 function restrictionCheck(day,worker,hours,restrictions){
     //returns true if a worker has a restriction which obstructs the roster hours, else returns false
-    let startTime,endTime,shiftStart,shiftEnd
+    let restrictionStartTime,restrictionEndTime,shiftStart,shiftEnd
     if (restrictions[worker.id]){
         const workerRestrictions = restrictions[worker.id]
         for (const restriction of workerRestrictions){
             if (restriction.day_of_week === day){
+                if (!restrictionStartTime && !restrictionEndTime){
+                    return false
+                }
                 const strStartTime = restriction.start_time.split(":")[0]
                 const strEndTime = restriction.end_time.split(":")[0]
-                startTime = parseInt(strStartTime) == 24 ? 1 : parseInt(strStartTime)
-                endTime =  parseInt(strEndTime) == 24 ? 1 : parseInt(strEndTime)
+                restrictionStartTime = parseInt(strStartTime)
+                restrictionEndTime = parseInt(strEndTime)
 
                 switch (hours){
                     case "6am-6pm":
@@ -116,12 +119,10 @@ function restrictionCheck(day,worker,hours,restrictions){
                 }
 
                 if (
-                    startTime === 0 && endTime === 0 ||
-                    startTime === 0 && endTime < endTime ||
-                    endTime === 0 && startTime < endTime ||
-                    startTime > shiftStart && startTime < shiftEnd ||
-                    endTime > shiftStart && endTime < shiftEnd ||
-                    startTime < shiftStart && endTime > shiftEnd
+                    (restrictionStartTime > shiftStart && restrictionEndTime < shiftEnd) ||
+                    (restrictionEndTime > shiftStart && restrictionEndTime < shiftEnd) ||
+                    (restrictionStartTime < shiftStart && restrictionEndTime > shiftEnd) ||
+                    (restrictionStartTime > shiftEnd && restrictionEndTime < shiftEnd)
                 ){
                     return false
                 }

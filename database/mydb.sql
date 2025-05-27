@@ -100,7 +100,7 @@ CREATE TABLE roster_entries(
     worker_id INT NOT NULL,
     shift_date DATE NOT NULL,
     shift_type VARCHAR(10) NOT NULL,
-    FOREIGN KEY (worker_id) REFERENCES workers(id),
+    FOREIGN KEY (worker_id) REFERENCES workers(id) ON DELETE CASCADE,
     FOREIGN KEY (roster_id) REFERENCES roster(roster_id) ON DELETE CASCADE,
     UNIQUE( roster_id,worker_id,shift_date,shift_type )
 );
