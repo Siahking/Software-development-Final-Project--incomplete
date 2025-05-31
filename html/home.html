@@ -14,6 +14,7 @@
     <p>Optimize your workforce roster</p>
     <div class="options">
         <button id="create-roster">Create Roster</button>
+        <button id="view-roster">View Roster</button>
         <a id="get-workers" href="/get-workers">Workers</a>
         <a id="get-locations" href="/get-locations">Locations</a>
         <a id="constraints" href="/constraints">Constraints</a>
@@ -33,6 +34,18 @@
         <p class="specified-hidden error-tag" id="locations-error">
             No Locations Found
         </p>
+    </div>
+
+    <div id="view-roster-options" class="specified-hidden">
+        <form id="view-rosters-form">
+            <label for="view-roster-date" class="bold">
+                Month/Year
+            </label>
+            <input type="month" id="view-roster-date" required>
+            <p class="bold">Locations</p>
+            <div id="view-roster-locations-div"></div>
+            <button type="submit">Find Rosters</button>
+        </form>
     </div>
 
     <div class="error-container specified-hidden" id="home-error-container">

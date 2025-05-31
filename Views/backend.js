@@ -427,6 +427,10 @@ export async function saveRoster(location_id,month,year){
         return {"error":"Location ID, Month and Year required"}
     }
 
+    location_id = parseInt(location_id)
+    month = parseInt(month)
+    year = parseInt(year)
+
     return apiRequest("save-roster","POST",{
         location_id,month,year
     })
@@ -496,8 +500,13 @@ export async function newRosterEntry(roster_id,worker_id,shift_date,shift_type){
         return {"error":"Invalid shift type"}
     }
 
+    roster_id = parseInt(roster_id)
+    worker_id = parseInt(worker_id)
+
+    console.log(roster_id,worker_id,shift_date,shift_type)
+
     return apiRequest("roster-entry","POST",{
-        roster_id,worker_id,shift_date,shift_type,shift_hours
+        roster_id,worker_id,shift_date,shift_type
     })
 }
 
@@ -623,7 +632,7 @@ export async function deleteAccount(account_id,username){
 }
 
 // async function tester() {
-//     const result = await editPermanentRestriction(1,19,"Wednesday","","00:00:00")
+//     const result = await saveRoster(2,11,2025)
 //     console.log(result)
 // }
 

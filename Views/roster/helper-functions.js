@@ -36,7 +36,7 @@ export function setDayNightWorker(tag,worker,shift,time){
             tag.setAttribute("shiftType","6pm-6am")
         }else{
             tag.innerText += "(10pm-6am)"
-            tag.setAttribute("shiftType","10m-6am")
+            tag.setAttribute("shiftType","10pm-6am")
         }
     }
     return tag

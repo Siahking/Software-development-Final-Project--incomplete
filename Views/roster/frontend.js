@@ -75,18 +75,28 @@ export async function generateCalender(month,year){
         const locationErrorTag = document.createElement("p")
         const saveRosterBtn = document.createElement("button")
         const saveRosterContainer = document.createElement("div")
+        const errorContainer = document.createElement("div")
+        const errorTag = document.createElement("p")
         saveRosterBtn.innerText = `Save ${location.location} Roster`
         saveRosterBtn.setAttribute("id",location.id)
         saveRosterBtn.classList.add("green-btn")
 
         saveRosterBtn.addEventListener("click",(event)=>{
-            const locationId = event.target.id 
+            const locationId = event.target.id
+            const errorTagId = `location-${location}`
             const workerDetails = document.querySelectorAll(`[name="${locationId}-workerDetails"]`)
-            saveRoster(workerDetails)
+            saveRoster(errorTagId,locationId,workerDetails)
         })
 
         saveRosterContainer.setAttribute("id","save-roster-container")
         saveRosterContainer.appendChild(saveRosterBtn)
+
+        errorTag.setAttribute("id",`location-${location.id}-error-tag`)
+        errorTag.classList.add("error-tag")
+        errorContainer.classList.add("specified-hidden","error-container")
+        errorContainer.setAttribute("id",`location-${location.id}-error-container`)
+        errorContainer.appendChild(errorTag)
+
         locationErrorTag.classList.add("error-tag")
         locationName.innerText = location.location
         headerContainer.appendChild(locationName)
