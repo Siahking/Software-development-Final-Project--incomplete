@@ -114,3 +114,16 @@ li{
     color: red;
     margin-left: -20px;
 }
+
+#save-roster-container{
+    min-width: 1000px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 75px;
+}
+
+#save-roster-container button{
+    padding: 10px;
+    cursor: pointer;
+    font-size: 15px;
+}

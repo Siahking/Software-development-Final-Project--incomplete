@@ -6,19 +6,21 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
-	"time"
 )
 
 type Roster struct {
-	RosterId   int `json:"roster_id"`
+	RosterId   int  `json:"roster_id"`
 	LocationId *int `json:"location_id"`
 	Month      *int `json:"month"`
+	Year       *int `json:"year"`
 }
 
 type RosterEntry struct {
-	EntryId   int    `json:"entry_id"`
+	EntryId   int     `json:"entry_id"`
 	RosterId  *int    `json:"roster_id"`
 	WorkerId  *int    `json:"worker_id"`
 	ShiftDate *string `json:"shift_date"`
@@ -33,32 +35,32 @@ func SaveRoster(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	if *roster.LocationId == 0 || *roster.Month == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Both Location Id and Month for creation are required"})
+	if *roster.LocationId == 0 || *roster.Month == 0 || *roster.Year == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Location ID, Month and Year are required"})
 		return
 	}
 
-	query := "INSERT INTO roster (location_id,month) VALUES (?,?)"
+	query := "INSERT INTO roster (location_id,month,year) VALUES (?,?,?)"
 
-	_, insertionErr := db.Exec(query, roster.LocationId, roster.Month)
+	_, insertionErr := db.Exec(query, roster.LocationId, roster.Month, roster.Year)
 
 	if insertionErr != nil {
 		if mysqlErr, ok := insertionErr.(*mysql.MySQLError); ok {
-			switch mysqlErr.Number{
+			switch mysqlErr.Number {
 			case 3819:
-				c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid Month input"})
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Month input"})
 				return
 			case 1452:
-				c.JSON(http.StatusInternalServerError,gin.H{"error":"This Location does not exist"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "This Location does not exist"})
 				return
 			case 1062:
-				c.JSON(http.StatusConflict,gin.H{"error":"A roster for this month and location already exists"})
+				c.JSON(http.StatusConflict, gin.H{"error": "A roster for this month and location already exists"})
 				return
 			default:
 				fmt.Print(insertionErr)
 			}
-		}else{
-			c.JSON(http.StatusInternalServerError,gin.H{"error":"Unknown error occured\n"+insertionErr.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unknown error occured\n" + insertionErr.Error()})
 			return
 		}
 	}
@@ -74,34 +76,48 @@ func RetrieveRosters(c *gin.Context, db *sql.DB) {
 	rosterId := c.Query("roster_id")
 	locationId := c.Query("location_id")
 	month := c.Query("month")
+	year := c.Query("year")
 
 	allowedParams := map[string]bool{
-		"roster_id": true,
-		"location_id":true,
-		"month": true,
+		"roster_id":   true,
+		"location_id": true,
+		"month":       true,
+		"year":        true,
 	}
 
 	for key := range c.Request.URL.Query() {
 		if !allowedParams[key] {
-			c.JSON(http.StatusBadRequest, gin.H{"error":"Unrecognized query parameter: "+ key})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Unrecognized query parameter: " + key})
 			return
 		}
 	}
 
-	if rosterId == "" && locationId == "" && month == "" {
+	if rosterId == "" && locationId == "" && month == "" && year == "" {
 		results, searchError = db.Query("SELECT * FROM roster")
 	} else if rosterId != "" {
 		query = "SELECT * FROM roster WHERE roster_id = ?"
 		results, searchError = db.Query(query, rosterId)
-	} else if locationId != "" && month != "" {
-		query = "SELECT * FROM roster WHERE location_id = ? AND month = ?"
-		results, searchError = db.Query(query, locationId, month)
+	} else if locationId != "" && month != "" && year == "" {
+		query = "SELECT * FROM roster WHERE location_id = ? AND month = ? AND year = ?"
+		results, searchError = db.Query(query, locationId, month, year)
+	} else if locationId != "" && year != "" {
+		query = "SELECT * FROM roster WHERE location_id = ? AND year = ?"
+		results, searchError = db.Query(query, locationId, year)
+	} else if month != "" && locationId != "" {
+		query = "SELECT * FROM roster WHERE month = ? AND location_id = ?"
+		results, searchError = db.Query(query, month, locationId)
+	} else if month != "" && year != "" {
+		query = "SELECT * FROM roster WHERE month = ? AND year = ?"
+		results, searchError = db.Query(query, month, year)
 	} else if month != "" {
 		query = "SELECT * FROM roster WHERE month = ?"
 		results, searchError = db.Query(query, month)
 	} else if locationId != "" {
 		query = "SELECT * FROM roster WHERE location_id = ?"
 		results, searchError = db.Query(query, locationId)
+	} else if year != "" {
+		query = "SELECT * FROM roster WHERE year = ?"
+		results, searchError = db.Query(query, year)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid param"})
 		return
@@ -116,7 +132,7 @@ func RetrieveRosters(c *gin.Context, db *sql.DB) {
 	for results.Next() {
 		var roster Roster
 
-		if err := results.Scan(&roster.RosterId, &roster.LocationId, &roster.Month); err != nil {
+		if err := results.Scan(&roster.RosterId, &roster.LocationId, &roster.Month, &roster.Year); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in retrieving values\n" + err.Error()})
 			return
 		}
@@ -150,7 +166,8 @@ func EditRoster(c *gin.Context, db *sql.DB) {
 
 	query := `UPDATE roster SET
 			location_id = COALESCE(?, location_id),
-			month = COALESCE(?, month)
+			month = COALESCE(?, month),
+			year = COALESCE(?, year)
 			WHERE roster_id = ?
 	`
 
@@ -176,9 +193,9 @@ func EditRoster(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	rowsAffected,_ := result.RowsAffected()
-	if rowsAffected == 0{
-		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made, Entry may not exist or is already up to date"})
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No changes made, Entry may not exist or is already up to date"})
 		return
 	}
 
@@ -192,19 +209,32 @@ func DeleteRoster(c *gin.Context, db *sql.DB) {
 	rosterId := c.Query("roster_id")
 	locationId := c.Query("location_id")
 	month := c.Query("month")
+	year := c.Query("year")
 
 	if rosterId != "" {
 		query = "DELETE FROM roster WHERE roster_id = ?"
 		result, deleteErr = db.Exec(query, rosterId)
-	} else if locationId != "" && month != "" {
-		query = "DELETE FROM roster WHERE location_id = ? AND month = ?"
+	} else if locationId != "" && month != "" && year != "" {
+		query = "DELETE FROM roster WHERE location_id = ? AND month = ? AND year = ?"
 		result, deleteErr = db.Exec(query, locationId, month)
-	} else if locationId != "" {
-		query = "DELETE FROM roster WHERE location_id = ?"
-		result, deleteErr = db.Exec(query, locationId)
+	} else if locationId != "" && year != "" {
+		query = "DELETE FROM roster WHERE location_id = ? AND year = ?"
+		result, deleteErr = db.Exec(query, locationId, year)
+	} else if month != "" && year != "" {
+		query = "DELETE FROM roster WHERE month = ? AND year = ?"
+		result, deleteErr = db.Exec(query, month, year)
+	} else if month != "" && locationId != "" {
+		query = "DELETE FROM roster WHERE month = ? AND location_id = ?"
+		result, deleteErr = db.Exec(query, month, locationId)
 	} else if month != "" {
 		query = "DELETE FROM roster WHERE month = ?"
 		result, deleteErr = db.Exec(query, month)
+	} else if year != "" {
+		query = "DELETE FROM roster WHERE year = ?"
+		result, deleteErr = db.Exec(query, year)
+	} else if locationId != "" {
+		query = "DELETE FROM roster WHERE location_id = ?"
+		result, deleteErr = db.Exec(query, locationId)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input params"})
 		return
@@ -246,8 +276,8 @@ func RosterEntryHandler(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	if entryDate.Before(time.Now()){
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Shift date must be in the future"})
+	if entryDate.Before(time.Now()) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Shift date must be in the future"})
 		return
 	}
 
@@ -367,7 +397,7 @@ func EditRosterEntry(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	if rosterEntry.ShiftDate != nil{
+	if rosterEntry.ShiftDate != nil {
 		layout := "2006-01-02"
 
 		entryDate, entryDateErr := time.Parse(layout, *rosterEntry.ShiftDate)
@@ -376,8 +406,8 @@ func EditRosterEntry(c *gin.Context, db *sql.DB) {
 			return
 		}
 
-		if entryDate.Before(time.Now()){
-			c.JSON(http.StatusBadRequest,gin.H{"error":"Shift date must be in the future"})
+		if entryDate.Before(time.Now()) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Shift date must be in the future"})
 			return
 		}
 	}
@@ -391,9 +421,9 @@ func EditRosterEntry(c *gin.Context, db *sql.DB) {
 
 	result, _ := db.Exec(query, rosterEntry.RosterId, rosterEntry.WorkerId, rosterEntry.ShiftDate, rosterEntry.ShiftType, id)
 
-	rowsAffected,_ := result.RowsAffected()
-	if rowsAffected == 0{
-		c.JSON(http.StatusNotFound, gin.H{"error":"No changes made, Entry may not exist or is already up to date"})
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No changes made, Entry may not exist or is already up to date"})
 		return
 	}
 
@@ -433,8 +463,8 @@ func DeleteRosterEntry(c *gin.Context, db *sql.DB) {
 				return
 			}
 
-			if entryDate.Before(time.Now()){
-				c.JSON(http.StatusBadRequest,gin.H{"error":"Shift date must be in the future"})
+			if entryDate.Before(time.Now()) {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Shift date must be in the future"})
 				return
 			}
 

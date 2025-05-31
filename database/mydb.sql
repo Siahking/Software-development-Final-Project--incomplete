@@ -89,8 +89,9 @@ CREATE TABLE roster (
     roster_id INT AUTO_INCREMENT PRIMARY KEY,
     location_id INT NOT NULL,
     month INT NOT NULL CHECK (month >= 1 AND month <= 12),
-    FOREIGN KEY (location_id) REFERENCES locations(id),
-    UNIQUE (location_id,month)
+    year INT NOT NULL,
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
+    UNIQUE (location_id,month,year)
 );
 
 --@block

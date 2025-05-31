@@ -21,17 +21,22 @@ export async function retrieveWorkers(day,month,year,workers,daysOff,restriction
 export function setDayNightWorker(tag,worker,shift,time){
     //selecting the first index of each first name to get the first letter in the name
     tag.innerText = `${shift[worker].first_name[0]}.${shift[worker].last_name}\n`
+    tag.setAttribute("workerId",shift[worker].id)
     if (time === "day"){
         if (shift.shift === "12hr"){
             tag.innerText += "(6am-6pm)"
+            tag.setAttribute("shiftType","6am-6pm")
         }else{
             tag.innerText += "(6am-2pm)"
+            tag.setAttribute("shiftType","6am-2pm")
         }
     }else{
         if (shift.shift === "12hr"){
             tag.innerText += "(6pm-6am)"
+            tag.setAttribute("shiftType","6pm-6am")
         }else{
             tag.innerText += "(10pm-6am)"
+            tag.setAttribute("shiftType","10m-6am")
         }
     }
     return tag
@@ -40,6 +45,8 @@ export function setDayNightWorker(tag,worker,shift,time){
 export function setAfternoonWorker(tag,shift){
     tag.innerText = `${shift.afternoonWorker.first_name[0]}.${shift.afternoonWorker.last_name}\n`
     tag.innerText += "(2pm-10pm)"
+    tag.setAttribute("workerId",shift.afternoonWorker.id)
+    tag.setAttribute("shiftType","2pm-10pm")
     return tag
 }
 
@@ -190,4 +197,12 @@ export function setLoadingContainer(){
     loadingContainer.classList.add("loading-container")
     loadingContainer.appendChild(loadingMessage)
     return loadingContainer
+}
+
+export function setAttributes(tag,tagName,locationId,monthYear,dayNumber){
+    tag.setAttribute("locationId",locationId)
+    tag.setAttribute("day",dayNumber)
+    tag.setAttribute("monthYear",monthYear)
+    tag.setAttribute("name",`${locationId}-workerDetails`)
+    tag.setAttribute("id",`${dayNumber}-${locationId}-${tagName}`)
 }

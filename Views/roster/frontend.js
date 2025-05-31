@@ -2,6 +2,7 @@ import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
 import { setLoadingContainer } from "./helper-functions.js"
 import { objectCheck } from "../general-helper-funcs.js"
+import { saveRoster } from "../saved-rosters/functions.js"
 
 export async function generateCalender(month,year){
     const [
@@ -72,6 +73,20 @@ export async function generateCalender(month,year){
         const headerContainer = document.createElement("div")
         const locationName = document.createElement("h2")
         const locationErrorTag = document.createElement("p")
+        const saveRosterBtn = document.createElement("button")
+        const saveRosterContainer = document.createElement("div")
+        saveRosterBtn.innerText = `Save ${location.location} Roster`
+        saveRosterBtn.setAttribute("id",location.id)
+        saveRosterBtn.classList.add("green-btn")
+
+        saveRosterBtn.addEventListener("click",(event)=>{
+            const locationId = event.target.id 
+            const workerDetails = document.querySelectorAll(`[name="${locationId}-workerDetails"]`)
+            saveRoster(workerDetails)
+        })
+
+        saveRosterContainer.setAttribute("id","save-roster-container")
+        saveRosterContainer.appendChild(saveRosterBtn)
         locationErrorTag.classList.add("error-tag")
         locationName.innerText = location.location
         headerContainer.appendChild(locationName)
@@ -136,6 +151,7 @@ export async function generateCalender(month,year){
                 month:month,
                 year:year,
                 WORKERS:WORKERS,
+                location:location,
                 dayBlock:morningShiftBlock,
                 afternoonBlock:eveningShiftBlock,
                 nightBlock:nightShiftBlock,
@@ -185,6 +201,7 @@ export async function generateCalender(month,year){
 
         locationFragment.appendChild(headerContainer)
         locationFragment.appendChild(calendarContainer)
+        locationFragment.appendChild(saveRosterContainer)
         container.appendChild(locationFragment)
     }
 }

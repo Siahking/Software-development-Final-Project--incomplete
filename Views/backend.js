@@ -422,17 +422,17 @@ export async function clearOccupancies(){
     return apiRequest("clear-occupancies","DELETE")
 }
 
-export async function saveRoster(location_id,month){
-    if (!location_id || !month){
-        return {"error":"Location ID and Month required"}
+export async function saveRoster(location_id,month,year){
+    if (!location_id || !month || !year){
+        return {"error":"Location ID, Month and Year required"}
     }
 
     return apiRequest("save-roster","POST",{
-        location_id,month
+        location_id,month,year
     })
 }
 
-export async function retrieveRosters(roster_id=null,location_id=null,month=null){
+export async function retrieveRosters(roster_id=null,location_id=null,month=null,year=null){
     let url = 'retrieve-rosters'
     const queryParams = []
 
@@ -444,6 +444,8 @@ export async function retrieveRosters(roster_id=null,location_id=null,month=null
         }
         if (month){
             queryParams.push(`month=${month}`)
+        }if (year){
+            queryParams.push(`year=${year}`)
         }
 
         const newparams = queryParams.join("&")
@@ -453,20 +455,19 @@ export async function retrieveRosters(roster_id=null,location_id=null,month=null
     return apiRequest(url,"GET")
 }
 
-export async function editRoster(idStr,location_id,month){
+export async function editRoster(idStr,location_id,month,year){
     const id = parseInt(idStr)
 
     location_id = location_id ? location_id : null
     month = month ? month : null
-
-    console.log(location_id,month)
+    year = year ? year : null
 
     return apiRequest(`edit-roster/${id}`,"PATCH",{
-        location_id,month
+        location_id,month,year
     })
 }
 
-export async function deleteRoster(id,location_id,month){
+export async function deleteRoster(id,location_id,month,year){
     let url = `delete-roster?`
 
     if (id){
@@ -478,6 +479,8 @@ export async function deleteRoster(id,location_id,month){
         }
         if (month){
             params.push(`month=${month}`)
+        }if (year){
+            params.push(`year=${year}`)
         }
 
         url += params.join("&")
@@ -494,7 +497,7 @@ export async function newRosterEntry(roster_id,worker_id,shift_date,shift_type){
     }
 
     return apiRequest("roster-entry","POST",{
-        roster_id,worker_id,shift_date,shift_type
+        roster_id,worker_id,shift_date,shift_type,shift_hours
     })
 }
 
@@ -542,7 +545,7 @@ export async function editRosterEntry(entry_id,roster_id,worker_id,shift_date,sh
     }
 
     return apiRequest(`edit-entry/${entry_id}`,"PATCH",{
-        roster_id,worker_id,shift_date,shift_type
+        roster_id,worker_id,shift_date,shift_type,shift_hours
     })
 }
 

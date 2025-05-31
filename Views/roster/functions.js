@@ -2,7 +2,7 @@ import * as helperFuncs from "./helper-functions.js"
 import { objectCheck } from "../general-helper-funcs.js"
 
 export async function assignWorkers({ 
-    dayNumber, month, year, WORKERS, daysOff, restrictions,constraints,dayBlock,afternoonBlock,
+    dayNumber, month, year, WORKERS,location, daysOff, restrictions,constraints,dayBlock,afternoonBlock,
     nightBlock
  }){
     let shift1,shift2
@@ -35,12 +35,18 @@ export async function assignWorkers({
     nightWorker1 = helperFuncs.setDayNightWorker(nightWorker1,"nightWorker",shift1,"night")
     nightWorker2 = helperFuncs.setDayNightWorker(nightWorker2,"nightWorker",shift2,"night")
 
-    dayWorker1.setAttribute("id",`${dayNumber}-dayworker1`)
-    dayWorker2.setAttribute("id",`${dayNumber}-dayworker2`)
-    afternoonWorker1.setAttribute("id",`${dayNumber}-afternoonworker1`)
-    afternoonWorker2.setAttribute("id",`${dayNumber}-afternoonworker2`)
-    nightWorker1.setAttribute("id",`${dayNumber}-nightworker1`)
-    nightWorker2.setAttribute("id",`${dayNumber}-nightworker2`)
+    const tempArray = new Map([
+        [dayWorker1,"dayWorker1"],
+        [dayWorker2,"dayWorker2"],
+        [afternoonWorker1,"afternoonWorker1"],
+        [afternoonWorker2,"afternoonWorker2"],
+        [nightWorker1,"nightWorker1"],
+        [nightWorker2,"nightWorker2"]
+    ])
+    
+    for (const [element,label] of tempArray.entries()) {
+        helperFuncs.setAttributes(element,label,location.id,`${month}-${year}`,dayNumber)
+    };
 
     for (const tag of [dayWorker1,dayWorker2]){
         dayBlock.appendChild(tag)
