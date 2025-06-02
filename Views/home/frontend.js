@@ -50,7 +50,7 @@ export async function retrieveLocations(){
 
     if (objectCheck(results)){
         displayError("roster-error",results.error)
-            for(const tag of [locationIdentifier,submitBtn,locationsContainer])tag.classList.add("specified-hidden")
+        for(const tag of [locationIdentifier,submitBtn,locationsContainer])tag.classList.add("specified-hidden")
         lowerContainer.classList.remove("specified-hidden")
         return
     }
@@ -66,10 +66,12 @@ export async function retrieveLocations(){
         const input = document.createElement("input")
 
         input.setAttribute("type","checkbox")
-        input.setAttribute("name",location+"roster")
+        input.setAttribute("name","roster-location")
         input.setAttribute("value",id)
-        input.setAttribute("id",`${location}-roster`)
+        input.setAttribute("id",`${id}-roster`)
         input.setAttribute("class","roster-option")
+        input.setAttribute("data-location",location)
+        input.setAttribute("data-rosterid",result.roster_id)
 
         const labelText = document.createTextNode(`${location}`)
         label.setAttribute("for",`${location}-roster`)
@@ -83,5 +85,4 @@ export async function retrieveLocations(){
     for(const tag of [locationIdentifier,submitBtn])tag.classList.remove("specified-hidden")
     locationsContainer.classList.remove("specified-hidden")
     lowerContainer.classList.remove("specified-hidden")
-    
 }

@@ -352,7 +352,7 @@ func RetrieveRosterEntries(c *gin.Context, db *sql.DB) {
 		}
 
 		whereClause := strings.Join(conditions, " AND ")
-		finalQuery := baseQuery + whereClause
+		finalQuery := baseQuery + whereClause + " ORDER BY shift_date"
 
 		rows, extractionErr = db.Query(finalQuery, args...)
 	}

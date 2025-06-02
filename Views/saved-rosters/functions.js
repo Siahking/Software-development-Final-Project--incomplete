@@ -23,10 +23,7 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
 
         if (parseInt(day) < 10)day = `0${day}`
 
-        console.log(RosterResult[0].roster_id,workerid,`${year}-${month}-${day}`,shiftType)
-
         const createRosterResults = await apiFuncs.newRosterEntry(RosterResult[0].roster_id,workerid,`${year}-${month}-${day}`,shiftType)
-        console.log(createRosterResults)
 
         if(objectCheck(createRosterResults)){
             displayError(errorTagId,createRosterResults.error)

@@ -6,6 +6,7 @@ const rosterBtn = document.getElementById("create-roster")
 const rosterDiv = document.getElementById("roster-div")
 const loadLocationsBtn = document.getElementById("select-date-btn")
 const viewRosterBtn = document.getElementById("view-roster")
+const viewRosterForm = document.getElementById("view-rosters-form")
 
 funcs.loadContents()
 
@@ -28,3 +29,6 @@ rosterBtn.addEventListener("click",()=>frontend.toogleDiv("roster-div"))
 viewRosterBtn.addEventListener("click",()=>frontend.toogleDiv("view-roster-options"))
 
 loadLocationsBtn.addEventListener("click",async ()=> await frontend.retrieveLocations())
+
+viewRosterForm.addEventListener("submit",async (event)=>funcs.findRosters(event))
+
