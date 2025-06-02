@@ -83,7 +83,7 @@ export async function generateCalender(month,year){
 
         saveRosterBtn.addEventListener("click",(event)=>{
             const locationId = event.target.id
-            const errorTagId = `location-${location}`
+            const errorTagId = `location-${location.id}-error`
             const workerDetails = document.querySelectorAll(`[name="${locationId}-workerDetails"]`)
             saveRoster(errorTagId,locationId,workerDetails)
         })
@@ -212,6 +212,7 @@ export async function generateCalender(month,year){
         locationFragment.appendChild(headerContainer)
         locationFragment.appendChild(calendarContainer)
         locationFragment.appendChild(saveRosterContainer)
+        locationFragment.appendChild(errorContainer)
         container.appendChild(locationFragment)
     }
 }

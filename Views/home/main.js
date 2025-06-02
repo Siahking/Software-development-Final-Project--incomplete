@@ -4,6 +4,8 @@ import * as funcs from "./functions.js"
 const messageTag = document.getElementById("message")
 const rosterBtn = document.getElementById("create-roster")
 const rosterDiv = document.getElementById("roster-div")
+const loadLocationsBtn = document.getElementById("select-date-btn")
+const viewRosterBtn = document.getElementById("view-roster")
 
 funcs.loadContents()
 
@@ -21,4 +23,8 @@ window.addEventListener("DOMContentLoaded",()=>{
         localStorage.removeItem("Message")
 })
 
-rosterBtn.addEventListener("click",frontend.toogleDiv)
+rosterBtn.addEventListener("click",()=>frontend.toogleDiv("roster-div"))
+
+viewRosterBtn.addEventListener("click",()=>frontend.toogleDiv("view-roster-options"))
+
+loadLocationsBtn.addEventListener("click",async ()=> await frontend.retrieveLocations())

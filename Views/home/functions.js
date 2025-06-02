@@ -5,9 +5,13 @@ const errorTagId = "home-error"
 const locationsErrorTag = document.getElementById("locations-error")
 const rosterForm = document.getElementById("roster-form")
 const locationsDiv = document.getElementById("locations-div")
+const viewLocationsDiv = document.getElementById("view-roster-locations-div")
 
 export async function loadContents(){
-    const locations = await apiFuncs.getLocations()
+    const [viewRosterLocations,locations] = await Promise.all([
+        apiFuncs.retrieveRosters(),
+        apiFuncs.getLocations()
+    ])
 
     if (objectCheck(locations)){
         locationsErrorTag.classList.remove("specified-hidden")

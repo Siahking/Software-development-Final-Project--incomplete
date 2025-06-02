@@ -428,7 +428,7 @@ export async function saveRoster(location_id,month,year){
     }
 
     location_id = parseInt(location_id)
-    month = parseInt(month)
+    month = parseInt(month) + 1
     year = parseInt(year)
 
     return apiRequest("save-roster","POST",{
