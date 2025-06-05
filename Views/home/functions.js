@@ -82,6 +82,7 @@ export function findRosters(event){
     const selectedLocations = []
 
     for (const tag of rosterLocations){
+        console.log(tag)
         if (tag.checked){
             const obj = {
                 "location":tag.dataset.location,

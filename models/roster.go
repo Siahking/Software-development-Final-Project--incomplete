@@ -312,10 +312,20 @@ func RosterEntryHandler(c *gin.Context, db *sql.DB) {
 }
 
 func RetrieveRosterEntries(c *gin.Context, db *sql.DB) {
+	type ExtendedRosterEntry struct {
+		EntryId    int       `json:"entry_id"`
+		RosterId   int       `json:"roster_id"`
+		WorkerId   int       `json:"worker_id"`
+		ShiftDate  string    `json:"shift_date"`
+		ShiftType  string    `json:"shift_type"`
+		FirstName  string    `json:"first_name"`
+		LastName   string    `json:"last_name"`
+	}
+
 	var query string
 	var rows *sql.Rows
 	var extractionErr error
-	var entries []RosterEntry
+	var entries []ExtendedRosterEntry
 	entryId := c.Query("entry_id")
 	rosterId := c.Query("roster_id")
 	workerId := c.Query("worker_id")
@@ -323,10 +333,21 @@ func RetrieveRosterEntries(c *gin.Context, db *sql.DB) {
 	shift_type := c.Query("shift_type")
 
 	if entryId != "" {
-		query = "SELECT * FROM roster_entries WHERE entry_id = ?"
+		query = `
+			SELECT re.entry_id, re.roster_id, re.worker_id, re.shift_date, re.shift_type,
+			       w.first_name, w.last_name
+			FROM roster_entries re
+			JOIN workers w ON re.worker_id = w.id
+			WHERE re.entry_id = ?
+			ORDER BY re.shift_date`
 		rows, extractionErr = db.Query(query, entryId)
 	} else {
-		baseQuery := "SELECT * FROM roster_entries WHERE "
+		baseQuery := `
+			SELECT re.entry_id, re.roster_id, re.worker_id, re.shift_date, re.shift_type,
+			       w.first_name, w.last_name
+			FROM roster_entries re
+			JOIN workers w ON re.worker_id = w.id
+			WHERE `
 		var conditions []string
 		var args []interface{}
 		if rosterId != "" {
@@ -364,8 +385,8 @@ func RetrieveRosterEntries(c *gin.Context, db *sql.DB) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var entry RosterEntry
-		if err := rows.Scan(&entry.EntryId, &entry.RosterId, &entry.WorkerId, &entry.ShiftDate, &entry.ShiftType); err != nil {
+		var entry ExtendedRosterEntry
+		if err := rows.Scan(&entry.EntryId, &entry.RosterId, &entry.WorkerId, &entry.ShiftDate, &entry.ShiftType,&entry.FirstName,&entry.LastName); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in retrieving values\n" + err.Error()})
 			return
 		}
