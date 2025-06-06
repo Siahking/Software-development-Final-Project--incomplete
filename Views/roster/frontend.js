@@ -77,6 +77,7 @@ export async function generateCalender(month,year){
         const saveRosterContainer = document.createElement("div")
         const errorContainer = document.createElement("div")
         const errorTag = document.createElement("p")
+        const saveTag = document.createElement("p")
         saveRosterBtn.innerText = `Save ${location.location} Roster`
         saveRosterBtn.setAttribute("id",location.id)
         saveRosterBtn.classList.add("green-btn")
@@ -96,6 +97,9 @@ export async function generateCalender(month,year){
         errorContainer.classList.add("specified-hidden","error-container")
         errorContainer.setAttribute("id",`location-${location.id}-error-container`)
         errorContainer.appendChild(errorTag)
+
+        saveTag.setAttribute("id",`${location.id}-message`)
+        saveTag.classList.add("specified-hidden")
 
         locationErrorTag.classList.add("error-tag")
         locationName.innerText = location.location
@@ -212,6 +216,7 @@ export async function generateCalender(month,year){
         locationFragment.appendChild(headerContainer)
         locationFragment.appendChild(calendarContainer)
         locationFragment.appendChild(saveRosterContainer)
+        locationFragment.appendChild(saveTag)
         locationFragment.appendChild(errorContainer)
         container.appendChild(locationFragment)
     }

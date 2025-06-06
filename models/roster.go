@@ -255,7 +255,7 @@ func DeleteRoster(c *gin.Context, db *sql.DB) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No Entry found"})
 		return
 	} else {
-		c.JSON(http.StatusOK, gin.H{"error": "Entry deleted successfully"})
+		c.JSON(http.StatusOK, gin.H{"message": "Entry deleted successfully"})
 		return
 	}
 }
@@ -331,6 +331,8 @@ func RetrieveRosterEntries(c *gin.Context, db *sql.DB) {
 	workerId := c.Query("worker_id")
 	shift_date := c.Query("shift_date")
 	shift_type := c.Query("shift_type")
+
+	fmt.Println(shift_date + "\n\n")
 
 	if entryId != "" {
 		query = `

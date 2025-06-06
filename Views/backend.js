@@ -423,12 +423,13 @@ export async function clearOccupancies(){
 }
 
 export async function saveRoster(location_id,month,year){
+    console.log("save roster month is "+month)
     if (!location_id || !month || !year){
         return {"error":"Location ID, Month and Year required"}
     }
 
     location_id = parseInt(location_id)
-    month = parseInt(month) + 1
+    month = parseInt(month)
     year = parseInt(year)
 
     return apiRequest("save-roster","POST",{
@@ -503,8 +504,6 @@ export async function newRosterEntry(roster_id,worker_id,shift_date,shift_type){
     roster_id = parseInt(roster_id)
     worker_id = parseInt(worker_id)
 
-    console.log(roster_id,worker_id,shift_date,shift_type)
-
     return apiRequest("roster-entry","POST",{
         roster_id,worker_id,shift_date,shift_type
     })
@@ -524,7 +523,7 @@ export async function retrieveRosterEntries(entry_id,roster_id,worker_id,shift_d
             params.push(`worker_id=${worker_id}`)
         }
         if (shift_date){
-            params.push(`shift_date+${shift_date}`)
+            params.push(`shift_date=${shift_date}`)
         }
         if (shift_type){
             params.push(`shift_type=${shift_type}`)
@@ -632,7 +631,7 @@ export async function deleteAccount(account_id,username){
 }
 
 // async function tester() {
-//     const result = await retrieveRosterEntries("",10,"","","")
+//     const result = await saveRoster(1,8,2025)
 //     console.log(result)
 // }
 

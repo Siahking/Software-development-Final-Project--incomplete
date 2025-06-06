@@ -11,16 +11,27 @@ export async function loadRosters(){
         rosters.push(roster[0])
     }
 
-    console.log(rosters)
-
-    for (const roster of rosters){
-        const [year,month] = [roster.year,roster.month - 1]
+    for (const [index,roster] of rosters.entries()){
+        const [year,month] = [roster.year,roster.month]
 
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const date = new Date(year, month - 1, 1);
         const firstDayOfWeek = date.getDay();
         const daysInMonth = new Date(year, month, 0).getDate();
         const calendarContainer = document.createElement("div")
+        const headerContainer = document.createElement("div")
+        const locationName = document.createElement("h2")
+        const deleteBtn = document.createElement("button")
+
+        deleteBtn.setAttribute("id",`delete-btn-${roster.roster_id}`)
+        deleteBtn.setAttribute("value",roster.roster_id)
+        deleteBtn.classList.add("delete-btn")
+        deleteBtn.innerText = "Delete Roster"
+
+        deleteBtn.addEventListener("click",(event)=>deleteRosterHandler(event))
+
+        locationName.innerText = data[index].location
+        headerContainer.appendChild(locationName)
 
         calendarContainer.setAttribute("id",`${roster.location_id}-roster`)
         calendarContainer.classList.add("calendar-container")
@@ -41,7 +52,7 @@ export async function loadRosters(){
         }
 
         for (let day = 1; day <= daysInMonth; day++) {
-            const date = `${day}-${month}-${year}`
+            const date = `${year}-${month}-${day}`
             const dayCell = document.createElement("div");
             dayCell.className = "calendar-item calendar-day";
 
@@ -60,16 +71,16 @@ export async function loadRosters(){
 
             calendarContainer.appendChild(dayCell)
         }
+        container.appendChild(headerContainer)
         container.appendChild(calendarContainer)
+        container.appendChild(deleteBtn)
     }
 
 }
 
-async function insertWorkers(rosterId,date){
+async function insertWorkers(rosterId,rosterDate){
 
-    const rosterData = await apiFuncs.retrieveRosterEntries("",rosterId,"",date,"")
-
-    console.log(rosterData)
+    const rosterData = await apiFuncs.retrieveRosterEntries("",rosterId,"",rosterDate,"")
 
     const morningShiftBlock = document.createElement("div");
     morningShiftBlock.className = "shift-block shift-1";
@@ -83,19 +94,21 @@ async function insertWorkers(rosterId,date){
     for (const worker of rosterData){
         const tag = document.createElement("p")
         switch(worker.shift_type){
-            case "6am-6pm" || "6am-2pm":
+            case "6am-6pm" :
+            case "6am-2pm" :
                 tag.innerText = `${worker.first_name[0]}.${worker.last_name}\n`
-                tag.innerHTML += `(${worker.shift_type})`
+                tag.innerText += `(${worker.shift_type})`
                 morningShiftBlock.appendChild(tag)
                 break
             case "2pm-10pm":
                 tag.innerText = `${worker.first_name[0]}.${worker.last_name}\n`
-                tag.innerHTML += `(${worker.shift_type})`
+                tag.innerText += `(${worker.shift_type})`
                 eveningShiftBlock.appendChild(tag)
                 break
-            case "6pm-6am" || "10pm-6am":
+            case "6pm-6am" :
+            case "10pm-6am":
                 tag.innerText = `${worker.first_name[0]}.${worker.last_name}\n`
-                tag.innerHTML += `(${worker.shift_type})`
+                tag.innerText += `(${worker.shift_type})`
                 nightShiftBlock.appendChild(tag)
                 break
         }
@@ -104,19 +117,11 @@ async function insertWorkers(rosterId,date){
     return [morningShiftBlock,eveningShiftBlock,nightShiftBlock]
 }
 
-function insertWorkersToTags(tag,shift,rosterObj){
-    const shifts = []
+async function deleteRosterHandler(event){
+    const rosterId = event.target.value
 
-    switch (shift){
-        case "morningShift":
-            for (const shift of rosterObj){
-                if (shift.shift_type === "6am-6pm" || shift.shift_type === "6am-2pm"){
+    const results = await apiFuncs.deleteRoster(rosterId,"","","")
 
-                }
-            }
-    }
-
-    for (const shifts of rosterObj){
-
-    }
+    sessionStorage.setItem("Message",results.message)
+    window.location.href = "/"
 }
