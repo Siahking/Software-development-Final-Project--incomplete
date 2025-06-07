@@ -18,35 +18,70 @@ export async function retrieveWorkers(day,month,year,workers,daysOff,restriction
     return array.sort(() => Math.random() - 0.5);
 }
 
-export function setDayNightWorker(tag,worker,shift,time){
+export function setDayNightWorker(idStart,tag,worker,shift,time){
     //selecting the first index of each first name to get the first letter in the name
-    tag.innerText = `${shift[worker].first_name[0]}.${shift[worker].last_name}\n`
+    const pTag = document.createElement("p")
+    const workerName = document.createElement("span")
+    const shiftType = document.createElement("span")
+    const editBtn = document.createElement("button")
+    workerName.innerText = `${shift[worker].first_name[0]}.${shift[worker].last_name}`
     tag.setAttribute("workerId",shift[worker].id)
     if (time === "day"){
         if (shift.shift === "12hr"){
-            tag.innerText += "(6am-6pm)"
+            shiftType.innerText = "(6am-6pm)"
             tag.setAttribute("shiftType","6am-6pm")
         }else{
-            tag.innerText += "(6am-2pm)"
+            shiftType.innerText = "(6am-2pm)"
             tag.setAttribute("shiftType","6am-2pm")
         }
     }else{
         if (shift.shift === "12hr"){
-            tag.innerText += "(6pm-6am)"
+            shiftType.innerText = "(6pm-6am)"
             tag.setAttribute("shiftType","6pm-6am")
         }else{
-            tag.innerText += "(10pm-6am)"
+            shiftType.innerText = "(10pm-6am)"
             tag.setAttribute("shiftType","10pm-6am")
         }
     }
+    workerName.setAttribute("id",`${idStart}-${time}-worker`)
+    shiftType.setAttribute("id",`${idStart}-${time}-shift`)
+
+    editBtn.innerText = "✏️"
+    editBtn.classList.add("editBtn")
+    editBtn.setAttribute("id",`${idStart}-${time}-editBtn`)
+
+    pTag.innerText = ""
+    pTag.appendChild(workerName)
+    pTag.appendChild(shiftType)
+    tag.appendChild(pTag)
+    tag.appendChild(editBtn)
+    tag.classList.add("workerContainer")
     return tag
 }
 
-export function setAfternoonWorker(tag,shift){
-    tag.innerText = `${shift.afternoonWorker.first_name[0]}.${shift.afternoonWorker.last_name}\n`
-    tag.innerText += "(2pm-10pm)"
+export function setAfternoonWorker(idStart,tag,shift){
+    const pTag = document.createElement("p")
+    const workerName = document.createElement("span")
+    const shiftType = document.createElement("span")
+    const editBtn = document.createElement("button")
+    workerName.innerText = `${shift.afternoonWorker.first_name[0]}.${shift.afternoonWorker.last_name}`
+    shiftType.innerText = "(2pm-10pm)"
     tag.setAttribute("workerId",shift.afternoonWorker.id)
     tag.setAttribute("shiftType","2pm-10pm")
+
+    workerName.setAttribute("id",`${idStart}-afternoon-worker`)
+    shiftType.setAttribute("id",`${idStart}-afternoon-shift`)
+
+    editBtn.innerText = "✏️"
+    editBtn.classList.add("editBtn")
+    editBtn.setAttribute("id",`${idStart}-afternoon-editBtn`)
+
+    pTag.innerText = ""
+    pTag.appendChild(workerName)
+    pTag.appendChild(shiftType)
+    tag.appendChild(pTag)
+    tag.appendChild(editBtn)
+    tag.classList.add("workerContainer")
     return tag
 }
 

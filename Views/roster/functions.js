@@ -16,24 +16,24 @@ export async function assignWorkers({
     const container = document.createElement("div")
     container.setAttribute("id",`${location}-workers-div`)
 
-    let dayWorker1 = document.createElement("p")
-    let dayWorker2 = document.createElement("p")
-    let afternoonWorker1 = document.createElement("p")
-    let afternoonWorker2 = document.createElement("p")
-    let nightWorker1 = document.createElement("p")
-    let nightWorker2 = document.createElement("p")
+    let dayWorker1 = document.createElement("div")
+    let dayWorker2 = document.createElement("div")
+    let afternoonWorker1 = document.createElement("div")
+    let afternoonWorker2 = document.createElement("div")
+    let nightWorker1 = document.createElement("div")
+    let nightWorker2 = document.createElement("div")
     
-    dayWorker1 = helperFuncs.setDayNightWorker(dayWorker1,"dayWorker",shift1,"day")
-    dayWorker2 = helperFuncs.setDayNightWorker(dayWorker2,"dayWorker",shift2,"day")
+    dayWorker1 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,dayWorker1,"dayWorker",shift1,"day")
+    dayWorker2 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,dayWorker2,"dayWorker",shift2,"day")
     //manually sets afternoon workers if the shifts ends up being 8 hr shifts
     if (shift1["afternoonWorker"]){
-        afternoonWorker1 = helperFuncs.setAfternoonWorker(afternoonWorker1,shift1)
+        afternoonWorker1 = helperFuncs.setAfternoonWorker(`${location.location}-${dayNumber}`,afternoonWorker1,shift1)
     }
     if (shift2["afternoonWorker"]){
-        afternoonWorker2 = helperFuncs.setAfternoonWorker(afternoonWorker2,shift2)
+        afternoonWorker2 = helperFuncs.setAfternoonWorker(`${location.location}-${dayNumber}`,afternoonWorker2,shift2)
     }
-    nightWorker1 = helperFuncs.setDayNightWorker(nightWorker1,"nightWorker",shift1,"night")
-    nightWorker2 = helperFuncs.setDayNightWorker(nightWorker2,"nightWorker",shift2,"night")
+    nightWorker1 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,nightWorker1,"nightWorker",shift1,"night")
+    nightWorker2 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,nightWorker2,"nightWorker",shift2,"night")
 
     const tempArray = new Map([
         [dayWorker1,"dayWorker1"],

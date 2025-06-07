@@ -23,7 +23,7 @@
 
 .calendar-item {
     position: relative;
-    padding: 30px 20px ;
+    padding: 20px 10px ;
     border: 1px solid #ddd;
     background-color: lightgray;
     min-width: 120px;
@@ -68,15 +68,15 @@
     margin: 3px 0;
 }
 
-.shift-1 {
+.shift-1 ,.shift-1 .workerContainer button{
     background-color: lightblue;
 }
 
-.shift-2 {
+.shift-2 ,.shift-2 .workerContainer button{
     background-color: lightgreen;
 }
 
-.shift-3 {
+.shift-3 ,.shift-3 .workerContainer button{
     background-color: lightcoral;
 }
 
@@ -126,4 +126,20 @@ li{
     padding: 10px;
     cursor: pointer;
     font-size: 15px;
+}
+
+span{
+    font-size: 12px;
+}
+
+.editBtn{
+    border: none;
+    border-radius: 5px;
+    margin-left: 2px;
+    padding: 0;
+}
+
+.workerContainer{
+    display: flex;
+    flex-direction: row;
 }
