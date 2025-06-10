@@ -351,7 +351,7 @@ func RetrieveRosterEntries(c *gin.Context, db *sql.DB) {
 			JOIN workers w ON re.worker_id = w.id
 			WHERE `
 		var conditions []string
-		var args []interface{}
+		var args []any
 		if rosterId != "" {
 			conditions = append(conditions, "roster_id = ?")
 			args = append(args, rosterId)

@@ -2,12 +2,13 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
+	"strings"
 )
 
 type Occupancy struct {
@@ -54,26 +55,51 @@ func CreateNewOccupancy(c *gin.Context, db *sql.DB) {
 
 //retrieve all occupancies or retrieve occupancies by worker_id,event_date or note
 func RetrieveOccupancies(c *gin.Context, db *sql.DB){
+	var query string
 	var occupancies []Occupancy
 	var rows *sql.Rows
 	var err error
-	column := c.Param("column")
-	value := c.Param("value")
+	eventDate := c.Query("event_date")
+	workerId := c.Query("worker_id")
+	note := c.Query("note")
+
+	allowedParams := map[string]bool{
+		"event_date": true,
+		"worker_id": true,
+		"note": true,
+	}
+
+	for key := range c.Request.URL.Query(){
+		if !allowedParams[key] {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Unrecognized query parameter: " + key})
+			return
+		}
+	}
+
+	fmt.Print("passed the for loop \n\n")
 	
-	if column == "" {
-		rows, err = db.Query("SELECT * FROM occupancy")
-	}else if column == "worker_id"{
-		query := "SELECT * FROM occupancy WHERE worker_id = ?"
-		rows, err = db.Query(query,value)
-	}else if column == "event_date"{
-		query := "SELECT * FROM occupancy WHERE event_date = ?"
-		rows, err = db.Query(query,value)
-	}else if column == "note"{
-		query := "SELECT * FROM occupancy WHERE note = ?"
-		rows, err = db.Query(query,value)
-	}else{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid column entry"})
-		return
+	var conditions []string
+	var args []any
+	if eventDate != ""{
+		conditions = append(conditions, "event_date = ?")
+		args = append(args, eventDate)
+	}
+	if workerId != ""{
+		conditions = append(conditions, "worker_id = ?")
+		args = append(args, workerId)
+	}
+	if note != ""{
+		conditions = append(conditions, "note = ?")
+		args = append(args, note)
+	}
+
+	if len(conditions) == 0{
+		query = "SELECT * FROM occupancy ORDER BY event_date"
+		rows, err = db.Query(query)
+	} else{
+		whereClause := strings.Join(conditions, " AND ")
+		query = "SELECT * FROM occupancy WHERE " + whereClause + " ORDER BY event_date"
+		rows,err = db.Query(query, args...)
 	}
 
 	if err != nil{

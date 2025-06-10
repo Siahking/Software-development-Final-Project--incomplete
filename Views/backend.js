@@ -401,15 +401,25 @@ export async function createOccupancy(worker_id,event_date,note){
     })
 }
 
-export async function retrieveOccupancies(column="",value=""){
-    let url
-    if (!column && !value){
-        url = `retrieve-occupancies`
-    }else{
-        url = `retrieve-occupancies/${column}/${value}`
+export async function retrieveOccupancies(event_date,worker_id,note){
+    let url = "retrieve-occupancies"
+    const params = []
+
+    if (event_date){
+        params.push(`event_date=${event_date}`)
+    }
+    if (worker_id){
+        params.push(`worker_id=${worker_id}`)
+    }
+    if (note){
+        params.push(`note=${note}`)
     }
 
-    return apiRequest(url)
+    if (params.length > 0){
+        url += ('?' + params.join("&"))
+    }
+    
+    return apiRequest(url,"GET")
 }
 
 export async function removeOccupancy(id){
@@ -630,9 +640,9 @@ export async function deleteAccount(account_id,username){
     return apiRequest(url,"DELETE")
 }
 
-// async function tester() {
-//     const result = await saveRoster(1,8,2025)
-//     console.log(result)
-// }
+async function tester() {
+    const result = await retrieveOccupancies("2025-12-01","51","Work")
+    console.log(result)
+}
 
-// tester()
+tester()

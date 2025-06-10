@@ -221,3 +221,42 @@ export async function generateCalender(month,year){
         container.appendChild(locationFragment)
     }
 }
+
+export async function adjustEditDiv(event){
+    const editBtn = event.target;
+    const editDivId = editBtn.id.replace("-editBtn","-editDiv")
+
+    const shiftBlock = editBtn.closest(".workerContainer")
+
+    if (!shiftBlock)return;
+
+    let dropDown = shiftBlock.querySelector(".edit-dropdown")
+
+    if (dropDown){
+        if (dropDown.classList.contains("specified-hidden"))dropDown.classList.remove("specified-hidden")
+        else dropDown.classList.add("specified-hidden")
+        return
+    }
+
+    const workerId = shiftBlock.getAttribute("workerid")
+    const workers = await apiFuncs.retrieveWorkerOrLocations("location_id",shiftBlock.getAttribute("locationid"))
+    const occupiedWorkers = await apiFuncs.retrieveOccupancies()
+    const shiftType = shiftBlock.getAttribute("shifttype")
+    const shiftWorkers = []
+
+    for (const worker of workers){
+        if(worker["hours"].includes(shiftType)){
+            if (!worker.id == workerId){
+                shiftWorkers.push(worker)
+            }
+        }
+    }
+
+    console.log(workers)
+
+    return
+
+    dropDown = document.createElement("div")
+    dropDown.classList.add("edit-dropdown")
+    dropDown.setAttribute("id",editDivId)
+}

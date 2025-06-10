@@ -1,4 +1,5 @@
 import * as apiFuncs from "../backend.js"
+import { adjustEditDiv } from "./frontend.js"
 import { objectCheck } from "../general-helper-funcs.js"
 
 export async function retrieveWorkers(day,month,year,workers,daysOff,restrictions,hours){
@@ -49,6 +50,7 @@ export function setDayNightWorker(idStart,tag,worker,shift,time){
     editBtn.innerText = "✏️"
     editBtn.classList.add("editBtn")
     editBtn.setAttribute("id",`${idStart}-${time}-editBtn`)
+    editBtn.addEventListener("click",(event)=>adjustEditDiv(event))
 
     pTag.innerText = ""
     pTag.appendChild(workerName)
@@ -240,4 +242,30 @@ export function setAttributes(tag,tagName,locationId,monthYear,dayNumber){
     tag.setAttribute("monthYear",monthYear)
     tag.setAttribute("name",`${locationId}-workerDetails`)
     tag.setAttribute("id",`${dayNumber}-${locationId}-${tagName}`)
+}
+
+export async function filterWorkers(workerId,locationId,date){
+    const workers = await apiFuncs.retrieveWorkerOrLocations("location_id",locationId)
+    const occupiedWorkers = await apiFuncs.retrieveOccupancies(date,"","")
+    const daysOff = await apiFuncs.getDaysOff("worker_id",workerId)
+    const restriction = await apiFuncs.findPermanentRestrictions("worker_id",workerId)
+    const shiftWorkers = []
+    const workerOptions = []
+    
+    for (const worker of workers){
+        if(worker["hours"].includes(shiftType)){
+            shiftWorkers.push(worker)
+        }
+    }
+
+    for (const worker of shiftWorkers) {
+        const wId = worker.id
+
+        const isOccupied = occupiedWorkers.some(entry=> entry.worker_id === wId)
+        if (isOccupied) continue
+
+        const hasDayOff = daysOff.some(off => off.worker_id === wId)
+    }
+
+
 }

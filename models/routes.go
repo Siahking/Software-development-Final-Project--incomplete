@@ -189,10 +189,6 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.POST("/create-occupancy",func(c *gin.Context) {
 		CreateNewOccupancy(c,db)
 	})
-	//find occuoancy data using other given data 
-	router.GET("/retrieve-occupancies/:column/:value",func(c *gin.Context) {
-		RetrieveOccupancies(c,db)
-	})
 	//retrieve all occupancies
 	router.GET("/retrieve-occupancies",func(c *gin.Context) {
 		RetrieveOccupancies(c,db)
