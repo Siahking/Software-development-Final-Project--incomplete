@@ -1,12 +1,33 @@
 import * as helperFuncs from "./helper-functions.js"
 import { objectCheck } from "../general-helper-funcs.js"
+import * as apiFuncs from "../backend.js"
+
+const rawRestrictions = await apiFuncs.getPermanentRestrictions()
+export let restrictions = {}
+
+if (!objectCheck(rawRestrictions)){  
+    for (const restriction of rawRestrictions){
+        const key = restriction.worker_id
+        const restrictionObject = {
+            id:restriction.id,
+            day_of_week:restriction.day_of_week,
+            start_time:restriction.start_time,
+            end_time:restriction.end_time
+        }
+        if (restrictions[key]){
+            restrictions[key].push(restrictionObject)
+        }else{
+            restrictions[key] = [restrictionObject]
+        }
+    }
+}
 
 export async function assignWorkers({ 
-    dayNumber, month, year, WORKERS,location, daysOff, restrictions,constraints,dayBlock,afternoonBlock,
+    dayNumber, month, year, WORKERS,location, daysOff,constraints,dayBlock,afternoonBlock,
     nightBlock
  }){
     let shift1,shift2
-    const results = await rosterWorkers(dayNumber,month,year,WORKERS,daysOff,restrictions,constraints)
+    const results = await rosterWorkers(dayNumber,month,year,WORKERS,daysOff,constraints)
     if (objectCheck(results) || Object.keys(results).includes("Insufficient Workers")){
         return results
     }
@@ -63,7 +84,7 @@ export async function assignWorkers({
     return {"success":""}
 }
 
-export async function rosterWorkers(day,month,year,workers,daysOff,restrictions,constraints){ 
+async function rosterWorkers(day,month,year,workers,daysOff,constraints){ 
     const shifts = ["8hr","12hr"]
     const locationsError = []
     const dateStr = helperFuncs.dateToString(day,month,year)

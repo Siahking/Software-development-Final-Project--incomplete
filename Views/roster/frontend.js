@@ -1,6 +1,6 @@
 import * as funcs from "./functions.js"
 import * as apiFuncs from "../backend.js"
-import { setLoadingContainer } from "./helper-functions.js"
+import { setLoadingContainer,filterWorkers } from "./helper-functions.js"
 import { objectCheck } from "../general-helper-funcs.js"
 import { saveRoster } from "../saved-rosters/functions.js"
 
@@ -170,7 +170,6 @@ export async function generateCalender(month,year){
                 afternoonBlock:eveningShiftBlock,
                 nightBlock:nightShiftBlock,
                 daysOff:daysOff,
-                restrictions:restrictions,
                 constraints:constraints
             }
 
@@ -230,6 +229,9 @@ export async function adjustEditDiv(event){
     const currentWorkerId = shiftBlock.getAttribute("workerid")
     const locationId = shiftBlock.getAttribute("locationid")
     const dayNumber = shiftBlock.getAttribute("day")
+    const [month,year] = shiftBlock.getAttribute("monthyear").split("-")
+    const day = new Date(`${year}-${month}-${dayNumber}`)
+    const dayName = day.toLocaleDateString("en-US", { weekday: "long" });
 
     const otherWorkersDivs = document.getElementsByClassName(`${dayNumber}-${locationId}-worker`)
     const otherWorkers = []
@@ -263,7 +265,7 @@ export async function adjustEditDiv(event){
         }
     }
 
-    console.log(otherWorkers)
+    filterWorkers(workerId,shiftType,locationId,`${year}-${month}-${dayNumber}`,dayName,otherWorkers)
 
     return
 
