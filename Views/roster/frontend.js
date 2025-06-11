@@ -227,6 +227,17 @@ export async function adjustEditDiv(event){
     const editDivId = editBtn.id.replace("-editBtn","-editDiv")
 
     const shiftBlock = editBtn.closest(".workerContainer")
+    const currentWorkerId = shiftBlock.getAttribute("workerid")
+    const locationId = shiftBlock.getAttribute("locationid")
+    const dayNumber = shiftBlock.getAttribute("day")
+
+    const otherWorkersDivs = document.getElementsByClassName(`${dayNumber}-${locationId}-worker`)
+    const otherWorkers = []
+
+    for (const div of otherWorkersDivs){
+        const workerId = div.getAttribute("workerid")
+        if (workerId && workerId !== currentWorkerId)otherWorkers.push(workerId)
+    }
 
     if (!shiftBlock)return;
 
@@ -252,7 +263,7 @@ export async function adjustEditDiv(event){
         }
     }
 
-    console.log(workers)
+    console.log(otherWorkers)
 
     return
 

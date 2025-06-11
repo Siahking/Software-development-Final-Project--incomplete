@@ -640,9 +640,9 @@ export async function deleteAccount(account_id,username){
     return apiRequest(url,"DELETE")
 }
 
-async function tester() {
-    const result = await retrieveOccupancies("2025-12-01","51","Work")
-    console.log(result)
-}
+// async function tester() {
+//     const result = await retrieveOccupancies("2025-12-01","51","Work")
+//     console.log(result)
+// }
 
-tester()
+// tester()

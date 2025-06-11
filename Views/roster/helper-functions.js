@@ -10,7 +10,7 @@ export async function retrieveWorkers(day,month,year,workers,daysOff,restriction
     for (const worker of workers){
         if (
             excludedWorkers[`${worker.id}`] ||
-            !restrictionCheck(stringDay,worker,hours,restrictions)
+            !restrictionCheck(stringDay,worker.id,hours,restrictions)
         )continue
         if (worker.hours.includes(hours) || worker.hours.includes("24hrs")){
             array.push(worker)
@@ -124,11 +124,11 @@ function getDayName(dateString){
     return date.toLocaleDateString('en-US',options);
 }
 
-function restrictionCheck(day,worker,hours,restrictions){
+function restrictionCheck(day,workerId,hours,restrictions){
     //returns true if a worker has a restriction which obstructs the roster hours, else returns false
     let restrictionStartTime,restrictionEndTime,shiftStart,shiftEnd
-    if (restrictions[worker.id]){
-        const workerRestrictions = restrictions[worker.id]
+    if (restrictions[workerId]){
+        const workerRestrictions = restrictions[workerId]
         for (const restriction of workerRestrictions){
             if (restriction.day_of_week === day){
                 if (!restrictionStartTime && !restrictionEndTime){
@@ -237,6 +237,7 @@ export function setLoadingContainer(){
 }
 
 export function setAttributes(tag,tagName,locationId,monthYear,dayNumber){
+    tag.classList.add(`${dayNumber}-${locationId}-worker`)
     tag.setAttribute("locationId",locationId)
     tag.setAttribute("day",dayNumber)
     tag.setAttribute("monthYear",monthYear)
@@ -244,13 +245,17 @@ export function setAttributes(tag,tagName,locationId,monthYear,dayNumber){
     tag.setAttribute("id",`${dayNumber}-${locationId}-${tagName}`)
 }
 
-export async function filterWorkers(workerId,locationId,date){
+export async function filterWorkers(workerId,locationId,date,otherWorkers){
     const workers = await apiFuncs.retrieveWorkerOrLocations("location_id",locationId)
     const occupiedWorkers = await apiFuncs.retrieveOccupancies(date,"","")
     const daysOff = await apiFuncs.getDaysOff("worker_id",workerId)
-    const restriction = await apiFuncs.findPermanentRestrictions("worker_id",workerId)
+    const excludedWorkers = await dayOffCheck(day,month,year,daysOff)
+    const constraints = await apiFuncs.getConstraints(workerId)
+    const results = await Promise.all(constraints)
     const shiftWorkers = []
     const workerOptions = []
+
+    console.log(constraints)
     
     for (const worker of workers){
         if(worker["hours"].includes(shiftType)){
@@ -260,11 +265,16 @@ export async function filterWorkers(workerId,locationId,date){
 
     for (const worker of shiftWorkers) {
         const wId = worker.id
+        
+        if (excludedWorkers[`${workerId}`]) continue
+
+        const isRestricted = restrictionCheck(day,workerId,hours,restrictions)
+        if (isRestricted)continue
 
         const isOccupied = occupiedWorkers.some(entry=> entry.worker_id === wId)
         if (isOccupied) continue
 
-        const hasDayOff = daysOff.some(off => off.worker_id === wId)
+
     }
 
 
