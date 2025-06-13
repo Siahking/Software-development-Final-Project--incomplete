@@ -89,11 +89,11 @@ async function rosterWorkers(day,month,year,workers,daysOff,constraints){
     const locationsError = []
     const dateStr = helperFuncs.dateToString(day,month,year)
     const [sixToSixDayArray,sixToSixNightArray,sixToTwoArray,twoToTenArray,tenToSixArray] = await Promise.all([
-        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-6pm"),
-        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6pm-6am"),
-        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"6am-2pm"),
-        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"2pm-10pm"),
-        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,restrictions,"10pm-6am")
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,"6am-6pm"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,"6pm-6am"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,"6am-2pm"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,"2pm-10pm"),
+        helperFuncs.retrieveWorkers(day,month,year,workers,daysOff,"10pm-6am")
     ])
     let shiftOne,shiftTwo
 
@@ -104,6 +104,7 @@ async function rosterWorkers(day,month,year,workers,daysOff,constraints){
         helperFuncs.checkShifts("2pm-10pm",twoToTenArray),
         helperFuncs.checkShifts("10pm-6am",tenToSixArray)
     ]
+    
 
     for (const check of checkArray){
         if(objectCheck(check)){

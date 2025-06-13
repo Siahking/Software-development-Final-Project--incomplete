@@ -212,6 +212,7 @@ export function dateToString(day,month,year){
 }
 
 export async function setWorkerForShift(workerArray,date,shiftWorkersArray,constraints){
+    let count = 1
     while(true){
         const worker = workerArray.pop()
         const result = await apiFuncs.createOccupancy(worker.id,date,"Work") 
@@ -219,6 +220,7 @@ export async function setWorkerForShift(workerArray,date,shiftWorkersArray,const
         if (!objectCheck(result)){
             return worker
         }
+        count++
     }
 }
 
@@ -250,11 +252,10 @@ export async function filterWorkers(workerId,shiftType,locationId,date,dayName,o
 
     const [year,month,day] = date.split('-')
 
-    const [workers,occupiedWorkers,daysOff,restrictions,constraints] = await Promise.all([
+    const [workers,daysOff,constraints] = await Promise.all([
         apiFuncs.retrieveWorkerOrLocations("location_id",locationId),
-        apiFuncs.retrieveOccupancies(date,"",""),
         apiFuncs.getDaysOff("worker_id",workerId),
-        apiFuncs.getConstraints(workerId)
+        apiFuncs.getConstraints("",workerId)
     ])
 
     let excludedWorkers = []
@@ -275,29 +276,27 @@ export async function filterWorkers(workerId,shiftType,locationId,date,dayName,o
 
     for (const worker of shiftWorkers) {
         const wId = worker.id
-        
+
+        if (wId == workerId)continue
         if (excludedWorkers[`${workerId}`]) continue
 
         const isRestricted = restrictionCheck(dayName,workerId,shiftType)
-        if (isRestricted)continue
-
-        const isOccupied = occupiedWorkers.some(entry=> entry.worker_id === wId)
-        if (isOccupied) continue
+        if (!isRestricted)continue
 
         workerOptions.push(worker)
     }
 
-    console.log(workerOptions)
+    return validateConstraint(constraints,workerOptions,otherWorkers)
 
 }
 
 function validateConstraint(constraints,workerOptions,otherWorkers){
     if (constraints.length === 0)return  workerOptions
     const validCandidates = []
-    for (const candidate of otherWorkers){
+    for (const candidate of workerOptions){
         let hasConstraint = false;
 
-        for (const worker of workerOptions){
+        for (const worker of otherWorkers){
             for (const constraint of constraints){
                 const worker1 = constraint.worker1_id
                 const worker2 = constraint.worker2_id
@@ -317,5 +316,5 @@ function validateConstraint(constraints,workerOptions,otherWorkers){
         if (!hasConstraint) validCandidates.push(candidate)
     }
 
-    console.log(validCandidates)
+    return validCandidates
 }
