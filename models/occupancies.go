@@ -161,12 +161,20 @@ func RemoveOccupancy(c *gin.Context, db *sql.DB) {
 
 //delete all stored records from the occupancy table
 func EmptyOccupancies(c *gin.Context, db *sql.DB){
-	query := "DELETE FROM occupancy"
+	query1 := `DELETE FROM occupancy`
 
-	_, err := db.Exec(query)
+	_, err1 := db.Exec(query1)
 
-	if err != nil{
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in clearing table\n"+err.Error()})
+	if err1 != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in clearing table\n"+err1.Error()})
+		return
+	}
+
+	query2 := "ALTER TABLE occupancy AUTO_INCREMENT = 1"
+	_,err2 := db.Exec(query2)
+
+	if err2 != nil{
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error while reseting autoincrement\n"+err2.Error()})
 		return
 	}
 	c.JSON(http.StatusOK,gin.H{"message":"Table cleared successfully"})

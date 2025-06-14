@@ -225,6 +225,13 @@ export async function adjustEditDiv(event){
     const editBtn = event.target;
     const editDivId = editBtn.id.replace("-editBtn","-editDiv")
 
+    let dropDownContainer = document.getElementById(editDivId)
+    if (dropDownContainer){
+        dropDownContainer.parentNode.removeChild(dropDownContainer)
+        return
+    }
+
+    //gather relevant data to display worker options
     const shiftBlock = editBtn.closest(".workerContainer")
     const currentWorkerId = shiftBlock.getAttribute("workerid")
     const locationId = shiftBlock.getAttribute("locationid")
@@ -243,17 +250,8 @@ export async function adjustEditDiv(event){
 
     if (!shiftBlock)return;
 
-    let dropDown = shiftBlock.querySelector(".edit-dropdown")
-
-    if (dropDown){
-        if (dropDown.classList.contains("specified-hidden"))dropDown.classList.remove("specified-hidden")
-        else dropDown.classList.add("specified-hidden")
-        return
-    }
-
     const workerId = shiftBlock.getAttribute("workerid")
     const workers = await apiFuncs.retrieveWorkerOrLocations("location_id",shiftBlock.getAttribute("locationid"))
-    const occupiedWorkers = await apiFuncs.retrieveOccupancies()
     const shiftType = shiftBlock.getAttribute("shifttype")
     const shiftWorkers = []
 
@@ -265,11 +263,45 @@ export async function adjustEditDiv(event){
         }
     }
 
-    filterWorkers(workerId,shiftType,locationId,`${year}-${month}-${dayNumber}`,dayName,otherWorkers)
+    //retrieve available workers
+    const availableWorkers = filterWorkers(workerId,shiftType,locationId,`${year}-${month}-${dayNumber}`,dayName,otherWorkers)
 
-    return
+    //create container for displaying workers
+    dropDownContainer = document.createElement("div")
+    dropDownContainer.setAttribute("id",editDivId)
+    dropDownContainer.classList.add("dropDownContainer")
 
-    dropDown = document.createElement("div")
-    dropDown.classList.add("edit-dropdown")
-    dropDown.setAttribute("id",editDivId)
+    const workerOptionsLabel = document.createElement("label")
+    workerOptionsLabel.innerText = "Select Worker to exchange with:"
+    workerOptionsLabel.setAttribute("for","workerSelect")
+    dropDownContainer.appendChild(workerOptionsLabel)
+
+    const workerSelect = document.createElement("select")
+    workerSelect.id = "worker-select"
+    dropDownContainer.appendChild(workerSelect)
+
+    const shiftSelect = document.createElement("select")
+    shiftSelect.id = "shift-select"
+    shiftSelect.innerHTML = `
+        <option value="6am-6pm">6am-6pm</option>
+        <option value="6am-2pm">6am-2pm</option>
+        <option value="2pm-10pm">2pm-10pm</option>
+        <option value="10pm-6am">10pm-6am</option>
+        <option value="6pm-6am">6pm-6am</option>
+    `
+    dropDownContainer.appendChild(shiftSelect)
+
+    const submitBtn = document.createElement("button")
+    submitBtn.textContent = "Done"
+    dropDownContainer.appendChild(document.createElement("br"))
+    dropDownContainer.appendChild(submitBtn)
+
+    const rect = editBtn.getBoundingClientRect();
+    dropDownContainer.style.top = `${window.scrollY + rect.bottom + 5}px`;
+    dropDownContainer.style.left = `${window.scrollX + rect.left}px`;
+    dropDownContainer.classList.remove("hidden");
+
+    document.body.appendChild(dropDownContainer)
+
+    console.log("finished")
 }

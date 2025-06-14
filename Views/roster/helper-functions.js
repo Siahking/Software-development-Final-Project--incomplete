@@ -212,15 +212,13 @@ export function dateToString(day,month,year){
 }
 
 export async function setWorkerForShift(workerArray,date,shiftWorkersArray,constraints){
-    let count = 1
     while(true){
         const worker = workerArray.pop()
         const result = await apiFuncs.createOccupancy(worker.id,date,"Work") 
-        setWorkerToUnavailable(worker.id,shiftWorkersArray,constraints)
         if (!objectCheck(result)){
+            setWorkerToUnavailable(worker.id,shiftWorkersArray,constraints)
             return worker
         }
-        count++
     }
 }
 
@@ -278,7 +276,7 @@ export async function filterWorkers(workerId,shiftType,locationId,date,dayName,o
         const wId = worker.id
 
         if (wId == workerId)continue
-        if (excludedWorkers[`${workerId}`]) continue
+        if (excludedWorkers[`${workerId}`])continue
 
         const isRestricted = restrictionCheck(dayName,workerId,shiftType)
         if (!isRestricted)continue

@@ -143,3 +143,11 @@ span{
     display: flex;
     flex-direction: row;
 }
+
+.dropDownContainer{
+    position: absolute;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background: #fff;
+    z-index: 1000;
+}
