@@ -236,6 +236,7 @@ export async function adjustEditDiv(event){
     const currentWorkerId = shiftBlock.getAttribute("workerid")
     const locationId = shiftBlock.getAttribute("locationid")
     const dayNumber = shiftBlock.getAttribute("day")
+    const shiftType = shiftBlock.getAttribute("shifttype")
     const [month,year] = shiftBlock.getAttribute("monthyear").split("-")
     const day = new Date(`${year}-${month}-${dayNumber}`)
     const dayName = day.toLocaleDateString("en-US", { weekday: "long" });
@@ -250,58 +251,139 @@ export async function adjustEditDiv(event){
 
     if (!shiftBlock)return;
 
-    const workerId = shiftBlock.getAttribute("workerid")
     const workers = await apiFuncs.retrieveWorkerOrLocations("location_id",shiftBlock.getAttribute("locationid"))
-    const shiftType = shiftBlock.getAttribute("shifttype")
-    const shiftWorkers = []
 
-    for (const worker of workers){
-        if(worker["hours"].includes(shiftType)){
-            if (!worker.id == workerId){
-                shiftWorkers.push(worker)
-            }
-        }
-    }
-
-    //retrieve available workers
-    const availableWorkers = filterWorkers(workerId,shiftType,locationId,`${year}-${month}-${dayNumber}`,dayName,otherWorkers)
-
-    //create container for displaying workers
     dropDownContainer = document.createElement("div")
     dropDownContainer.setAttribute("id",editDivId)
     dropDownContainer.classList.add("dropDownContainer")
 
-    const workerOptionsLabel = document.createElement("label")
-    workerOptionsLabel.innerText = "Select Worker to exchange with:"
-    workerOptionsLabel.setAttribute("for","workerSelect")
-    dropDownContainer.appendChild(workerOptionsLabel)
+    const paramsObject = {
+        workerId:currentWorkerId,
+        shiftType:shiftType,
+        locationId:locationId,
+        date:`${year}-${month}-${dayNumber}`,
+        dayName:dayName,
+        otherWorkers:otherWorkers,
+        dropDownContainer:dropDownContainer
+    }
 
-    const workerSelect = document.createElement("select")
-    workerSelect.id = "worker-select"
-    dropDownContainer.appendChild(workerSelect)
+    selectShift(paramsObject)
+
+    // //retrieve available workers
+    // const availableWorkers = await filterWorkers(currentWorkerId,shiftType,locationId,`${year}-${month}-${dayNumber}`,dayName,otherWorkers)
+    // console.log(availableWorkers)
+    // const workerOptions = []
+    
+    // for (const worker of availableWorkers){
+    //     console.log(worker)
+    // }
+
+    // //create container for displaying workers
+
+    // const workerOptionsLabel = document.createElement("label")
+    // workerOptionsLabel.innerText = "Select Worker to exchange with:"
+    // workerOptionsLabel.setAttribute("for","workerSelect")
+    // dropDownContainer.appendChild(workerOptionsLabel)
+
+    // const workerSelect = document.createElement("select")
+    // workerSelect.id = "worker-select"
+    // dropDownContainer.appendChild(workerSelect)
+
+    // const submitBtn = document.createElement("button")
+    // submitBtn.textContent = "Done"
+    // dropDownContainer.appendChild(document.createElement("br"))
+    // dropDownContainer.appendChild(submitBtn)
+
+    const rect = editBtn.getBoundingClientRect();
+    dropDownContainer.style.top = `${window.scrollY + rect.bottom + 5}px`;
+    dropDownContainer.style.left = `${window.scrollX + rect.left}px`;
+
+    document.body.appendChild(dropDownContainer)
+
+    console.log("finished")
+}
+
+function selectShift(paramObject){
+
+    //gather relevant data to display worker options
 
     const shiftSelect = document.createElement("select")
     shiftSelect.id = "shift-select"
-    shiftSelect.innerHTML = `
-        <option value="6am-6pm">6am-6pm</option>
-        <option value="6am-2pm">6am-2pm</option>
-        <option value="2pm-10pm">2pm-10pm</option>
-        <option value="10pm-6am">10pm-6am</option>
-        <option value="6pm-6am">6pm-6am</option>
-    `
-    dropDownContainer.appendChild(shiftSelect)
+
+    // Add a real placeholder
+    const placeholder = document.createElement("option");
+    placeholder.textContent = "Select a new Shift Option";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.value = "";
+    shiftSelect.appendChild(placeholder);
+
+    // Build options
+    const options = {
+        "6am-6pm": ["6am-6pm", "6am-2pm"],
+        "6am-2pm": ["6am-6pm", "6am-2pm"],
+        "2pm-10pm": ["2pm-10pm"],
+        "10pm-6am": ["10pm-6am", "6pm-6am"],
+        "6pm-6am": ["10pm-6am", "6pm-6am"],
+    };
+
+    (options[paramObject.shiftType] || []).forEach(shift => {
+        const opt = document.createElement("option");
+        opt.value = shift;
+        opt.textContent = shift;
+        shiftSelect.appendChild(opt);
+    });
+
+    // Listen for selection
+    shiftSelect.addEventListener("change",async function (event) {
+        const selected = event.target.value;
+        paramObject["selectedShift"] = selected
+
+        await selectWorker(paramObject)
+    });
+
+    paramObject.dropDownContainer.appendChild(shiftSelect)
+}
+
+async function selectWorker(paramObject){
+    const dayName = paramObject.dayName
+    const date = paramObject.date
+    const locationId = paramObject.locationId
+    const shiftType = paramObject.seletedShift
+    const workerId = paramObject.workerId
+    const otherWorkers = paramObject.otherWorkers
+    const dropDownContainer = paramObject.dropDownContainer
+
+    let workerSelect = document.getElementById("worker-select")
+    if (workerSelect){
+        workerSelect.parentNode.removeChild(workerSelect)
+    }
+
+    const availableWorkers = await filterWorkers(workerId,shiftType,locationId,date,dayName,otherWorkers)
+    console.log([...availableWorkers])
+
+    workerSelect = document.createElement("select")
+    workerSelect.id = "worker-select"
+
+    const placeholder = document.createElement("option");
+    placeholder.textContent = "Select Worker to exchange with:";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.value = "";
+    workerSelect.appendChild(placeholder);
+
+    for (const worker of availableWorkers){
+        const option = document.createElement("option")
+        option.value = worker.id
+        option.textContent = `${worker.first_name[0]}.${worker.last_name}`
+        console.log(option.textContent)
+        workerSelect.appendChild(option)
+    }
+
+    dropDownContainer.appendChild(workerSelect)
 
     const submitBtn = document.createElement("button")
     submitBtn.textContent = "Done"
     dropDownContainer.appendChild(document.createElement("br"))
     dropDownContainer.appendChild(submitBtn)
-
-    const rect = editBtn.getBoundingClientRect();
-    dropDownContainer.style.top = `${window.scrollY + rect.bottom + 5}px`;
-    dropDownContainer.style.left = `${window.scrollX + rect.left}px`;
-    dropDownContainer.classList.remove("hidden");
-
-    document.body.appendChild(dropDownContainer)
-
-    console.log("finished")
 }
