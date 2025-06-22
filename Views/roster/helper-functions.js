@@ -316,3 +316,50 @@ function validateConstraint(constraints,workerOptions,otherWorkers){
 
     return validCandidates
 }
+
+export async function setNewDayWorker(oldWorkerContainer,shift,newWorker,container){
+    const oldWorkerShift = oldWorker.getAttribute("shifttype")
+    const locationId = oldWorker.getAttribute("locationid")
+    const [month,year] = shiftBlock.getAttribute("monthyear").split("-")
+    const dayNumber = oldWorkerContainer.getAttribute("day")
+    const date = `${year}-${month}-${dayNumber}`
+    const day = new Date(date)
+    const dayName = day.toLocaleDateString("en-US", { weekday: "long" });
+
+    const otherWorkersDivs = document.getElementsByClassName(`${dayNumber}-${locationId}-worker`)
+    const otherWorkers = []
+
+    for (const div of otherWorkersDivs){
+        const workerId = div.getAttribute("workerid")
+        if (workerId && workerId !== currentWorkerId)otherWorkers.push(workerId)
+    }
+
+    let availableWorkers = await filterWorkers(newWorker.id,shift,locationId,date,dayName,otherWorkers)
+    if (oldWorkerShift === "6am-2pm"){
+        if (shift === "6am-2pm"){
+            
+        }else{
+
+        }
+    }else{
+        if (shift === "6am-2pm"){
+            
+        }else{
+
+        }
+    }
+}
+
+export function setNewAfternoonWorker(oldWorker,newWorker,container){
+    
+}
+
+export function setNewNightWorker(oldWorker,newWorker,container){
+    const newWorkerShift = newWorker.shifttype
+    if (newWorkerShift === "10pm-6am"){
+
+    }else{
+
+    }
+}
+

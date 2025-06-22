@@ -174,3 +174,15 @@ async function rosterWorkers(day,month,year,workers,daysOff,constraints){
     }
     return {"success":[shiftOne,shiftTwo]}
 }
+
+export function resetShifts(newWorker,oldWorker,container){
+    const oldWorkerShift = oldWorker.shifttype
+
+    if (oldWorkerShift === "6am-2pm"){
+        helperFuncs.setNewDayWorker(oldWorker,newWorker,container)
+    }else if (oldWorker === "2pm-10pm"){
+        helperFuncs.setNewAfternoonWorker(oldWorker,newWorker,container)
+    }else{
+        helperFuncs.setNewNightWorker(oldWorker,newWorker,container)
+    }
+}
