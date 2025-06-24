@@ -234,14 +234,14 @@ export async function adjustEditDiv(event){
     }
 
     //gather relevant data to display worker options
-    const shiftBlock = editBtn.closest(".workerContainer")
-    const currentWorkerId = shiftBlock.getAttribute("workerid")
-    const locationId = shiftBlock.getAttribute("locationid")
-    const dayNumber = shiftBlock.getAttribute("day")
-    const shiftType = shiftBlock.getAttribute("shifttype")
-    const [month,year] = shiftBlock.getAttribute("monthyear").split("-")
-    const day = new Date(`${year}-${month}-${dayNumber}`)
-    const dayName = day.toLocaleDateString("en-US", { weekday: "long" });
+    const oldWorkerContainer = editBtn.closest(".calendar-item")
+    const oldWorker = editBtn.closest(".workerContainer")
+    const currentWorkerId = oldWorker.getAttribute("workerid")
+    const locationId = oldWorker.getAttribute("locationid")
+    const dayNumber = oldWorker.getAttribute("day")
+    const shiftType = oldWorker.getAttribute("shifttype")
+    const [month,year] = oldWorker.getAttribute("monthyear").split("-")
+    const date = `${year}-${month}-${dayNumber}`
 
     const otherWorkersDivs = document.getElementsByClassName(`${dayNumber}-${locationId}-worker`)
     const otherWorkers = []
@@ -251,18 +251,19 @@ export async function adjustEditDiv(event){
         if (workerId && workerId !== currentWorkerId)otherWorkers.push(workerId)
     }
 
-    if (!shiftBlock)return;
+    if (!oldWorker)return;
 
     const dropDownContainer = document.createElement("div")
     dropDownContainer.setAttribute("id",editDivId)
     dropDownContainer.classList.add("dropDownContainer")
 
     const paramsObject = {
+        oldWorker:oldWorker,
+        oldWorkerContainer:oldWorkerContainer,
         workerId:currentWorkerId,
         shiftType:shiftType,
         locationId:locationId,
-        date:`${year}-${month}-${dayNumber}`,
-        dayName:dayName,
+        date:date,
         otherWorkers:otherWorkers,
         dropDownContainer:dropDownContainer
     }
@@ -277,7 +278,6 @@ export async function adjustEditDiv(event){
 }
 
 function selectShift(paramObject){
-
     //gather relevant data to display worker options
 
     const shiftSelect = document.createElement("select")
@@ -319,20 +319,20 @@ function selectShift(paramObject){
 }
 
 async function selectWorker(paramObject){
-    const dayName = paramObject.dayName
     const date = paramObject.date
     const locationId = paramObject.locationId
-    const shiftType = paramObject.shiftType
+    const selectedShift = paramObject.selectedShift
     const workerId = paramObject.workerId
     const otherWorkers = paramObject.otherWorkers
     const dropDownContainer = paramObject.dropDownContainer
+    const oldWorker = paramObject.oldWorker
 
     let workerSelect = document.getElementById("worker-select")
     if (workerSelect){
         workerSelect.parentNode.removeChild(workerSelect)
     }
 
-    const availableWorkers = await filterWorkers(workerId,shiftType,locationId,date,dayName,otherWorkers)
+    const availableWorkers = await filterWorkers(workerId,selectedShift,locationId,date,otherWorkers)
 
     workerSelect = document.createElement("select")
     workerSelect.id = "worker-select"
@@ -367,8 +367,12 @@ async function selectWorker(paramObject){
         submitBtn = document.createElement("button")
         submitBtn.textContent = "Done"
         submitBtn.setAttribute("id","submitBtn")
-        submitBtn.addEventListener("click",()=>{
-            resetShifts()
+        submitBtn.addEventListener("click",async ()=>{
+            const selectedWorker = document.getElementById("worker-select").value
+            const newWorker = await apiFuncs.findWorker("","","","",selectedWorker)
+            funcs.resetShifts(newWorker[0],selectedShift,oldWorker)
+            paramObject.dropDownContainer.parentNode.removeChild(paramObject.dropDownContainer)
+
         })
         dropDownContainer.appendChild(document.createElement("br"))
         dropDownContainer.appendChild(submitBtn)
