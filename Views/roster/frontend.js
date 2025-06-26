@@ -148,6 +148,7 @@ export async function generateCalender(month,year){
             // Create a span for the day number (top-right corner)
             const dayNumber = document.createElement("span");
             dayNumber.className = "day-number";
+            dayNumber.setAttribute("id",`day-number-`+day)
             dayNumber.textContent = day;
 
             // Create divs for shift blocks
@@ -326,13 +327,20 @@ async function selectWorker(paramObject){
     const otherWorkers = paramObject.otherWorkers
     const dropDownContainer = paramObject.dropDownContainer
     const oldWorker = paramObject.oldWorker
+    let coworker
+    const oldWorkerDivId = oldWorker.getAttribute("id")
+    if (oldWorkerDivId[oldWorkerDivId.length-1] === "1"){
+        coworker = document.getElementById(oldWorkerDivId.slice(0,-1) + "2")
+    }else{
+        coworker = document.getElementById(oldWorkerDivId.slice(0,-1) + "1")
+    }
 
     let workerSelect = document.getElementById("worker-select")
     if (workerSelect){
         workerSelect.parentNode.removeChild(workerSelect)
     }
 
-    const availableWorkers = await filterWorkers(workerId,selectedShift,locationId,date,otherWorkers)
+    const availableWorkers = await filterWorkers(workerId,selectedShift,locationId,date,otherWorkers,coworker)
 
     workerSelect = document.createElement("select")
     workerSelect.id = "worker-select"
