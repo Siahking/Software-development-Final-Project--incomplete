@@ -185,7 +185,7 @@ export function resetShifts(newWorker,newWorkerShift,oldWorker){
 
     if (oldWorkerShift === "6am-2pm" || oldWorkerShift === "6am-6pm"){
         helperFuncs.setNewDayWorker(newWorkerShift,newWorker,oldWorker)
-    }else if (oldWorker === "2pm-10pm"){
+    }else if (oldWorkerShift === "2pm-10pm"){
         helperFuncs.setNewAfternoonWorker(newWorker,oldWorker)
     }else{
         helperFuncs.setNewNightWorker(newWorkerShift,newWorker,oldWorker)
