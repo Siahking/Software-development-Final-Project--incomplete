@@ -44,17 +44,21 @@ export async function assignWorkers({
     let nightWorker1 = document.createElement("div")
     let nightWorker2 = document.createElement("div")
     
-    dayWorker1 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,dayWorker1,"dayWorker",shift1,"day")
-    dayWorker2 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,dayWorker2,"dayWorker",shift2,"day")
+    dayWorker1 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}-1`,dayWorker1,"dayWorker",shift1,"day")
+    dayWorker2 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}-2`,dayWorker2,"dayWorker",shift2,"day")
     //manually sets afternoon workers if the shifts ends up being 8 hr shifts
     if (shift1["afternoonWorker"]){
-        afternoonWorker1 = helperFuncs.setAfternoonWorker(`${location.location}-${dayNumber}`,afternoonWorker1,shift1)
+        afternoonWorker1 = helperFuncs.setAfternoonWorker(`${location.location}-${dayNumber}-1`,afternoonWorker1,shift1)
+    }else{
+        afternoonWorker1 = null
     }
     if (shift2["afternoonWorker"]){
-        afternoonWorker2 = helperFuncs.setAfternoonWorker(`${location.location}-${dayNumber}`,afternoonWorker2,shift2)
+        afternoonWorker2 = helperFuncs.setAfternoonWorker(`${location.location}-${dayNumber}-2`,afternoonWorker2,shift2)
+    }else{
+        afternoonWorker2 = null
     }
-    nightWorker1 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,nightWorker1,"nightWorker",shift1,"night")
-    nightWorker2 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}`,nightWorker2,"nightWorker",shift2,"night")
+    nightWorker1 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}-1`,nightWorker1,"nightWorker",shift1,"night")
+    nightWorker2 = helperFuncs.setDayNightWorker(`${location.location}-${dayNumber}-2`,nightWorker2,"nightWorker",shift2,"night")
 
     const tempArray = new Map([
         [dayWorker1,"dayWorker1"],
@@ -74,6 +78,7 @@ export async function assignWorkers({
     }
 
     for (const tag of [afternoonWorker1,afternoonWorker2]){
+        if(!tag)continue
         afternoonBlock.appendChild(tag)
     }
 

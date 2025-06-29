@@ -27,7 +27,6 @@ export function setDayNightWorker(idStart,tag,worker,shift,time){
     const shiftType = document.createElement("span")
     shiftType.classList.add ("shiftType")
     workerName.classList.add("workerInfo")
-    const editBtn = document.createElement("button")
     workerName.innerText = `${shift[worker].first_name[0]}.${shift[worker].last_name}`
     tag.setAttribute("workerId",shift[worker].id)
     if (time === "day"){
@@ -50,15 +49,10 @@ export function setDayNightWorker(idStart,tag,worker,shift,time){
     workerName.setAttribute("id",`${idStart}-${time}-worker`)
     shiftType.setAttribute("id",`${idStart}-${time}-shift`)
 
-    editBtn.innerText = "✏️"
-    editBtn.classList.add("editBtn")
-    editBtn.setAttribute("id",`${idStart}-${time}-editBtn`)
-    editBtn.addEventListener("click",(event)=>adjustEditDiv(event))
-
     pTag.appendChild(workerName)
     pTag.appendChild(shiftType)
     tag.appendChild(pTag)
-    tag.appendChild(editBtn)
+    setupEditBtn(`${idStart}-${time}-editBtn`,tag)
     tag.classList.add("workerContainer")
     return tag
 }
@@ -69,7 +63,6 @@ export function setAfternoonWorker(idStart,tag,shift){
     const shiftType = document.createElement("span")
     shiftType.classList.add ("shiftType")
     workerName.classList.add("workerInfo")
-    const editBtn = document.createElement("button")
     workerName.innerText = `${shift.afternoonWorker.first_name[0]}.${shift.afternoonWorker.last_name}`
     shiftType.innerText = "(2pm-10pm)"
     tag.setAttribute("workerId",shift.afternoonWorker.id)
@@ -78,15 +71,11 @@ export function setAfternoonWorker(idStart,tag,shift){
     workerName.setAttribute("id",`${idStart}-afternoon-worker`)
     shiftType.setAttribute("id",`${idStart}-afternoon-shift`)
 
-    editBtn.innerText = "✏️"
-    editBtn.classList.add("editBtn")
-    editBtn.setAttribute("id",`${idStart}-afternoon-editBtn`)
-
     pTag.innerText = ""
     pTag.appendChild(workerName)
     pTag.appendChild(shiftType)
     tag.appendChild(pTag)
-    tag.appendChild(editBtn)
+    setupEditBtn(`${idStart}-afternoon-editBtn`,tag)
     tag.classList.add("workerContainer")
     return tag
 }
@@ -241,12 +230,23 @@ export function setLoadingContainer(){
 }
 
 export function setAttributes(tag,tagName,locationId,monthYear,dayNumber){
+    if (!tag)return
     tag.classList.add(`${dayNumber}-${locationId}-worker`)
     tag.setAttribute("locationId",locationId)
     tag.setAttribute("day",dayNumber)
     tag.setAttribute("monthYear",monthYear)
     tag.setAttribute("name",`${locationId}-workerDetails`)
     tag.setAttribute("id",`${dayNumber}-${locationId}-${tagName}`)
+}
+
+function setupEditBtn(id,container){
+    const editBtn = document.createElement("button")
+    editBtn.innerText = "✏️"
+    editBtn.classList.add("editBtn")
+    editBtn.setAttribute("id",id)
+    editBtn.addEventListener("click",(event)=>adjustEditDiv(event))
+    
+    container.appendChild(editBtn)
 }
 
 export async function filterWorkers(workerId,shiftType,locationId,date,otherWorkers,coworker){
@@ -290,7 +290,7 @@ export async function filterWorkers(workerId,shiftType,locationId,date,otherWork
     return validateConstraint(constraints,workerOptions,otherWorkers)
 }
 
-export async function filterGeneralShiftWorkers(shiftType,locationId,date,otherWorkers) {
+export async function filterGeneralShiftWorkers(shiftType,locationId,date,otherWorkers,coworkerId=null) {
     const [year, month, day] = date.split("-")
 
     const workers = await apiFuncs.retrieveWorkerOrLocations("location_id", locationId)
@@ -298,9 +298,17 @@ export async function filterGeneralShiftWorkers(shiftType,locationId,date,otherW
     const availableWorkers = []
 
     for (const worker of workers){
+        console.log("new Worker")
+        console.log("Comparing:", worker.id, typeof worker.id, "vs", coworkerId, typeof coworkerId);
+        console.log(worker)
+        if (worker.id === coworkerId){
+            console.log("blocked")
+            continue
+        }
         if (!worker["hours"].includes(shiftType))continue
+        
 
-        const daysOff = await apiFuncs.getDaysOff("worker_id",worker)
+        const daysOff = await apiFuncs.getDaysOff("worker_id",worker.id)
         let isOff = false
         if (!objectCheck(daysOff)){
             const excluded = await dayOffCheck(day, month, year, daysOff)
@@ -308,8 +316,13 @@ export async function filterGeneralShiftWorkers(shiftType,locationId,date,otherW
         }
         if (isOff) continue
 
+        console.log(worker)
+
         shiftWorkers.push(worker)
+        console.log("added")
     }
+
+    console.log(shiftWorkers)
 
     for (const option of shiftWorkers){
         const workerContraints = await apiFuncs.getConstraints(option.id)
@@ -365,9 +378,9 @@ function validateConstraint(constraints,workerOptions,otherWorkers){
 }
 
 export async function setNewDayWorker(newWorkerShift,newWorker,oldWorker){
-    console.log("passed here")
     const locationId = oldWorker.getAttribute("locationid")
-    const locationName = await apiFuncs.findLocation("id",locationId)
+    const locationResult = await apiFuncs.findLocation("id",locationId)
+    const locationName = locationResult[0].location
     const [month,year] = oldWorker.getAttribute("monthyear").split("-")
     const dayNumber = oldWorker.getAttribute("day")
     const date = `${year}-${month}-${dayNumber}`
@@ -401,6 +414,8 @@ export async function setNewDayWorker(newWorkerShift,newWorker,oldWorker){
 
             const afternoonWorkerShift = document.getElementById(afternoonWorkerId)
             const nightWorkerShift = document.getElementById(nightWorkerId)
+            const nightCoworker = nightWorkerShift.closest(".workerContainer")
+            const nightCoworkerId = parseInt(nightCoworker.getAttribute("workerid"))
 
             workerSpan.innerText = `${newWorker.first_name[0]}.${newWorker.last_name}`
             shiftSpan.innerText = `(${newWorkerShift})`
@@ -410,7 +425,7 @@ export async function setNewDayWorker(newWorkerShift,newWorker,oldWorker){
             const nightWorkerSpan = nightWorkerShift.getElementsByClassName("workerInfo")[0]
             const nightShiftSpan = nightWorkerShift.getElementsByClassName("shiftType")[0]
 
-            let availableWorkers = await filterGeneralShiftWorkers(newWorkerShift,locationId,date,otherWorkers)
+            let availableWorkers = await filterGeneralShiftWorkers(newWorkerShift,locationId,date,otherWorkers,nightCoworkerId)
             const randomIndex = Math.floor(Math.random() * availableWorkers.length)       
             const newNightWorker = availableWorkers[randomIndex]
             
@@ -419,25 +434,43 @@ export async function setNewDayWorker(newWorkerShift,newWorker,oldWorker){
         }
     }else{ //old worker shift is 6am-6pm
         if (newWorkerShift === "6am-6pm"){
-            workerSpan.innerText = `${newWorker.first_name[0]}.${newWorker.lastname}`
+            workerSpan.innerText = `${newWorker.first_name[0]}.${newWorker.last_name}`
             shiftSpan.innerText = `(${newWorkerShift})`
         }else{
+            workerSpan.innerText = `${newWorker.first_name[0]}.${newWorker.last_name}`
+            shiftSpan.innerText = `(${newWorkerShift})`
+
+            let buttonId
             const oldWorkerId = oldWorker.getAttribute("id")
-            
+            let afternoonCoworker = null
             const idArray = oldWorkerId.split("-")
             const afternoonWorkerId = `${idArray[0]}-${idArray[1]}-afternoonWorker${oldWorkerId[oldWorkerId.length-1]}`
             const nightWorkerId = `${idArray[0]}-${idArray[1]}-nightWorker${oldWorkerId[oldWorkerId.length-1]}`
+            const dayNumberSpan = document.getElementById(`day-number-${dayNumber}`)
+            const shiftsContainer = dayNumberSpan.closest(".calendar-item")
+            const afternoonShiftContainer = shiftsContainer.getElementsByClassName("shift-2")[0]
+            const afternoonCoworkerCheck = afternoonShiftContainer.querySelector('[shifttype="2pm-10pm"]')
+            if (afternoonCoworkerCheck) afternoonCoworker = afternoonCoworkerCheck.getAttribute("workerid")
 
+            let availableAfternoonWorkers
+
+            //check if theres any 2-10 workers 
+            const shiftCheck = afternoonShiftContainer.getElementsByClassName("workerContainer")
+            if (shiftCheck.length > 0){
+                const afternoonCoworker = shiftCheck[0]
+                const afternoonCoworkerId = parseInt(afternoonCoworker.getAttribute("workerid"))
+                availableAfternoonWorkers = await filterGeneralShiftWorkers("2pm-10pm",locationId,date,otherWorkers,afternoonCoworkerId)
+            }else{
+                availableAfternoonWorkers = await filterGeneralShiftWorkers("2pm-10pm",locationId,date,otherWorkers)
+            }
+            
+            const randomIndex = Math.floor(Math.random() * availableAfternoonWorkers.length)       
+            const newAfternoonWorker = availableAfternoonWorkers[randomIndex]
+            
             const afternoonWorkerShift = document.createElement("div")
             const container = document.createElement("p")
             const workerData = document.createElement("span")
             const shiftData = document.createElement("span")
-
-            const availableWorkers = filterGeneralShiftWorkers("2pm-10pm",locationId,date,otherWorkers)
-            const randomIndex = Math.floor(Math.random() * availableWorkers.length)       
-            const newAfternoonWorker = availableWorkers[randomIndex]
-
-            console.log(newAfternoonWorker)
 
             workerData.innerText = `${newAfternoonWorker.first_name[0]}.${newAfternoonWorker.last_name}`
             shiftData.innerText = "(2pm-10pm)"
@@ -452,20 +485,27 @@ export async function setNewDayWorker(newWorkerShift,newWorker,oldWorker){
             afternoonWorkerShift.setAttribute("name",`${locationId}-workerDetails`)
             afternoonWorkerShift.setAttribute("id",afternoonWorkerId)
             afternoonWorkerShift.classList.add("workerContainer")
-            afternoonWorkerShift.classList.add(`${day}-${location}-worker`)
+            afternoonWorkerShift.classList.add(`${dayNumber}-${location}-worker`)
 
-            container.appendChild(shiftData)
             container.appendChild(workerData)
+            container.appendChild(shiftData)
+            setupEditBtn(buttonId,container)
             afternoonWorkerShift.appendChild(container)
 
-            const dayNumberSpan = document.getElementById(`day-number-${dayNumber}`)
-            const afternoonDiv = dayNumberSpan.closest(".shift-2")
+            afternoonShiftContainer.appendChild(afternoonWorkerShift)
 
-            afternoonDiv.appendChild(afternoonWorkerShift)
+            const nightWorkerContainer = document.getElementById(nightWorkerId)
+            const nightWorkerData = nightWorkerContainer.getElementsByClassName("workerInfo")
+            const nightWorkerShift = nightWorkerContainer.getElementsByClassName("shiftType")
+            const nightCoworker = nightWorkerContainer.closest(".workerContainer")
+            const nightCoworkerId = parseInt(nightCoworker.getAttribute("workerid"))
 
-            const nightWorkerShift = document.getElementById(nightWorkerId)
+            const availableNightWorkers = await filterGeneralShiftWorkers("10pm-6am",locationId,date,otherWorkers,nightCoworkerId)
+            const randomIndex2 = Math.floor(Math.random() * availableNightWorkers.length)
+            const newNightWorker = availableNightWorkers[randomIndex2]
 
-            
+            nightWorkerData.innerText = `${newNightWorker.first_name[0]}.${newNightWorker.last_name}`
+            nightWorkerShift.innerText = "(10pm-6am)"
         }
     }
 }
