@@ -113,5 +113,5 @@ OPTIROSTER is a full stack project developed entirely from scratch.It utilises C
         - Inputs: Worker ID, Day of Week, (Optional) Start Time, End Time
         - Creates a permanent restriction
     - Find Restriction
-        - Search by restriction ID or Worker ID.
+        - Search by restriction ID or Worker ID.edit
 
