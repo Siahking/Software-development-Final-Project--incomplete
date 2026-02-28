@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -157,7 +158,10 @@ func GetWorkers(c *gin.Context, db *sql.DB) {
 	rows, err := db.Query("SELECT * FROM workers")
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error with selecting rows\n" + err.Error()})
+		log.Println("DB Query Error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":"Unable to fetch workers",
+		})
 		return
 	}
 	defer rows.Close()
@@ -191,7 +195,7 @@ func GetWorkers(c *gin.Context, db *sql.DB) {
 	}
 
 	if len(employees) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No Employees found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Employees found"}) //empty table
 	} else {
 		c.IndentedJSON(http.StatusOK, employees)
 	}
