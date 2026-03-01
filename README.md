@@ -27,7 +27,7 @@ cd Software-development-Final-Project--incomplete
 
 ```env
 DB_USER=app_user
-DB_PASSWORD=R0sterProjectDatabase
+DB_PASSWORD=R0sterPr0jectDatabase
 DB_NAME=roster
 DB_HOST=127.0.0.1
 DB_PORT=3306
