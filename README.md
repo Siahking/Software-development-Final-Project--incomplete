@@ -13,6 +13,61 @@ OPTIROSTER is a full stack project developed entirely from scratch.It utilises C
  - APIS:            Custom REST API
  - Architecture:    MVC inspired project structure
 
+## Getting Started
+Follow these steps to set up the project locally:
+
+### 1. Clone the repository 
+```bash
+git clone https://github.com/Siahking/Software-development-Final-Project--incomplete.git
+cd Software-development-Final-Project--incomplete
+```
+---
+
+## 2. Create a `.env` file in the project root(the same folder as `main.go`) with the following content:
+
+```env
+DB_USER=app_user
+DB_PASSWORD=R0sterProjectDatabase
+DB_NAME=roster
+DB_HOST=127.0.0.1
+DB_PORT=3306
+```
+
+Do not commit your `.env` file to Github.
+
+(Optional best practice: include a `.env.example` file in the repository with placeholder values.)
+
+---
+
+## 3. Install Dependecies
+
+```bash
+go mod tidy
+```
+
+---
+
+## 4. Ensure MySQL Is Running
+- Make sure mySQL is installed and running.
+- Ensure the database defined in `DB_NAME` exists.
+- The user defined in `DB_USER` must have proper priviledges.
+
+---
+
+## 5. Run the Application
+
+```bash
+go run main.go
+```
+
+The backend server will start on:
+
+```
+http://localhost:8080
+```
+
+---
+
 ## Key Features  
  - Create update and delete workers and locations
  - Define days off, availably constraints and permanent time restrictions

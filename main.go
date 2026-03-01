@@ -14,11 +14,14 @@ import (
 
 func main() {
 	// Set up database connection
-	db, err := models.InitializeDB()
+	db, dsn, err := models.InitializeDB()
 	if err != nil {
 		log.Fatal("Error connecting to database: ", err)
 	}
 	defer db.Close()
+
+	//Run migrations automatically on startup
+	models.RunMigrations(dsn)
 
 	//Get the router ready
 	router := gin.Default()

@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -85,7 +86,8 @@ func GetRestrictions(c *gin.Context, db *sql.DB) {
 	rows, err := db.Query("SELECT id,worker_id,day_of_week,start_time,end_time FROM permanent_restrictions")
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error in retrieving values" + err.Error()})
+		log.Println("DB Query Error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch restrictions"})
 		return
 	}
 	defer rows.Close()

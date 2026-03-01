@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS roster_entries;
+DROP TABLE IF EXISTS roster;
+DROP TABLE IF EXISTS occupancy;
+DROP TABLE IF EXISTS permanent_restrictions;
+DROP TABLE IF EXISTS worker_constraints;
+DROP TABLE IF EXISTS days_off;
+DROP TABLE IF EXISTS worker_locations;
+DROP TABLE IF EXISTS workers;
+DROP TABLE IF EXISTS locations;
+DROP TABLE IF EXISTS user_accounts;
