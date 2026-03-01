@@ -10,9 +10,23 @@ const breakIdCheckbox = document.getElementById("breakid-radio")
 const valueInput = document.getElementById("value")
 let message
 
-const workers = await apiFuncs.getWorkers()
-const SHIFTOBJECT = {}
+let workers
 
+try{
+    workers = await apiFuncs.getWorkers()
+
+    if (!workers || objectCheck(workers)){
+        emptyTableTag.classList.remove('specified-hidden')
+        console.warn("No workers found, script terminated")
+        throw new Error("No workers found")
+    }
+}catch(err){
+    emptyTableTag.classList.remove('specified-hidden')
+    console.error("Error fetching workers:", err)
+    throw err
+}
+
+const SHIFTOBJECT = {}
 for (const worker of workers){
     for (const hour of worker.hours){
         if (SHIFTOBJECT[hour]){
