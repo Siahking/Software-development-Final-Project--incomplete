@@ -71,16 +71,27 @@ export async function generateCalender(month,year){
         let errorFound = false
         const WORKERS = await apiFuncs.retrieveWorkerOrLocations("location_id",location.id)
         const headerContainer = document.createElement("div")
+        headerContainer.classList.add("location-header-div")
+
         const locationName = document.createElement("h2")
+
         const locationErrorTag = document.createElement("p")
+        locationErrorTag.classList.add("error-tag")
+
         const saveRosterBtn = document.createElement("button")
-        const saveRosterContainer = document.createElement("div")
-        const errorContainer = document.createElement("div")
-        const errorTag = document.createElement("p")
-        const saveTag = document.createElement("p")
         saveRosterBtn.innerText = `Save ${location.location} Roster`
         saveRosterBtn.setAttribute("id",location.id)
         saveRosterBtn.classList.add("green-btn")
+
+        const saveRosterContainer = document.createElement("div")
+        saveRosterContainer.setAttribute("id","save-roster-container")
+        
+        const errorContainer = document.createElement("div")
+        errorContainer.classList.add("specified-hidden","error-container")
+
+        const errorTag = document.createElement("p")
+        const saveTag = document.createElement("p")
+    
 
         saveRosterBtn.addEventListener("click",(event)=>{
             const locationId = event.target.id
@@ -89,22 +100,19 @@ export async function generateCalender(month,year){
             saveRoster(errorTagId,locationId,workerDetails)
         })
 
-        saveRosterContainer.setAttribute("id","save-roster-container")
         saveRosterContainer.appendChild(saveRosterBtn)
 
         errorTag.setAttribute("id",`location-${location.id}-error-tag`)
         errorTag.classList.add("error-tag")
-        errorContainer.classList.add("specified-hidden","error-container")
+
         errorContainer.setAttribute("id",`location-${location.id}-error-container`)
         errorContainer.appendChild(errorTag)
 
         saveTag.setAttribute("id",`${location.id}-message`)
         saveTag.classList.add("specified-hidden")
 
-        locationErrorTag.classList.add("error-tag")
         locationName.innerText = location.location
         headerContainer.appendChild(locationName)
-        headerContainer.classList.add("location-header-div")
         if (objectCheck(WORKERS)){
             locationErrorTag.innerText = "No workers found for this Location"
             headerContainer.appendChild(locationErrorTag)
@@ -176,13 +184,14 @@ export async function generateCalender(month,year){
 
             const results = await funcs.assignWorkers(assignWorkerParams)
             if (objectCheck(results)){
+                errorFound = true
                 locationErrorTag.innerText = results.error
                 headerContainer.appendChild(locationErrorTag)
                 loadingContainer.classList.add("specified-hidden")
                 locationFragment.appendChild(headerContainer)
-                errorFound = true
                 break
             }else if(Object.keys(results).includes("Insufficient Workers")){
+                errorFound = true
                 locationErrorTag.innerText = "Insufficient Workers for shifts:"
                 const unorderedList = document.createElement("ul")
                 for (const location of results["Insufficient Workers"]){
@@ -194,7 +203,6 @@ export async function generateCalender(month,year){
                 headerContainer.appendChild(unorderedList)
                 loadingContainer.classList.add("specified-hidden")
                 locationFragment.appendChild(headerContainer)
-                errorFound = true
                 break
             }
 
@@ -209,7 +217,10 @@ export async function generateCalender(month,year){
             container.appendChild(headerContainer)
             container.appendChild(calendarContainer)
         }
-        if (errorFound)continue
+        if (errorFound){
+            container.appendChild(locationFragment)
+            continue
+        }
         calendarContainer.classList.remove("specified-hidden")
         loadingContainer.classList.add("specified-hidden")
 
