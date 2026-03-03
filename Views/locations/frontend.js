@@ -29,7 +29,6 @@ export function toogleDiv(btnId){
 }
 
 export function toogleEditDiv(){
-    console.log("passed here")
     toogleStates["add-location"] = false
     toogleStates["find-location"] = false
 

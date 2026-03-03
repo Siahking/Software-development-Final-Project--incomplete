@@ -173,6 +173,4 @@ export async function editRestriction(event){
     }
 
     const result = await apiFuncs.editPermanentRestriction(restrictionId,newWorker,newDay,newStartTime,newEndTime)
-
-    console.log(result)
 }

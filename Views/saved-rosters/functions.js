@@ -2,7 +2,6 @@ import * as apiFuncs from "../backend.js"
 import { displayError, objectCheck } from "../general-helper-funcs.js"
 
 export async function saveRoster(errorTagId,LocationId,workersDetail){
-
     const messageTag = document.getElementById(`${LocationId}-message`)
     const MonthYear = workersDetail[0].getAttribute("monthyear")
     const [Month,Year] = MonthYear.split("-")
@@ -40,9 +39,7 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
     }finally{
         document.body.style.cursor = "default"
         document.body.style.pointerEvents = "auto"
-    }
 
     messageTag.classList.remove("specified-hidden")
     messageTag.innerText = "Roster saved successfully"
-
 }

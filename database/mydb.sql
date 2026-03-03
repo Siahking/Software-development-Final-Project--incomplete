@@ -111,4 +111,4 @@
 -- )
 
 --@block
-SELECT * FROM occupancy;
+SELECT * FROM roster_entries;

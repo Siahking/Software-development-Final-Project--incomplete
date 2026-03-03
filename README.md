@@ -26,7 +26,7 @@ cd Software-development-Final-Project--incomplete
 ## 2. Create a `.env` file in the project root(the same folder as `main.go`) with the following content:
 
 ```env
-DB_USER=app_user
+DB_USER=appuser
 DB_PASSWORD=R0sterPr0jectDatabase
 DB_NAME=roster
 DB_HOST=127.0.0.1

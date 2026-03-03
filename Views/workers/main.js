@@ -51,7 +51,6 @@ editWorkerBtn.addEventListener(
 
 editWorkerForm.addEventListener(
     "submit",(event)=>{
-        console.log("form submitted")
         backendFuncs.editWorker(event)}
 )
 

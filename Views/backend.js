@@ -17,7 +17,6 @@ async function apiRequest(endpoint, method = "GET", body = null){
     try {
         const response = await fetch(url, options);
         const result = await response.json();
-
         if (!response.ok){
             throw new Error(result?.error || `Error: ${response.status} ${response.statusText}`)
         }
@@ -321,8 +320,6 @@ export async function editDaysOff(idStr,worker_id,start_date,end_date){
     start_date = start_date ? start_date : null
     end_date = end_date ? end_date : null
 
-    console.log(id,worker_id,start_date,end_date)
-
     return apiRequest(url,"PATCH",{
         id,worker_id,start_date,end_date
     })
@@ -432,8 +429,7 @@ export async function clearOccupancies(){
     return apiRequest("clear-occupancies","DELETE")
 }
 
-export async function saveRoster(location_id,month,year){
-    console.log("save roster month is "+month)
+export async function  saveRoster(location_id,month,year){
     if (!location_id || !month || !year){
         return {"error":"Location ID, Month and Year required"}
     }

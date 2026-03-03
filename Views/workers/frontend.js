@@ -85,6 +85,11 @@ export function toogleDisplay(div,otherDivs=""){
             otherDivs.forEach(div => {
                 div.classList.add("specified-hidden")
             });
+
+            div.scrollIntoView({
+                behavior:"smooth",
+                block:"start"
+            })
         }
     }else{
         div.classList.add("specified-hidden")

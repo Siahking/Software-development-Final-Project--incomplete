@@ -11,7 +11,7 @@ if (!objectCheck(rawRestrictions)){
         const restrictionObject = {
             id:restriction.id,
             day_of_week:restriction.day_of_week,
-            start_time:restriction.start_time,
+            start_time:restriction.start_time, 
             end_time:restriction.end_time
         }
         if (restrictions[key]){

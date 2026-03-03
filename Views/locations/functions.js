@@ -84,8 +84,6 @@ export async function editLocation(event){
 
     event.preventDefault()
 
-    console.log("passed in function")
-
     const locationId = document.getElementById("targetId").value
     const locationName = document.getElementById("newLocationName").value
 
@@ -94,11 +92,7 @@ export async function editLocation(event){
         return
     }
 
-    console.log("pass the if statement")
-
     const results =await  apiFuncs.editLocation(locationId,locationName)
-
-    console.log(results)
 
     if(objectCheck(results)){
         displayError(errorTagId,results.error)
