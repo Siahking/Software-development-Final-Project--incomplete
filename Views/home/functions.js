@@ -50,11 +50,13 @@ export function saveDateAndLocations(event){
         }
     }
 
-    const selectedDate = new Date(dateInput.value + "-01");
-    const currentDate = new Date();
-    currentDate.setDate(1)
+    const [year, month] = dateInput.value.split("-").map(Number);
 
-    if (selectedDate <= currentDate) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if (year < currentYear || (year === currentYear && month <= currentMonth)) {
         displayError(errorTagId,"Please select a subsequent month.")
         return;
     }
@@ -65,13 +67,13 @@ export function saveDateAndLocations(event){
     }
 
     const dateObject = {
-        month:selectedDate.getMonth() + 1,
-        year:selectedDate.getFullYear()
+        month: month,
+        year: year
     }
 
     localStorage.setItem("Date",JSON.stringify(dateObject))
     localStorage.setItem("Locations",JSON.stringify(locations))
-    window.location.href = "/create-roster"
+    window.location.href = "/create-roster" 
 }
 
 export function findRosters(event){

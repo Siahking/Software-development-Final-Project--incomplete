@@ -26,10 +26,10 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
             const monthYear = workerDetail.getAttribute("monthyear")
             const [month,year] = monthYear.split("-")
 
+            if (parseInt(month) < 10) month = `0${month}`
             if (parseInt(day) < 10)day = `0${day}`
 
             const createRosterResults = await apiFuncs.newRosterEntry(RosterResult[0].roster_id,workerid,`${year}-${month}-${day}`,shiftType)
-
             if(objectCheck(createRosterResults)){
                 displayError(errorTagId,createRosterResults.error)
                 messageTag.classList.add("specified-hidden")
@@ -42,4 +42,5 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
 
     messageTag.classList.remove("specified-hidden")
     messageTag.innerText = "Roster saved successfully"
+}
 }
