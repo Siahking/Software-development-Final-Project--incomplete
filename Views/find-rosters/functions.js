@@ -20,18 +20,24 @@ export async function loadRosters(){
         const daysInMonth = new Date(year, month, 0).getDate();
         const calendarContainer = document.createElement("div")
         const headerContainer = document.createElement("div")
+        const locationNameContainer = document.createElement("div")
+        locationNameContainer.classList.add("location-header-div")
         const locationName = document.createElement("h2")
+        const deleteBtnContainer = document.createElement("div")
+        deleteBtnContainer.setAttribute("id","save-roster-container")
         const deleteBtn = document.createElement("button")
 
         deleteBtn.setAttribute("id",`delete-btn-${roster.roster_id}`)
         deleteBtn.setAttribute("value",roster.roster_id)
         deleteBtn.classList.add("delete-btn")
         deleteBtn.innerText = "Delete Roster"
+        deleteBtnContainer.appendChild(deleteBtn)
 
         deleteBtn.addEventListener("click",(event)=>deleteRosterHandler(event))
 
         locationName.innerText = data[index].location
-        headerContainer.appendChild(locationName)
+        locationNameContainer.appendChild(locationName)
+        headerContainer.appendChild(locationNameContainer)
 
         calendarContainer.setAttribute("id",`${roster.location_id}-roster`)
         calendarContainer.classList.add("calendar-container")
@@ -73,7 +79,7 @@ export async function loadRosters(){
         }
         container.appendChild(headerContainer)
         container.appendChild(calendarContainer)
-        container.appendChild(deleteBtn)
+        container.appendChild(deleteBtnContainer)
     }
 
 }
