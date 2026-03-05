@@ -88,11 +88,16 @@ export async function generateCalender(month,year){
         
         const errorContainer = document.createElement("div")
         errorContainer.classList.add("specified-hidden","error-container")
+        const successContainer = document.createElement("div")
+        successContainer.setAttribute("id",`${location.id}-success-container`)
+        successContainer.classList.add("specified-hidden","success-container")
 
         const errorTag = document.createElement("p")
-        const saveTag = document.createElement("p")
+        const successMessage = document.createElement("p")
+        successMessage.innerText = "Roster saved successfully"
+        successMessage.setAttribute("id",`${location.id}-message`)
+        successContainer.appendChild(successMessage)
     
-
         saveRosterBtn.addEventListener("click",(event)=>{
             const locationId = event.target.id
             const errorTagId = `location-${location.id}-error`
@@ -107,9 +112,6 @@ export async function generateCalender(month,year){
 
         errorContainer.setAttribute("id",`location-${location.id}-error-container`)
         errorContainer.appendChild(errorTag)
-
-        saveTag.setAttribute("id",`${location.id}-message`)
-        saveTag.classList.add("specified-hidden")
 
         locationName.innerText = location.location
         headerContainer.appendChild(locationName)
@@ -227,7 +229,7 @@ export async function generateCalender(month,year){
         locationFragment.appendChild(headerContainer)
         locationFragment.appendChild(calendarContainer)
         locationFragment.appendChild(saveRosterContainer)
-        locationFragment.appendChild(saveTag)
+        locationFragment.appendChild(successContainer)
         locationFragment.appendChild(errorContainer)
         container.appendChild(locationFragment)
     }

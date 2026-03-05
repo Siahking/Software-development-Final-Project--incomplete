@@ -111,4 +111,4 @@
 -- )
 
 --@block
-DELETE FROM roster;
+SELECT * FROM roster;

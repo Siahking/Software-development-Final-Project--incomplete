@@ -2,13 +2,13 @@ import * as apiFuncs from "../backend.js"
 import { displayError, objectCheck } from "../general-helper-funcs.js"
 
 export async function saveRoster(errorTagId,LocationId,workersDetail){
-    const messageTag = document.getElementById(`${LocationId}-message`)
+    const successContainer = document.getElementById(`${LocationId}-success-container`)
     const MonthYear = workersDetail[0].getAttribute("monthyear")
     const [Month,Year] = MonthYear.split("-")
 
     const newRoster = await apiFuncs.saveRoster(LocationId,Month,Year)
     if (objectCheck(newRoster)){
-        messageTag.classList.add("specified-hidden")
+         
         displayError(errorTagId,newRoster.error)
         return
     }
@@ -32,7 +32,7 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
             const createRosterResults = await apiFuncs.newRosterEntry(RosterResult[0].roster_id,workerid,`${year}-${month}-${day}`,shiftType)
             if(objectCheck(createRosterResults)){
                 displayError(errorTagId,createRosterResults.error)
-                messageTag.classList.add("specified-hidden")
+                successContainer.classList.add("specified-hidden")
                 break
             }
         }
@@ -40,7 +40,6 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
         document.body.style.cursor = "default"
         document.body.style.pointerEvents = "auto"
 
-    messageTag.classList.remove("specified-hidden")
-    messageTag.innerText = "Roster saved successfully"
+    successContainer.classList.remove("specified-hidden")
 }
 }
