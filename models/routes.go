@@ -60,6 +60,9 @@ func htmlRoutes(router *gin.Engine) {
 	router.GET("find-rosters",func(c *gin.Context) {
 		c.HTML(http.StatusOK, "find-rosters.html",nil)
 	})
+	router.GET("/login",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "login.html",nil)
+	})
 }
 
 func apiRouter(router *gin.Engine, db *sql.DB) {

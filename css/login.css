@@ -1,0 +1,18 @@
+body,html{
+    height: 80vh;
+    justify-content: center;
+    background-color: var(--teal);
+    color: white;
+}
+
+body,html,#roster-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#info-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

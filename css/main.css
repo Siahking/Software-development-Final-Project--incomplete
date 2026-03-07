@@ -78,14 +78,6 @@ tr:last-child td {
     transition: opacity 0.5s ease, max-height 0.5s ease;
 }
 
-.specified-hidden{
-    display: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 0 !important;
-    overflow: hidden;
-}
-
 .visible{
     opacity: 1;
     max-height: 500px; 

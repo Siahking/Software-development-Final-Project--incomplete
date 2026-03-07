@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <title>Login</title>
+</head>
+<body>
+    <h1>OptiRoster</h1>
+    <h3>Login</h3>
+    <div id="buttons-container">
+        <button id="login-button">
+            Login
+        </button>
+        <button id="signup-button">
+            Sign Up
+        </button>
+    </div>
+    <div id="info-container" class="specified-hidden">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Type here" autocorrect="off" name="fake-email">
+        <label for="password">Password</label>
+        <input type="text" id="password" placeholder="Type here" autocorrect="off">
+        <button type="submit">Submit</button>
+    </div>
+    <script type="module" src="../views/login/frontend.js"></script>
+    <script type="module" src="../views/login/main.js"></script>
+</body>

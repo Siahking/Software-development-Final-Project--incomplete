@@ -1,4 +1,5 @@
 import { objectCheck } from "./general-helper-funcs.js";
+import bcrypt from "bcryptjs"
 
 const BASEURL = "http://localhost:8080/"
 
@@ -588,18 +589,43 @@ export async function deleteRosterEntry(entry_id,roster_id,worker_id,shift_date,
     return apiRequest(url,"DELETE")
 }
 
-export async function createAccount(username,password){
+export async function comparePasswords(account_id,username,password){
+    let accountData
+    if (account_id){
+        accountData = await retrieveAccount(account_id)
+    }else if(username){
+        accountData = await retrieveAccount(username)
+    }else{
+        return {"error":"Invalid account Id or username"}
+    }
 
-    if (!username || !password){
+    if(accountData.error)return {"error":"No account found matching Id or username"}
+
+    const hashedPassword = accountData[0].password
+
+    const matchCheck = await bcrypt.compare(password,hashedPassword)
+
+    if (matchCheck){
+        return {"success":"Correct password"}
+    }else{
+        return {"error":"Incorrect password"}
+    }
+}
+
+export async function createAccount(username,rawPassword){
+
+    if (!username || !rawPassword){
         return {"error":"Password and username required"}
     }
+
+    const password = await bcrypt.hash(rawPassword,10)
 
     return apiRequest("create-account","POST",{
         username,password
     })
 }
 
-export async function retrieveAccount(account_id,username){
+async function retrieveAccount(account_id,username){
     let url = "retrieve-account"
 
     if (account_id){
@@ -636,9 +662,11 @@ export async function deleteAccount(account_id,username){
     return apiRequest(url,"DELETE")
 }
 
-// async function tester() {
-//     const result = await retrieveOccupancies("2025-12-01","51","Work")
-//     console.log(result)
-// }
+async function tester() {
+    const result = await comparePasswords(3,"","testpassword")
+    console.log(result)
+}
 
-// tester()
+tester()
+
+// "testuser", "testpassword"

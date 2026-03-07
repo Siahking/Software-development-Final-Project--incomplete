@@ -111,4 +111,4 @@
 -- )
 
 --@block
-SELECT * FROM roster;
+DELETE FROM user_accounts;
