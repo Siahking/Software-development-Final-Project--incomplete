@@ -2,11 +2,13 @@ package models
 
 import (
 	"database/sql"
-	"net/http"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
-	"strconv"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Account struct {
@@ -28,14 +30,20 @@ func CreateAccount(c *gin.Context, db *sql.DB) {
 		return
 	}
 
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(*account.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
 	query := "INSERT INTO user_accounts (username,password) VALUES (?,?)"
 
-	_,insertionErr := db.Exec(query, account.Username,account.Password)
+	_,insertionErr := db.Exec(query, account.Username,string(encryptedPassword))
 
 	if insertionErr != nil {
 		if mysqlErr, ok := insertionErr.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				c.JSON(http.StatusConflict, gin.H{"error": "An accout with this username already exists"})
+				c.JSON(http.StatusConflict, gin.H{"error": "An account with this username already exists"})
 				return
 			}
 		}
@@ -46,52 +54,24 @@ func CreateAccount(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusCreated,gin.H{"message":"Account created successfully"})
 }
 
-func RetrieveAccounts(c *gin.Context, db *sql.DB){
-	baseString := "SELECT * FROM user_accounts WHERE "
-	accountId := c.Query("account_id")
-	username := c.Query("username")
-	var accounts []Account
-
-	var query string
-	var rows *sql.Rows
-	var err error
-
-	if accountId != ""{
-		query = baseString + "account_id = ?"
-		rows, err = db.Query(query,accountId)
-	}else if username != ""{
-		query = baseString + "username = ?"
-		rows, err = db.Query(query,username)
-	}else{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid params"})
-		return
+func RetrieveAccounts(db *sql.DB, username string) (*Account,error){
+	if username == "" {
+		return nil, fmt.Errorf("Username is required")
 	}
 
-	if err != nil{
-		c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in retreiving values\n"+err.Error()})
-		return
-	}
-	defer rows.Close()
+	query := "SELECT * FROM user_accounts WHERE username = ?"
+	row := db.QueryRow(query, username)
 
-	for rows.Next(){
-		var account Account
-
-		err := rows.Scan(&account.AccountID,&account.Username,&account.Password)
-
-		if err != nil{
-			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error in scanning rows\n"+err.Error()})
-			return
+	var account Account
+	err := row.Scan(&account.AccountID, &account.Username, &account.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, sql.ErrNoRows
 		}
-
-		accounts = append(accounts, account)
+		return nil,err
 	}
 
-	if len(accounts) == 0{
-		c.JSON(http.StatusNotFound,gin.H{"error":"No Accounts found"})
-		return
-	}else{
-		c.JSON(http.StatusOK,accounts)
-	}
+	return &account,nil
 }
 
 func EditAccount(c *gin.Context, db *sql.DB){
@@ -164,4 +144,31 @@ func DeleteAccount(c *gin.Context, db *sql.DB){
 	}else{
 		c.JSON(http.StatusOK,gin.H{"message":"Account deleted successfully"})
 	}
+}
+
+func Login(c *gin.Context, db *sql.DB){
+	var input Account
+	if err:=c.ShouldBindJSON(&input); err != nil{
+		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid request"})
+		return
+	}
+
+	account, err := RetrieveAccounts(db, *input.Username)
+	if err != nil{
+		if err == sql.ErrNoRows{
+			c.JSON(http.StatusNotFound,gin.H{"error":"No account found with this username"})
+			return
+		}else{
+			c.JSON(http.StatusInternalServerError,gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(*account.Password), []byte(*input.Password))
+	if err != nil{
+		c.JSON(http.StatusUnauthorized,gin.H{"error":"Incorrect password"})
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{"message":"Login successful"})
 }

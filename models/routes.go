@@ -251,10 +251,6 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	router.POST("/create-account",func(c *gin.Context){
 		CreateAccount(c,db)
 	})
-	//retrieve accounts
-	router.GET("/retrieve-account", func(c *gin.Context){
-		RetrieveAccounts(c,db)
-	})
 	//edit accounts
 	router.PATCH("/edit-account/:id", func(c *gin.Context){
 		EditAccount(c,db)
@@ -262,5 +258,9 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	//delete account
 	router.DELETE("/delete-account", func(c *gin.Context){
 		DeleteAccount(c,db)
+	})
+	//login
+	router.POST("/login", func(c *gin.Context){
+		Login(c,db)
 	})
 }

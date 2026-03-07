@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/home.css">
     <title>Login</title>
 </head>
 <body>
@@ -18,12 +19,15 @@
             Sign Up
         </button>
     </div>
-    <div id="info-container" class="specified-hidden">
+    <div id="info-container" class="hidden">
         <label for="username">Username</label>
         <input type="text" id="username" placeholder="Type here" autocorrect="off" name="fake-email">
         <label for="password">Password</label>
         <input type="text" id="password" placeholder="Type here" autocorrect="off">
-        <button type="submit">Submit</button>
+        <button id="submit-button">Submit</button>
+    </div>
+    <div id="error-container" class="error-container specified-hidden">
+        <p id="error-tag"></p>
     </div>
     <script type="module" src="../views/login/frontend.js"></script>
     <script type="module" src="../views/login/main.js"></script>
