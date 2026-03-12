@@ -1,8 +1,8 @@
-.table-div,.container,#find-days-off-div,#add-restriction-form,#start-time-div,#end-time-div,#restriction-ids-div,#time-div,#add-days-off-form{
+.table-div,.container,#find-days-off-form,#add-restriction-form,#start-time-div,#end-time-div,#restriction-ids-div,#time-div,#add-days-off-form{
     display: flex;
 }
 
-.table-div,#find-days-off-div,#add-restriction-form,#start-time-div,#end-time-div,#restriction-ids-div,#add-restriction-div,#add-days-off-div,
+.table-div,#find-days-off-form,#add-restriction-form,#start-time-div,#end-time-div,#restriction-ids-div,#add-restriction-div,#add-days-off-div,
 #find-restriction-div,#find-days-off-div,#add-days-off-form{
     flex-direction: column;
     align-items: center;
@@ -30,7 +30,7 @@
 }
 
 #add-restriction-div,#add-days-off-div,#edit-days-off-div,
-#find-restriction-div,#find-days-off-div,#edit-restriction-div {
+#find-restriction-div,#find-days-off-form,#edit-restriction-div {
     background: #f8f8f8;
     border-radius: 8px; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
@@ -38,7 +38,7 @@
     padding: 10px 0;
 }
 
-#add-days-off-div,#find-days-off-div{
+#add-days-off-div,#find-days-off-form{
     padding-top: 20px;
     width: 250px;
 }

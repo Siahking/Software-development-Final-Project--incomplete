@@ -215,7 +215,7 @@ export async function addWorkerHandler(event){
 
     sessionStorage.setItem("Message",result.message)
 
-    window.location.href = '/'
+    window.location.href = '/home'
 }
 
 export async function findWorkers(event){
@@ -260,7 +260,7 @@ export async function deleteWorker(event){
     if (confirmation){
         const result = await apiFuncs.removeEntry(workerId,"workers")
         sessionStorage.setItem("Message",result.message)
-        window.location.href = '/'
+        window.location.href = '/home'
     }else{
         displayError(errorTagId,"Operation Canceled")
     }
@@ -323,7 +323,7 @@ export async function editWorker(event){
         return
     }else{
         sessionStorage.setItem("Message",result.message)
-        window.location.href = '/'
+        window.location.href = '/home'
         return
     }
 }

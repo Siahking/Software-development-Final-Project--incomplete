@@ -129,5 +129,5 @@ async function deleteRosterHandler(event){
     const results = await apiFuncs.deleteRoster(rosterId,"","","")
 
     sessionStorage.setItem("Message",results.message)
-    window.location.href = "/"
+    window.location.href = "/home"
 }

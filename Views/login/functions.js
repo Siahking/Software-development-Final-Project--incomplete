@@ -9,7 +9,7 @@ export async function checkCredentials(username,password){
         displayError("error",result.error)
     }else{
         sessionStorage.setItem("Message","Login Successful")
-        window.location.href = "/"
+        window.location.href = "/home"
     }
 }
 

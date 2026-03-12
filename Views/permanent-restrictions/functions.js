@@ -120,7 +120,7 @@ export async function addRestriction(event){
     }
 
     sessionStorage.setItem("Message",result.message)
-    window.location.href = "/"
+    window.location.href = "/home"
 }
 
 export async function deleteRestriction(id){
@@ -133,7 +133,7 @@ export async function deleteRestriction(id){
         }
 
         sessionStorage.setItem("Message",result.message)
-        window.location.href = "/"
+        window.location.href = "/home"
     }else{
         displayError(errorTagId,"Operation Cancled")
     }

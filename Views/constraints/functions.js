@@ -19,7 +19,7 @@ export async function removeConstraint(id){
             displayError(errorTagId,result.error)
         }else{
             sessionStorage.setItem("Message",result.message)
-            window.location.href = "/"
+            window.location.href = "/home"
         }
     }else{
         displayError(errorTagId,"Opertaion Canceled")
@@ -42,7 +42,7 @@ export async function addConstraint(event){
     }
 
     sessionStorage.setItem("Message",result.message)
-    window.location.href = '/'
+    window.location.href = '/home'
 }
 
 export async function displayConstraints(){
@@ -150,5 +150,5 @@ export async function changeConstraint(event){
     }
 
     sessionStorage.setItem("Message",result.message)
-    window.location.href = "/"
+    window.location.href = "/home"
 }

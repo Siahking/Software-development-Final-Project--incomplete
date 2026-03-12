@@ -51,7 +51,7 @@ export async function deleteLocation(id){
             displayError(errorTagId,result.error)
         }else{
             sessionStorage.setItem("Message",result.message)
-            window.location.href = "/"
+            window.location.href = "/home"
         }
     }else{
         displayError(errorTagId,"Operation Cancled")
@@ -65,7 +65,7 @@ export async function newLocation(){
         displayError(errorTagId,result.error)
     }else{
         sessionStorage.setItem("Message",result.message)
-        window.location.href = "/"
+        window.location.href = "/home"
     }
 }
 

@@ -1,36 +1,35 @@
 const valueLabel = document.getElementById("value-label")
+const editCheckboxIds = ["newWorkerId","newStartTime","newEndTime"]
 
-const editChecboxIds = ["newWorkerId","newStartTime","newEndTime"]
-
-editChecboxIds.forEach(id=>{
+editCheckboxIds.forEach(id=>{
     const checkbox = document.getElementById(id)
     const input = document.getElementById(id+ "-value")
 
     checkbox.addEventListener("click",(event)=>{
         if (event.target.checked){
-            input.classList.remove("specified-hidden")
+            input.classList.remove("hidden")
         }else{
-            input.classList.add("specified-hidden")
+            input.classList.add("hidden")
         }
     })
 })
 
 export function toogleDivs(currentDiv,otherDivs){
-    if (currentDiv.classList.contains("specified-hidden")){
-        currentDiv.classList.remove("specified-hidden")
+    if (currentDiv.classList.contains("hidden")){
+        currentDiv.classList.remove("hidden")
         otherDivs.forEach(div => {
-            div.classList.add("specified-hidden")
+            div.classList.add("hidden")
         });
     }else{
-        currentDiv.classList.add("specified-hidden")
+        currentDiv.classList.add("hidden")
     }
 }
 
 export function toogleCheckboxes(event){
     if (event.target.checked){
-        valueLabel.classList.remove("specified-hidden")
+        valueLabel.classList.remove("hidden")
     }else{
-        valueLabel.classList.add("specified-hidden")
+        valueLabel.classList.add("hidden")
     }
 }
 

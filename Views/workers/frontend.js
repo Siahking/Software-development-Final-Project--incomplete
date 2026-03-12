@@ -24,9 +24,9 @@ const availabilityOptions = document.querySelectorAll('[name="edit-availability"
 availabilityOptions.forEach(option=>{
     option.addEventListener("click",()=>{
         if (option.id === "specified-availability"){
-            hoursContainer.classList.remove("specified-hidden")
+            hoursContainer.classList.remove("hidden")
         }else{
-            hoursContainer.classList.add("specified-hidden")
+            hoursContainer.classList.add("hidden")
         }
     })
 })
@@ -60,30 +60,30 @@ function toogleInputs(checkbox,input){
             }
             for (const item of [...unimportantInputArr,otherInput]){
                 item.value = ""
-                item.classList.add("specified-hidden")
+                item.classList.add("hidden")
             }
-            input.classList.remove("specified-hidden")
+            input.classList.remove("hidden")
         }else{
             for (const checkbox of [...unimportantCheckboxArr,otherCheckbox]){
                 checkbox.removeAttribute('disabled')
             }
-            input.classList.add("specified-hidden")
+            input.classList.add("hidden")
         }
         
     }else if (checkbox.checked){
-        input.classList.remove("specified-hidden")
+        input.classList.remove("hidden")
     }else{
-        input.classList.add("specified-hidden")
+        input.classList.add("hidden")
         input.innerText = ""
     }
 }
 
 export function toogleDisplay(div,otherDivs=""){
-    if (div.classList.contains("specified-hidden")){
-        div.classList.remove("specified-hidden")
+    if (div.classList.contains("hidden")){
+        div.classList.remove("hidden")
         if (otherDivs){
             otherDivs.forEach(div => {
-                div.classList.add("specified-hidden")
+                div.classList.add("hidden")
             });
 
             div.scrollIntoView({
@@ -92,15 +92,15 @@ export function toogleDisplay(div,otherDivs=""){
             })
         }
     }else{
-        div.classList.add("specified-hidden")
+        div.classList.add("hidden")
     }
 }
 
 export function displayHours(event){
     if (event.target.id === "specified-option"){
-        hoursDiv.classList.remove("specified-hidden")
+        hoursDiv.classList.remove("hidden")
     }else{
-        hoursDiv.classList.add("specified-hidden")
+        hoursDiv.classList.add("hidden")
         for (const checkbox of hoursOptions){
             checkbox.checked = false
         }
@@ -118,11 +118,11 @@ function toogleEditCheckboxes(Id){
 
     checkbox.addEventListener("click",()=>{
         if (checkbox.checked){
-            toogleItem.classList.remove("specified-hidden")
+            toogleItem.classList.remove("hidden")
         }else{
-            toogleItem.classList.add("specified-hidden")
+            toogleItem.classList.add("hidden")
             if (checkbox.id === "newAvailabilityCheckbox"){
-                hoursContainer.classList.add("specified-hidden")
+                hoursContainer.classList.add("hidden")
                 availabilityOptions.forEach(option=>{
                     option.checked = false
                 })

@@ -8,7 +8,7 @@ export const toogleStates = {
 }
 
 export function toogleDiv(btnId){
-    editLocationDiv.classList.add("specified-hidden")
+    editLocationDiv.classList.add("hidden")
     if (btnId === "find-location"){
         if(toogleStates["add-location"]){
             toogleStates["add-location"] = false
@@ -21,9 +21,9 @@ export function toogleDiv(btnId){
     }
     toogleStates[btnId] = !toogleStates[btnId]
     if (!toogleStates["find-location"] && !toogleStates["add-location"]){
-        locationDiv.classList.add("specified-hidden")
+        locationDiv.classList.add("hidden")
     }else{
-        locationDiv.classList.remove("specified-hidden")
+        locationDiv.classList.remove("hidden")
     }
     input.value = ""
 }
@@ -32,11 +32,11 @@ export function toogleEditDiv(){
     toogleStates["add-location"] = false
     toogleStates["find-location"] = false
 
-    locationDiv.classList.add("specified-hidden")
+    locationDiv.classList.add("hidden")
 
-    if(editLocationDiv.classList.contains("specified-hidden")){
-        editLocationDiv.classList.remove("specified-hidden")
+    if(editLocationDiv.classList.contains("hidden")){
+        editLocationDiv.classList.remove("hidden")
     }else{
-        editLocationDiv.classList.add("specified-hidden")
+        editLocationDiv.classList.add("hidden")
     }
 }

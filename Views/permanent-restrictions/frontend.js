@@ -28,11 +28,11 @@ checkboxes.forEach(id=>{
         const toogleTag = document.getElementById(toogleTagId)
 
         if (event.target.checked){
-            toogleTag.classList.remove("specified-hidden")
+            toogleTag.classList.remove("hidden")
             if (event.target.id == "newStartTimeCheckbox")toogleTimeTags("newStartTimeCheckbox",true)
             else if (event.target.id == "newEndTimeCheckbox")toogleTimeTags("newEndTimeCheckbox",true)
         }else{
-            toogleTag.classList.add("specified-hidden")
+            toogleTag.classList.add("hidden")
             if (event.target.id === "dayOfWeekCheckbox"){
                 dayRadioBtns.forEach(btn => btn.checked = false);
             }else if (event.target.id == "newStartTimeCheckbox")toogleTimeTags("newStartTimeCheckbox",false)
@@ -43,26 +43,30 @@ checkboxes.forEach(id=>{
 })
 
 export function toogleRestrictonDivs(currentDiv,otherDiv){
-    if (currentDiv.classList.contains("specified-hidden")){
-        currentDiv.classList.remove("specified-hidden")
-        otherDiv.forEach(div => div.classList.add("specified-hidden"));
+    if (currentDiv.classList.contains("hidden")){
+        currentDiv.classList.remove("hidden")
+        otherDiv.forEach(div => div.classList.add("hidden"));
+        currentDiv.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        })
     }else{
-        currentDiv.classList.add("specified-hidden")
+        currentDiv.classList.add("hidden")
     }
 }
 
 function toogleTimeTags(tagId,display){
     if (display){
         if (tagId === "newStartTimeCheckbox"){
-            removeStartLabel.classList.remove("specified-hidden")
+            removeStartLabel.classList.remove("hidden")
         }else{
-            removeEndLabel.classList.remove("specified-hidden")
+            removeEndLabel.classList.remove("hidden")
         }
     }else{
         if (tagId === "newStartTimeCheckbox"){
-            removeStartLabel.classList.add("specified-hidden")
+            removeStartLabel.classList.add("hidden")
         }else{
-            removeEndLabel.classList.add("specified-hidden")
+            removeEndLabel.classList.add("hidden")
         }
     }
 }

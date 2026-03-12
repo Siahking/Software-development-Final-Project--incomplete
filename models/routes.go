@@ -24,7 +24,10 @@ func RegisterRoutes(router *gin.Engine, db *sql.DB) {
 
 func htmlRoutes(router *gin.Engine) {
 	// routes for html pages
-	router.GET("/", func(c *gin.Context) { //homepage
+	router.GET("/",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "login.html", nil)
+	})
+	router.GET("/home", func(c *gin.Context) { //homepage
 		c.HTML(http.StatusOK, "home.html", nil)
 	})
 	router.GET("/find-locations", func(c *gin.Context) {
