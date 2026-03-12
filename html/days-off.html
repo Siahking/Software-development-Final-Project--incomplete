@@ -12,7 +12,7 @@
     <div class="nav-container">
         <nav class="navbar navbar-expand-lg bg-white">
             <div class="container-fluid" id="nav-div">
-              <a class="navbar-brand" id="home-btn" href="/">Home</a>
+              <a class="navbar-brand" id="home-btn" href="/home">Home</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -40,7 +40,7 @@
     <div class="table-div">
         <h1>Days Off</h1>
         <div id="table-container">
-            <table id="table" class="specified-hidden">
+            <table id="table">
                 <tr>
                     <th>Id</th>
                     <th>Worker</th>
@@ -49,7 +49,7 @@
                 </tr>
             </table>
         </div>
-        <p id="empty-table" class="specified-hidden">No Values Found</p>
+        <p id="empty-table" class="hidden">No Values Found</p>
     </div>
 
     <div class="buttons-div">
@@ -58,8 +58,8 @@
         <button id="edit-days-off" class="grey-btn">Edit Days Off</button>
     </div>
 
-    <div class="data-input-container">
-        <div id="add-days-off-div" class="specified-hidden container">
+    <div class="data-input-container" id="days-off-container">
+        <div id="add-days-off-div" class="hidden">
             <form id="add-days-off-form">
                 <label for="worker-id" class="bold">
                     Worker ID
@@ -77,8 +77,8 @@
             </form>
         </div>
 
-        <form id="find-days-off-form">
-            <div id="find-days-off-div" class="specified-hidden">
+        <div id="find-days-off-div" class="hidden">
+            <form id="find-days-off-form">
                 <label for="workerid-radio" class="bold">
                     Worker Id
                     <input type="radio" id="workerid-radio" placeholder="Type here" name="search-check">
@@ -87,15 +87,15 @@
                     Break Id
                     <input type="radio" id="breakid-radio" name="search-check">
                 </label>
-                <label for="value" class="specified-hidden bold" id="value-label">
+                <label for="value" class="hidden bold" id="value-label">
                     Value
                     <input type="number" id="value" placeholder="Type here">
                 </label>
                 <button class="green-btn">Search</button>
-            </div>
-        </form>
+            </form>
+        </div>
 
-        <div id="edit-days-off-div" class="specified-hidden">
+        <div id="edit-days-off-div" class="hidden">
             <form id="edit-days-off-form">
                 <label for="breakId" class="bold">
                     Break ID
@@ -105,28 +105,28 @@
                     <input type="checkbox" id="newWorkerId" name="checkbox">
                     New Worker ID
                 </label>
-                <input type="number" id="newWorkerId-value" placeholder="Type here" autocomplete="off" class="text-number-input specified-hidden">
+                <input type="number" id="newWorkerId-value" placeholder="Type here" autocomplete="off" class="text-number-input hidden">
                 <label for="newStartTime" class="bold">
                     <input type="checkbox" id="newStartTime" name="checkbox">
                     New StartDate
                 </label>
-                <input type="date" id="newStartTime-value" placeholder="Type Here" autocomplete="off" class="specified-hidden">
+                <input type="date" id="newStartTime-value" placeholder="Type Here" autocomplete="off" class="hidden">
                 <label for="newEndTime" class="bold">
                     <input type="checkbox" id="newEndTime" name="checkbox">
                     New EndDate
                 </label>
-                <input type="date" id="newEndTime-value" placeholder="Type Here" autocomplete="off" class="specified-hidden">
+                <input type="date" id="newEndTime-value" placeholder="Type Here" autocomplete="off" class="hidden">
                 <button class="green-btn">Edit</button>
             </form>
         </div>
     </div>
-    <div class="specified-hidden error-container" id="days-off-error-container">
+    <div class="hidden error-container" id="days-off-error-container">
         <p id="days-off-error-tag" class="error-tag"></p>
     </div>
 
     <div class="table-div">
         <h1>Permanent Restrictions</h1>
-        <table id="restriction-table" class="specified-hidden">
+        <table id="restriction-table">
             <tr>
                 <th>ID</th>
                 <th>First Name</th>
@@ -136,7 +136,7 @@
                 <th>End Time</th>
             </tr>
         </table>
-        <p id="restriction-table-tag" class="specified-hidden">No restrictions Found</p>
+        <p id="restriction-table-tag" class="hidden">No restrictions Found</p>
     </div>
 
     <div class="buttons-div">
@@ -145,8 +145,8 @@
         <button id="edit-restriction-btn" class="grey-btn">Edit restriction</button>
     </div>
 
-    <div class="data-input-container">
-        <div id="add-restriction-div" class="specified-hidden container">
+    <div class="data-input-container" id="restriction-container">
+        <div id="add-restriction-div" class="hidden">
             <form id="add-restriction-form">
                 <label for="worker-id-input" class="bold">Worker ID</label>
                 <input type="number" id="worker-id-input" placeholder="Type here" class="text-number-input" required>
@@ -193,7 +193,7 @@
             </form>
         </div>
 
-        <div id="find-restriction-div" class="specified-hidden container">
+        <div id="find-restriction-div" class="hidden container">
             <form id="find-restriction-form">
                 <div id="restriction-ids-div">
                     <label for="restriction-id" class="bold">
@@ -213,7 +213,7 @@
             </form>
         </div>
 
-        <div id="edit-restriction-div" class="specified-hidden">
+        <div class="hidden" id="edit-restriction-div">
             <form id="edit-restriction-form">
                 <label for="restriction-target-id" class="bold">
                     Restriction ID
@@ -223,12 +223,12 @@
                     <input type="checkbox" id="newWorkerCheckbox">
                     New Worker
                 </label>
-                <input type="number" id="newWorker" class="specified-hidden text-number-input" placeholder="Type here">
+                <input type="number" id="newWorker" class="hidden text-number-input" placeholder="Type here">
                 <label for="dayOfWeekCheckbox" class="bold">
                     <input type="checkbox" id="dayOfWeekCheckbox">
                     New Day Of Week
                 </label>
-                <div id="dayOfWeekOptions" class="specified-hidden">
+                <div id="dayOfWeekOptions" class="hidden">
                     <label for="newSunday">
                         <input type="radio" id="newSunday" name="newDay" value="Sunday">
                         Sunday
@@ -262,8 +262,8 @@
                     <input type="checkbox" id="newStartTimeCheckbox">
                     New StartTime
                 </label>
-                <input type="time" id="newRestrictionStart" class="specified-hidden">
-                <label id="removeStartLabel" for="removeStartCheckbox" class="bold specified-hidden">
+                <input type="time" id="newRestrictionStart" class="hidden">
+                <label id="removeStartLabel" for="removeStartCheckbox" class="bold hidden">
                     <input type="checkbox" id="removeStartCheckbox">
                     Remove Start Time
                 </label>
@@ -271,8 +271,8 @@
                     <input type="checkbox" id="newEndTimeCheckbox">
                     New EndTime
                 </label>
-                <input type="time" id="newRestrictionEnd" class="specified-hidden">
-                <label id="removeEndLabel" for="removeEndCheckbox" class="bold specified-hidden">
+                <input type="time" id="newRestrictionEnd" class="hidden">
+                <label id="removeEndLabel" for="removeEndCheckbox" class="bold hidden">
                     <input type="checkbox" id="removeEndCheckbox">
                     Remove End Time
                 </label>
@@ -281,7 +281,7 @@
         </div>
     </div>
 
-    <div class="specified-hidden error-container" id="restriction-error-container">
+    <div class="hidden error-container" id="restriction-error-container">
         <p id="restriction-error-tag" class="error-tag"></p>
     </div>
     

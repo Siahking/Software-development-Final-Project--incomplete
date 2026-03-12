@@ -12,7 +12,7 @@
     <div class="nav-container">
         <nav class="navbar navbar-expand-lg bg-white">
             <div class="container-fluid" id="nav-div">
-              <a class="navbar-brand" id="home-btn" href="/">Home</a>
+              <a class="navbar-brand" id="home-btn" href="/home">Home</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -48,7 +48,7 @@
             </tr>
         </table>
     </div>
-    <div id="message-container" class="specified-hidden">
+    <div id="message-container" class="hidden">
         <p>No constraints Found</p>
     </div>
 
@@ -59,7 +59,7 @@
     </div>
 
         <div class="data-input-container">
-            <div id="add-constraint-div" class="specified-hidden">
+            <div id="add-constraint-div" class="hidden">
                 <form id="add-constraint-form">
                     <label for="worker1" class="bold">
                         Worker 1
@@ -78,7 +78,7 @@
                 </form>
             </div>
     
-            <div id="find-constraint-div" class="specified-hidden">
+            <div id="find-constraint-div" class="hidden">
                 <form id="find-constraint-form">
                     <div id="find-constraint-data-div">
                         <div id="worker1-data" class="worker-data">
@@ -108,7 +108,7 @@
                 </form>
             </div>
             
-            <div id="edit-constraint-div" class="specified-hidden">
+            <div id="edit-constraint-div" class="hidden">
                 <form id="edit-constraint-form">
                     <label for="constraint-id" class="bold">
                         Constraint ID
@@ -119,24 +119,24 @@
                         Worker1 ID
                         <input type="checkbox" id="worker1-checkbox">
                     </label>
-                    <input type="number" class="specified-hidden text-number-input" id="worker1Id-input" placeholder="Type here">
+                    <input type="number" class="hidden text-number-input" id="worker1Id-input" placeholder="Type here">
                     <label for="worker2-checkbox" class="bold">
                         Worker2 ID
                         <input type="checkbox" id="worker2-checkbox">
                     </label>
-                    <input type="number" class="specified-hidden text-number-input" id="worker2Id-input" placeholder="Type here">
+                    <input type="number" class="hidden text-number-input" id="worker2Id-input" placeholder="Type here">
                     <label for="summary-checkbox" class="bold">
                         Summary
                         <input type="checkbox" id="summary-checkbox">
                     </label>
-                    <input type="text" class="specified-hidden text-number-input" id="new-summary-input" placeholder="Type here" autocomplete="off">
+                    <input type="text" class="hidden text-number-input" id="new-summary-input" placeholder="Type here" autocomplete="off">
                     <button type="submit" class="green-btn">Change Constraint</button>
                 </form>
             </div>
     
         </div>
 
-        <div id="constraints-error-container" class="specified-hidden error-container">
+        <div id="constraints-error-container" class="hidden error-container">
             <p id="constraints-error-tag" class="error-tag"></p>
         </div>
          
