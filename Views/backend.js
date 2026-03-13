@@ -598,6 +598,10 @@ export async function login(username,password){
     })
 }
 
+export async function logout(){
+    return apiRequest("logout","POST")
+}
+
 export async function createAccount(username,password){
 
     if (!username || !password){
@@ -608,18 +612,6 @@ export async function createAccount(username,password){
         username,password
     })
 }
-
-// async function retrieveAccount(account_id,username){
-//     let url = "retrieve-account"
-
-//     if (account_id){
-//         url += `?account_id=${account_id}`
-//     }else if (username){
-//         url += `?username=${username}`
-//     }
-
-//     return apiRequest(url,"GET")
-// }
 
 export async function editAccount(account_id,username,password){
     if (!account_id){

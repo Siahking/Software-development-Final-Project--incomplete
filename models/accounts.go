@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-contrib/sessions" 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
@@ -153,6 +154,13 @@ func Login(c *gin.Context, db *sql.DB){
 		return
 	}
 
+	if input.Username == nil || input.Password == nil{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":"Usrname and password required",
+		})
+		return
+	}
+
 	account, err := RetrieveAccounts(db, *input.Username)
 	if err != nil{
 		if err == sql.ErrNoRows{
@@ -170,5 +178,35 @@ func Login(c *gin.Context, db *sql.DB){
 		return
 	}
 
+	session := sessions.Default(c)
+	session.Set("user", *account.Username)
+	session.Save()
+
 	c.JSON(http.StatusOK,gin.H{"message":"Login successful"})
+}
+
+func Logout(c *gin.Context){
+	session := sessions.Default(c)
+
+	session.Clear()
+	session.Save()
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":"Logged out successfully",
+	})
+}
+
+func AuthRequired() gin.HandlerFunc {
+	return func(c *gin.Context){
+		session := sessions.Default(c)
+		user := session.Get("user")
+
+		if user == nil {
+			c.Redirect(http.StatusFound,"/login")
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
 }

@@ -8,6 +8,8 @@ import (
 	"final-project/models"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -26,7 +28,11 @@ func main() {
 	//Get the router ready
 	router := gin.Default()
 
-	//AlLow cors
+	//Initialize sessions
+	store := cookie.NewStore([]byte("super-secret-key"))
+	router.Use(sessions.Sessions("roster-session", store))
+
+	//Allow cors
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://127.0.0.1:5501","http://127.0.0.1:5500", "http://localhost:5500"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
