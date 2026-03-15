@@ -111,4 +111,4 @@
 -- )
 
 --@block
-SELECT * FROM roster_entries;
+SELECT FROM user_accounts WHERE username = "king";

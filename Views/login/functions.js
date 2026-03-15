@@ -8,6 +8,7 @@ export async function checkCredentials(username,password){
     if (result.error){
         displayError("error",result.error)
     }else{
+        sessionStorage.setItem("Username",username)
         sessionStorage.setItem("Message","Login Successful")
         window.location.href = "/home"
     }

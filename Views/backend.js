@@ -626,6 +626,14 @@ export async function editAccount(account_id,username,password){
     })
 }
 
+export async function findAccount(username){
+    if(!username){
+        return{"error":"Username required"}
+    }
+
+    return apiRequest(`retrieve-account/${username}`,"GET")
+}
+
 export async function deleteAccount(account_id,username){
     let url = "delete-account"
 
@@ -639,7 +647,7 @@ export async function deleteAccount(account_id,username){
 }
 
 // async function tester() {
-//     const result = await login("king","12345678")
+//     const result = await findAccount("king","12345678")
 //     console.log(result)
 // }
 

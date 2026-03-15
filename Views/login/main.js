@@ -6,6 +6,14 @@ const signupBtn = document.getElementById("signup-button")
 const submitBtn = document.getElementById("submit-button")
 const usernameTag = document.getElementById("username")
 const passwordTag = document.getElementById("password")
+const messageTag = document.getElementById("message-tag")
+const message = sessionStorage.getItem("Message")
+
+if (message){
+    messageTag.innerText = message
+    messageTag.classList.remove("hidden")
+    sessionStorage.removeItem("Message")
+}
 
 loginBtn.addEventListener("click",()=>{
     toggleDiv("login-button")

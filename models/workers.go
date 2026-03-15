@@ -145,7 +145,6 @@ func FindWorker(c *gin.Context, db *sql.DB) {
 	}
 
 	if len(workers) == 0 {
-		fmt.Print("Passed here \n\n")
 		c.JSON(http.StatusNotFound, gin.H{"error": "No Workers found"})
 		return
 	} else {

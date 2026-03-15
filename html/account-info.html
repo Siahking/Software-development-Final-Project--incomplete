@@ -40,6 +40,7 @@
     <div id="account-info">
         <p id="username"></p>
         <p id="password"></p>
+        <p class="error-tag"></p>
     </div>
 
     <div id="btns-div">
@@ -48,7 +49,7 @@
         <button id="logout">Logout</button>
     </div>
 
-    <div id="edit-options-container" class="hidden">
+    <form id="edit-options-container" class="hidden">
         <label for="new-username">
             New Username
             <input type="text" id="new-username" placeholder="Type Here">
@@ -57,9 +58,12 @@
             New Password
             <input type="text" id="new-password" placeholder="Type Here">
         </label>
-        <button id="save-new-info">Save</button>
-    </div>
+        <button id="save-new-info" type="submit">Save</button>
+      </form>
 
+    <script type="module" src="../views/account/frontend.js"></script>
+    <script type="module" src="../views/account/functions.js"></script>
+    <script type="module" src="../views/account/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

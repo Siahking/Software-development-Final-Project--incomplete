@@ -75,6 +75,43 @@ func RetrieveAccounts(db *sql.DB, username string) (*Account,error){
 	return &account,nil
 }
 
+func FindAccount(c *gin.Context, db *sql.DB){
+	username := c.Param("username")
+
+	query := `SELECT * FROM user_accounts WHERE username = ?`
+
+	rows,err := db.Query(query,username)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in query execution\n" + err.Error()})
+		return
+	}
+
+	defer rows.Close()
+
+	var accounts []Account
+
+	for rows.Next(){
+		var account Account
+
+		err := rows.Scan(&account.AccountID,&account.Username,&account.Password)
+
+		if err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"error":"Error in scanning rows\n" + err.Error()})
+			return
+		}
+
+		accounts = append(accounts, account)
+	}
+
+	if len(accounts) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Accounts found"})
+		return
+	} else {
+		c.JSON(http.StatusOK, accounts)
+	}
+}
+
 func EditAccount(c *gin.Context, db *sql.DB){
 	var account Account
 	idStr := c.Param("id")

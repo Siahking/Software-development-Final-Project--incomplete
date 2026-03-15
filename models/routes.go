@@ -69,6 +69,9 @@ func htmlRoutes(router *gin.Engine) {
 	router.GET("/login",func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.html",nil)
 	})
+	router.GET("/account-info",func(c *gin.Context) {
+		c.HTML(http.StatusOK, "account-info.html", nil)
+	})
 }
 
 func apiRouter(router *gin.Engine, db *sql.DB) {
@@ -267,6 +270,10 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 	//delete account
 	protected.DELETE("/delete-account", func(c *gin.Context){
 		DeleteAccount(c,db)
+	})
+	//find account
+	protected.GET("/retrieve-account/:username", func(c *gin.Context){
+		FindAccount(c,db)
 	})
 	//login
 	router.POST("/login", func(c *gin.Context){
