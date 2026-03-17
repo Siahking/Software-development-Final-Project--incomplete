@@ -1,28 +1,51 @@
-import { editAccount,findAccount,logout } from "../backend.js"
+import { editAccount,findAccount,logout,deleteAccount } from "../backend.js"
 
 const errorTag = document.querySelector(".error-tag")
 
+const currentUsername = sessionStorage.getItem("Username")
+const results = await findAccount(currentUsername)
+
+if (results.error){
+    errorTag.innerText = results.error
+    throw new Error(results.error)
+}
+
+if (!results || !results[0]){
+    errorTag.innerText = "Account not found"
+    throw new Error("Account not found")
+}
+const userId = results[0].account_id
+
 export async function editInfo(){
-    const newUsername = document.getElementById("new-username").value
-    const newPassword = document.getElementById("new-password").value
-    const username = sessionStorage.getItem("Username")
+    const usernameValue = document.getElementById("new-username").value
+    const passwordValue = document.getElementById("new-password").value
+    const pwdCheck = document.getElementById("confirm-password").value
 
-    const results = await findAccount(username)
-
-    console.log(results)
-
-    if (newPassword || newUsername){
-        editAccount()
-    }else{
-
+    if(!usernameValue && !passwordValue){
+        errorTag.innerText = "No Changes made"
+        return
+    }else if (passwordValue !== pwdCheck){
+        errorTag.innerText = "Passwords do not match"
+        return
     }
 
-    return
+    const newUsername = usernameValue ? usernameValue : null
+    const newPassword = passwordValue ? passwordValue : null
+
+    const editResults = await editAccount(userId,newUsername,newPassword)
+
+    if(editResults.error){
+        errorTag.innerText = editResults.error
+    }else{
+        sessionStorage.setItem("Message",editResults.message + ",please login with new credentials")
+    }
+
+    await logout()
+    window.location = "/login"
 }
 
 export async function accountLogout(){
     const results = await logout()
-    console.log(results)
     if (results.error){
         errorTag.innerText = results.error
     }else{
@@ -31,3 +54,13 @@ export async function accountLogout(){
     }
 }
 
+export async function removeAccount(){
+    const results = await deleteAccount(userId)
+    if (results.error){
+        errorTag.innerText = results.error
+    }else{
+        sessionStorage.setItem("Message",results.message)
+        await logout()
+        window.location = "/login"
+    }
+}

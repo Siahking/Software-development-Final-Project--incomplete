@@ -50,16 +50,20 @@
     </div>
 
     <form id="edit-options-container" class="hidden">
-        <label for="new-username">
-            New Username
-            <input type="text" id="new-username" placeholder="Type Here">
-        </label>
-        <label for="new-password">
-            New Password
-            <input type="text" id="new-password" placeholder="Type Here">
-        </label>
-        <button id="save-new-info" type="submit">Save</button>
-      </form>
+      <label for="new-username">
+          New Username
+          <input type="text" id="new-username" placeholder="Type Here">
+      </label>
+      <label for="new-password">
+          New Password
+          <input type="text" id="new-password" placeholder="Type Here">
+      </label>
+      <label for="confirm-password" id="confirmation-label" class="hidden">
+        Confirm Password
+        <input type="text" id="confirm-password" placeholder="Type here">
+      </label>
+      <button id="save-new-info" type="submit">Save</button>
+    </form>
 
     <script type="module" src="../views/account/frontend.js"></script>
     <script type="module" src="../views/account/functions.js"></script>

@@ -128,6 +128,17 @@ func EditAccount(c *gin.Context, db *sql.DB){
 		return
 	}
 
+	if account.Password != nil {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*account.Password),bcrypt.DefaultCost)
+		if err != nil{
+			c.JSON(http.StatusInternalServerError,gin.H{"error":"Error found while hashing new password"})
+			return
+		}
+
+		hashedStr := string(hashedPassword)
+		account.Password = &hashedStr
+	}
+
 	query := `UPDATE user_accounts SET
 		username = COALESCE(?, username),
 		password = COALESCE(?, password)
