@@ -1,0 +1,29 @@
+#account-info{
+    min-width: 900px;
+    display: flex;
+    justify-content: center;
+}
+
+#btns-div{
+    min-width: 900px;
+    display: flex;
+    justify-content: center;
+}
+
+#error-container{
+    min-width: 900px;
+    display: flex;
+    justify-content: center;
+}
+
+#edit-options-container{
+    min-width: 900px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#edit-options-container label{
+    margin: 5px 0;
+}

@@ -1,20 +1,24 @@
 import { editAccount,findAccount,logout,deleteAccount } from "../backend.js"
+import { toggleErrorContainer } from "./frontend.js"
 
 const errorTag = document.querySelector(".error-tag")
 
 const currentUsername = sessionStorage.getItem("Username")
 const results = await findAccount(currentUsername)
+const usernameInfo = document.getElementById("username")
 
 if (results.error){
-    errorTag.innerText = results.error
+    toggleErrorContainer(results.error)
     throw new Error(results.error)
 }
 
 if (!results || !results[0]){
-    errorTag.innerText = "Account not found"
+    toggleErrorContainer("Account not found")
     throw new Error("Account not found")
 }
+
 const userId = results[0].account_id
+usernameInfo.innerText += results[0].username
 
 export async function editInfo(){
     const usernameValue = document.getElementById("new-username").value
@@ -22,10 +26,10 @@ export async function editInfo(){
     const pwdCheck = document.getElementById("confirm-password").value
 
     if(!usernameValue && !passwordValue){
-        errorTag.innerText = "No Changes made"
+        toggleErrorContainer("No Changes made")
         return
     }else if (passwordValue !== pwdCheck){
-        errorTag.innerText = "Passwords do not match"
+        toggleErrorContainer("Passwords do not match")
         return
     }
 
@@ -35,7 +39,7 @@ export async function editInfo(){
     const editResults = await editAccount(userId,newUsername,newPassword)
 
     if(editResults.error){
-        errorTag.innerText = editResults.error
+        toggleErrorContainer(editResults.error)
     }else{
         sessionStorage.setItem("Message",editResults.message + ",please login with new credentials")
     }
@@ -47,7 +51,7 @@ export async function editInfo(){
 export async function accountLogout(){
     const results = await logout()
     if (results.error){
-        errorTag.innerText = results.error
+        toggleErrorContainer(results.error)
     }else{
         sessionStorage.setItem("Message",results.message)
         window.location = "/login"
@@ -57,7 +61,7 @@ export async function accountLogout(){
 export async function removeAccount(){
     const results = await deleteAccount(userId)
     if (results.error){
-        errorTag.innerText = results.error
+        toggleErrorContainer(results.error)
     }else{
         sessionStorage.setItem("Message",results.message)
         await logout()
