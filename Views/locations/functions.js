@@ -19,7 +19,7 @@ export async function loadLocations(){
 
     if (objectCheck(locations)){
         locationsErrorTag.classList.remove("specified-hidden")
-        return
+        return   
     }
     
     locations.forEach(data=>{
