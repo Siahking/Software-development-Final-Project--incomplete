@@ -1,6 +1,10 @@
 import * as apiFuncs from "../backend.js"
 import { displayError, objectCheck } from "../general-helper-funcs.js"
 
+const scrollToBottom = () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })
+}
+
 export async function saveRoster(errorTagId,LocationId,workersDetail){
     const successContainer = document.getElementById(`${LocationId}-success-container`)
     const MonthYear = workersDetail[0].getAttribute("monthyear")
@@ -8,8 +12,8 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
 
     const newRoster = await apiFuncs.saveRoster(LocationId,Month,Year)
     if (objectCheck(newRoster)){
-         
         displayError(errorTagId,newRoster.error)
+        scrollToBottom()
         return
     }
     const RosterResult = await apiFuncs.retrieveRosters("",LocationId,Month,Year)
@@ -33,13 +37,15 @@ export async function saveRoster(errorTagId,LocationId,workersDetail){
             if(objectCheck(createRosterResults)){
                 displayError(errorTagId,createRosterResults.error)
                 successContainer.classList.add("specified-hidden")
+                scrollToBottom()
                 break
             }
         }
-    }finally{
+    }finally{   
         document.body.style.cursor = "default"
         document.body.style.pointerEvents = "auto"
 
-    successContainer.classList.remove("specified-hidden")
-}
+        successContainer.classList.remove("specified-hidden")
+        scrollToBottom()
+    }
 }

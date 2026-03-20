@@ -1,4 +1,5 @@
 import { editAccount,findAccount,logout,deleteAccount } from "../backend.js"
+import { displayError } from "../general-helper-funcs.js"
 import { toggleErrorContainer } from "./frontend.js"
 
 const errorTag = document.querySelector(".error-tag")
@@ -8,12 +9,12 @@ const results = await findAccount(currentUsername)
 const usernameInfo = document.getElementById("username")
 
 if (results.error){
-    toggleErrorContainer(results.error)
+    displayError("error",results.error)
     throw new Error(results.error)
 }
 
 if (!results || !results[0]){
-    toggleErrorContainer("Account not found")
+    displayError("error","Account not found")
     throw new Error("Account not found")
 }
 
@@ -26,10 +27,10 @@ export async function editInfo(){
     const pwdCheck = document.getElementById("confirm-password").value
 
     if(!usernameValue && !passwordValue){
-        toggleErrorContainer("No Changes made")
+        displayError("error","No Changes made")
         return
     }else if (passwordValue !== pwdCheck){
-        toggleErrorContainer("Passwords do not match")
+        displayError("error","Passwords do not match")
         return
     }
 
@@ -39,7 +40,7 @@ export async function editInfo(){
     const editResults = await editAccount(userId,newUsername,newPassword)
 
     if(editResults.error){
-        toggleErrorContainer(editResults.error)
+        displayError("error",editResults.error)
     }else{
         sessionStorage.setItem("Message",editResults.message + ",please login with new credentials")
     }
@@ -51,7 +52,7 @@ export async function editInfo(){
 export async function accountLogout(){
     const results = await logout()
     if (results.error){
-        toggleErrorContainer(results.error)
+        displayError("error",results.error)
     }else{
         sessionStorage.setItem("Message",results.message)
         window.location = "/login"

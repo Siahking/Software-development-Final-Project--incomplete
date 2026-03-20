@@ -22,7 +22,7 @@ export async function removeConstraint(id){
             window.location.href = "/home"
         }
     }else{
-        displayError(errorTagId,"Opertaion Canceled")
+        displayError(errorTagId,"Operation Canceled")
     }
 }
 

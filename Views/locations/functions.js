@@ -54,7 +54,7 @@ export async function deleteLocation(id){
             window.location.href = "/home"
         }
     }else{
-        displayError(errorTagId,"Operation Cancled")
+        displayError(errorTagId,"Operation Canceled")
     }
 }
 
@@ -92,11 +92,25 @@ export async function editLocation(event){
         return
     }
 
-    const results =await  apiFuncs.editLocation(locationId,locationName)
+    const results = await apiFuncs.editLocation(locationId, locationName)
 
-    if(objectCheck(results)){
-        displayError(errorTagId,results.error)
-    }else{
-        console.log(results)
+    if (!results) {
+        displayError(errorTagId, "Location update failed. Please try again.")
+        return
     }
+
+    if (objectCheck(results) && results.error) {
+        displayError(errorTagId, results.error)
+        return
+    }
+
+    if (results.message) {
+        sessionStorage.setItem("Message", results.message)
+        window.location.href = "/home"
+        return
+    }
+
+    // Fallback for unknown but non-error response
+    displayError(errorTagId, "Location update completed.")
+    console.log("editLocation response:", results)
 }

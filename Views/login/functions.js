@@ -28,6 +28,5 @@ export async function storeCredentials(username,password){
         setTimeout(() => {
             window.location.href = "/login"
         }, 5000)
-        window.location.href = "/login"
     }
 }

@@ -128,7 +128,7 @@ export async function deleteDaysOff(event){
         sessionStorage.setItem("Message",result.message)
         window.location.href = "/home"
     }else{
-        displayError(errorTagId,"Operation Cancleded")
+        displayError(errorTagId,"Operation Canceled")
     }
 }
 

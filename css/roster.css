@@ -154,3 +154,7 @@ span{
     background: #fff;
     z-index: 1000;
 }
+
+.error-container{
+    min-width: 1000px !important;
+}

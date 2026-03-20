@@ -5,6 +5,12 @@ import { objectCheck } from "../general-helper-funcs.js"
 import { saveRoster } from "../saved-rosters/functions.js"
 
 export async function generateCalender(month,year){
+    const scrollToElement = (element) => {
+        if (element && typeof element.scrollIntoView === "function") {
+            element.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+    }
+
     const [
         _clearOccupancies,daysOffResult,constraintsArray,restrictionsArray
     ] = await Promise.all([
@@ -95,6 +101,7 @@ export async function generateCalender(month,year){
         const errorTag = document.createElement("p")
         const successMessage = document.createElement("p")
         successMessage.innerText = "Roster saved successfully"
+        successMessage.style.color = "green"
         successMessage.setAttribute("id",`${location.id}-message`)
         successContainer.appendChild(successMessage)
     
@@ -119,6 +126,8 @@ export async function generateCalender(month,year){
             locationErrorTag.innerText = "No workers found for this Location"
             headerContainer.appendChild(locationErrorTag)
             locationFragment.appendChild(headerContainer)
+            container.appendChild(locationFragment)
+            scrollToElement(locationErrorTag)
             continue
         }
 
@@ -192,7 +201,7 @@ export async function generateCalender(month,year){
                 loadingContainer.classList.add("specified-hidden")
                 locationFragment.appendChild(headerContainer)
                 break
-            }else if(Object.keys(results).includes("Insufficient Workers")){
+            } else if(Object.keys(results).includes("Insufficient Workers")){
                 errorFound = true
                 locationErrorTag.innerText = "Insufficient Workers for shifts:"
                 const unorderedList = document.createElement("ul")
@@ -221,6 +230,7 @@ export async function generateCalender(month,year){
         }
         if (errorFound){
             container.appendChild(locationFragment)
+            scrollToElement(locationErrorTag)
             continue
         }
         calendarContainer.classList.remove("specified-hidden")
@@ -232,6 +242,9 @@ export async function generateCalender(month,year){
         locationFragment.appendChild(successContainer)
         locationFragment.appendChild(errorContainer)
         container.appendChild(locationFragment)
+
+        // Scroll to the finished roster for this location.
+        scrollToElement(calendarContainer)
     }
 }
 

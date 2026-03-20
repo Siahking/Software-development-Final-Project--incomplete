@@ -9,6 +9,11 @@ export function displayError(errorTagId,message){
     const errorContainer = document.getElementById(errorTagId+"-container")
     errorContainer.classList.remove("specified-hidden")
     errorTag.innerText = message
+
+    setTimeout(() => {
+        errorContainer.classList.add("specified-hidden")
+        errorTag.innerText = ""
+    }, 3000)
 }
 
 export function deleteConfirmation(item){

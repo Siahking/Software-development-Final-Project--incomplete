@@ -135,7 +135,7 @@ export async function deleteRestriction(id){
         sessionStorage.setItem("Message",result.message)
         window.location.href = "/home"
     }else{
-        displayError(errorTagId,"Operation Cancled")
+        displayError(errorTagId,"Operation Canceled")
     }
 }
 
