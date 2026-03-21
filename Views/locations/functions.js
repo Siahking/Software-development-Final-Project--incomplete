@@ -5,6 +5,8 @@ const errorTagId = "locations-error"
 const input = document.getElementById("location-input")
 const list = document.getElementById("list");
 const locationsErrorTag = document.getElementById("no-results-error-tag")
+const resultsContainer = document.getElementById("search-items")
+const locationsArr = []
 
 const valueCheck = ()=>{
     if (!input.value){
@@ -19,7 +21,7 @@ export async function loadLocations(){
 
     if (objectCheck(locations)){
         locationsErrorTag.classList.remove("specified-hidden")
-        return   
+        return
     }
     
     locations.forEach(data=>{
@@ -41,6 +43,7 @@ export async function loadLocations(){
         listItem.appendChild(deleteBtn)
 
         list.appendChild(listItem)
+        locationsArr.push(data)
     })
 }
 
@@ -60,13 +63,42 @@ export async function deleteLocation(id){
 
 export async function newLocation(){
     if (!valueCheck())return false
-    const result = await apiFuncs.addLocation(input.value)
+    //capitalize the name before adding it to the backend
+    const nameArray = input.value.split(' ')
+    const capitalizedName = nameArray.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    const result = await apiFuncs.addLocation(capitalizedName)
     if (objectCheck(result)){
         displayError(errorTagId,result.error)
     }else{
         sessionStorage.setItem("Message",result.message)
         window.location.href = "/home"
     }
+}
+
+export function displayOptions(){
+    const value = input.value.toLowerCase()
+    let matches
+
+    resultsContainer.innerHTML = ""
+    resultsContainer.classList.add("hidden")
+
+    if (value){
+        matches = locationsArr.filter(location=>location.location.toLowerCase().includes(value))
+        matches.map(result=>{
+            const item = document.createElement("p")
+            item.setAttribute("id",`${result.id}-option`)
+            item.classList.add("search-item")
+            item.innerText = result.location
+            item.addEventListener("click",()=>selectOption(`${result.location}`))
+            resultsContainer.appendChild(item)
+        })
+        if (matches.length>0)resultsContainer.classList.remove("hidden")
+    }
+}
+
+function selectOption(value){
+    input.value = value
+    resultsContainer.classList.add("hidden")
 }
 
 export async function findlocation(){

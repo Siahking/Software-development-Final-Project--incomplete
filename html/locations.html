@@ -54,23 +54,26 @@
         <div class="data-input-container">
           <div class="hidden" id="add-location-div">
             <form id="location-form">
-                <label for="location-input" class="bold">
+                <label for="location-input" class="bold" id="location-label">
                     Location Name
-                    <input type="text" class="text-number-input" id="location-input" placeholder="Type here" autocomplete="off">
                 </label>
+                <div id="wrapper">
+                  <input type="text" class="text-number-input" id="location-input" placeholder="Type here" autocomplete="off">
+                  <div class="hidden" id="search-items"></div>
+                </div>
                 <button id="location-submit-btn" class="green-btn">Submit</button>
             </form>
           </div>
 
           <div class="hidden" id="edit-location-div">
             <form id="edit-location-form">
-              <label for="locationId" class="bold">
+              <label for="targetId" class="bold">
                 Location ID
                 <input type="text" id="targetId" autocomplete="off" placeholder="Type Here" class="text-number-input">
               </label>
               <label for="locationName" class="bold">
                 Location Name
-                <input type="text" id="newLocationName" autocomplete="off" placeholder="Type Here" class="text-number-input">
+                <input type="text" id="locationName" autocomplete="off" placeholder="Type Here" class="text-number-input">
               </label>
               <button class="green-btn">Edit</button>
             </form>

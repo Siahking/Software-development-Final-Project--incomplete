@@ -6,14 +6,19 @@ const addLocationBtn = document.getElementById("add-location")
 const findLocationBtn = document.getElementById("find-location")
 const editLocationBtn = document.getElementById("edit-location")
 const editLocationForm = document.getElementById("edit-location-form")
+const inputTag = document.getElementById("location-input")
 
-funcs.loadLocations()
+await funcs.loadLocations()
 
 for (const btn of [addLocationBtn,findLocationBtn]){
     btn.addEventListener("click",(event)=>
         frontend.toogleDiv(event.target.id)
     )
 }
+
+inputTag.addEventListener("input",()=>{
+    if (frontend.toogleStates["find-location"])funcs.displayOptions()
+})
 
 locationForm.addEventListener("submit",(event)=>{
     event.preventDefault()
