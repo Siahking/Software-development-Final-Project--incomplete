@@ -1,6 +1,6 @@
-import * as apiFuncs from '../backend.js'
 import { objectCheck,displayError, deleteConfirmation } from '../general-helper-funcs.js'
 import validateCoverage from './helper-functions.js'
+import * as apiFuncs from "../backend.js";
 
 const errorTagId = "restriction-error"
 const emptyTableTag = document.getElementById("restriction-table-tag")
@@ -24,7 +24,8 @@ export async function displayRestrictions(){
     for (const restriction of results){
         const workerData = await getWorker(restriction.worker_id)
         const tableRow = document.createElement("tr")
-        const idData = document.createElement("td")
+        const restrictionIdData = document.createElement("td")
+        const workerIdData = document.createElement("td")
         const firstNameData = document.createElement("td")
         const lastNameData = document.createElement("td")
         const dayOfWeekData= document.createElement("td")
@@ -40,14 +41,15 @@ export async function displayRestrictions(){
             deleteRestriction(event.target.value)
         )
         
-        idData.innerText  = restriction.id
+        restrictionIdData.innerText  = restriction.id
+        workerIdData.innerText = workerData.id
         firstNameData.innerText = workerData.first_name
         lastNameData.innerText = workerData.last_name
         dayOfWeekData.innerText = restriction.day_of_week
         startTimeData.innerText = restriction.start_time ? restriction.start_time : "--"  
         endTimeData.innerText = restriction.end_time ? restriction.end_time : "--"
         
-        for (const data of [idData,firstNameData,lastNameData,dayOfWeekData,startTimeData,endTimeData,deleteBtn]){
+        for (const data of [restrictionIdData,workerIdData,firstNameData,lastNameData,dayOfWeekData,startTimeData,endTimeData,deleteBtn]){
             tableRow.appendChild(data)
         }
 
