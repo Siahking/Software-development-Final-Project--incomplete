@@ -7,7 +7,6 @@ import(
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"strings"
-	"strconv"
 )
 
 type Location struct {
@@ -155,14 +154,7 @@ func DeleteEntry(c *gin.Context, db *sql.DB) {
 
 func EditLocation(c *gin.Context,db *sql.DB){
 	var location Location
-	idStr := c.Param("id")
-
-	id, conversionErr := strconv.Atoi(idStr)
-
-	if conversionErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID parameter"})
-		return
-	}
+	currentLocation := c.Param("location")
 
 	if err := c.ShouldBindJSON(&location); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
@@ -174,9 +166,9 @@ func EditLocation(c *gin.Context,db *sql.DB){
 		return
 	}
 
-	query := `UPDATE locations SET location = COALESCE(?, location) WHERE id = ?`
+	query := `UPDATE locations SET location = COALESCE(?, location) WHERE location = ?`
 
-	result,err := db.Exec(query, location.Location, id)
+	result,err := db.Exec(query, location.Location, currentLocation)
 
 	if err != nil{
 		c.JSON(http.StatusConflict, gin.H{"error": "Location with this name already exists"})

@@ -113,18 +113,21 @@ export async function findlocation(){
 }
 
 export async function editLocation(event){
-
     event.preventDefault()
+    const currentLocationName = document.getElementById("current-location").value
+    let newLocationName = document.getElementById("new-location").value
 
-    const locationId = document.getElementById("targetId").value
-    const locationName = document.getElementById("newLocationName").value
+    console.log(!newLocationName)
 
-    if (!locationId){
-        displayError(errorTagId,"Location ID required")
+    if (!currentLocationName || !newLocationName){
+        console.log("passed in this statement")
+        displayError(errorTagId,"Please insert both the current and new location")
         return
     }
 
-    const results = await apiFuncs.editLocation(locationId, locationName)
+    newLocationName = newLocationName.charAt(0).toUpperCase() + newLocationName.slice(1)
+
+    const results = await apiFuncs.editLocation(currentLocationName, newLocationName)
 
     if (!results) {
         displayError(errorTagId, "Location update failed. Please try again.")

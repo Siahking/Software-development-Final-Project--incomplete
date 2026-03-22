@@ -50,6 +50,7 @@ export async function displayDaysOff(){
     for (const result of results){
         const tableRow = document.createElement("tr")
         const idInfo = document.createElement("td")
+        const workerId = document.createElement("td")
         const workerInfo = document.createElement("td")
         const startDate = document.createElement("td")
         const endDate = document.createElement("td")
@@ -59,6 +60,7 @@ export async function displayDaysOff(){
         const workerData = rawWorkerData[0]
 
         idInfo.innerText = result.break_id
+        workerId.innerText = workerData.id
         workerInfo.innerText = `${workerData.first_name} ${workerData.last_name}`
         startDate.innerText = result.start_date.split("T")[0]
         endDate.innerText = result.end_date.split("T")[0]
@@ -68,7 +70,7 @@ export async function displayDaysOff(){
         deleteBtn.innerText = "Remove Days Off"
         deleteBtn.classList.add("delete-btn")
         deleteBtn.addEventListener("click",(event)=>{
-            const confirmation = confirm(`Are you sure you want ot delete these days off for ${workerData.first_name} ${workerData.last_name}`)
+            const confirmation = confirm(`Are you sure you want to delete these days off for ${workerData.first_name} ${workerData.last_name}`)
             if (confirmation){
                 deleteDaysOff(event)
             }else{
@@ -77,7 +79,7 @@ export async function displayDaysOff(){
             }
         })
 
-        for (const cell of [idInfo,workerInfo,startDate,endDate,deleteBtn]){
+        for (const cell of [idInfo,workerId,workerInfo,startDate,endDate,deleteBtn]){
             tableRow.appendChild(cell)
         }
         table.appendChild(tableRow)

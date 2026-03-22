@@ -97,7 +97,7 @@ func apiRouter(router *gin.Engine, db *sql.DB) {
 		AddLocation(c, db)
 	})
 	//edit location
-	protected.PATCH("/edit-location/:id", func(c *gin.Context) {
+	protected.PATCH("/edit-location/:location", func(c *gin.Context) {
 		EditLocation(c, db)
 	})
 

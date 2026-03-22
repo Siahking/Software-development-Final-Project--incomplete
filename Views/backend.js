@@ -41,15 +41,16 @@ export async function findLocation(column,value){
     return apiRequest(url)
 }
 
-export async function editLocation(idStr,location){
-    let id
-    try{
-        id = parseInt(idStr)
-    }catch{
-        return {"error":"Invalid ID param, id needs to be a number"}
+export async function editLocation(currentLocationName,newLocationName){
+    if (!currentLocationName || !newLocationName){
+        return {"error":"Invalid params please provide both the current and new location names"}
     }
 
-    const url = `edit-location/${id}`
+    let location = newLocationName
+
+    console.log(newLocationName)
+
+    const url = `edit-location/${currentLocationName}`
     return apiRequest(url,"PATCH",{location})
 }
 
@@ -647,7 +648,7 @@ export async function deleteAccount(account_id,username){
 }
 
 // async function tester() {
-//     const result = await findAccount("king","12345678")
+//     const result = await editLocation("moriah","miami")
 //     console.log(result)
 // }
 
