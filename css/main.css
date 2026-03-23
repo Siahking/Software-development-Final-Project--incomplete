@@ -154,6 +154,26 @@ tr:last-child td {
     animation: pulseGlow 2.5s infinite;
 }
 
+#search-items{
+    margin-top: 7px;
+    position: absolute;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.search-item{
+    margin: 0;
+    padding: 5px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.search-item:hover {
+    background-color: #f0f0f0;
+}
+
 @keyframes pulseGlow {
     0% {
         text-shadow: 0 0 8px #97BC62, 0 0 16px #97BC62, 0 0 24px #97BC62;

@@ -1,5 +1,6 @@
 import * as frontend from "./frontend.js"
 import * as funcs from "./functions.js"
+import { displayOptions } from "../general-helper-funcs.js"
 
 const locationForm = document.getElementById("location-form")
 const addLocationBtn = document.getElementById("add-location")
@@ -7,6 +8,7 @@ const findLocationBtn = document.getElementById("find-location")
 const editLocationBtn = document.getElementById("edit-location")
 const editLocationForm = document.getElementById("edit-location-form")
 const inputTag = document.getElementById("location-input")
+const resultsContainer = document.getElementById("search-items")
 
 await funcs.loadLocations()
 
@@ -17,7 +19,8 @@ for (const btn of [addLocationBtn,findLocationBtn]){
 }
 
 inputTag.addEventListener("input",()=>{
-    if (frontend.toogleStates["find-location"])funcs.displayOptions()
+    // if (frontend.toogleStates["find-location"])funcs.displayOptions()
+    if (frontend.toogleStates["find-location"])displayOptions(inputTag,resultsContainer,funcs.locationsArr,"location")
 })
 
 locationForm.addEventListener("submit",(event)=>{

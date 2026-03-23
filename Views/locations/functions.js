@@ -6,7 +6,7 @@ const input = document.getElementById("location-input")
 const list = document.getElementById("list");
 const locationsErrorTag = document.getElementById("no-results-error-tag")
 const resultsContainer = document.getElementById("search-items")
-const locationsArr = []
+export const locationsArr = []
 
 const valueCheck = ()=>{
     if (!input.value){
@@ -75,27 +75,6 @@ export async function newLocation(){
     }
 }
 
-export function displayOptions(){
-    const value = input.value.toLowerCase()
-    let matches
-
-    resultsContainer.innerHTML = ""
-    resultsContainer.classList.add("hidden")
-
-    if (value){
-        matches = locationsArr.filter(location=>location.location.toLowerCase().includes(value))
-        matches.map(result=>{
-            const item = document.createElement("p")
-            item.setAttribute("id",`${result.id}-option`)
-            item.classList.add("search-item")
-            item.innerText = result.location
-            item.addEventListener("click",()=>selectOption(`${result.location}`))
-            resultsContainer.appendChild(item)
-        })
-        if (matches.length>0)resultsContainer.classList.remove("hidden")
-    }
-}
-
 function selectOption(value){
     input.value = value
     resultsContainer.classList.add("hidden")
@@ -120,7 +99,6 @@ export async function editLocation(event){
     console.log(!newLocationName)
 
     if (!currentLocationName || !newLocationName){
-        console.log("passed in this statement")
         displayError(errorTagId,"Please insert both the current and new location")
         return
     }

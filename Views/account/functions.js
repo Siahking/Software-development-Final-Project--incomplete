@@ -2,8 +2,6 @@ import { editAccount,findAccount,logout,deleteAccount } from "../backend.js"
 import { displayError } from "../general-helper-funcs.js"
 import { toggleErrorContainer } from "./frontend.js"
 
-const errorTag = document.querySelector(".error-tag")
-
 const currentUsername = sessionStorage.getItem("Username")
 const results = await findAccount(currentUsername)
 const usernameInfo = document.getElementById("username")
