@@ -1,4 +1,4 @@
-#add-constraints-form,#edit-constraint-form,#find-constraint-data-div,#find-constraint-button-div,#find-constraint-form,.worker-data label,#message-container{
+#add-constraint-form,#edit-constraint-form,#find-constraint-data-div,#find-constraint-button-div,#find-constraint-form,.worker-data label,#message-container{
     display: flex;
 }
 

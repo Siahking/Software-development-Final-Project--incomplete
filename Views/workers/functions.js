@@ -278,6 +278,7 @@ export async function editWorker(event){
     const newAddress = document.getElementById("newAddress").value
     const newContact = document.getElementById("newContact").value
     const newIdNumber = document.getElementById("newIdNumber").value
+    // const newLocation = document.getElementById("newLocation").value
     const availabilityOptions = document.querySelectorAll('[name="edit-availability"]')
     const hourOptions = document.querySelectorAll('[name="hour-option"]')
     let newAvailability = null
