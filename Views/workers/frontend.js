@@ -16,7 +16,7 @@ const unimportantInputArr = [firstNameInput,lastNameInput,middleNameInput]
 const fieldsArr = ['id','first-name','middle-name','last-name','id-number']
 
 const editIdArray = [
-    "newFirstName","newLastName","newMiddleName","newAddress","newContact","newIdNumber","newAvailability","newGender"
+    "newFirstName","newLastName","newMiddleName","newAddress","newContact","newIdNumber","newLocations","newAvailability","newGender"
 ]
 
 const availabilityOptions = document.querySelectorAll('[name="edit-availability"]')

@@ -19,7 +19,6 @@ for (const btn of [addLocationBtn,findLocationBtn]){
 }
 
 inputTag.addEventListener("input",()=>{
-    // if (frontend.toogleStates["find-location"])funcs.displayOptions()
     if (frontend.toogleStates["find-location"])displayOptions(inputTag,resultsContainer,funcs.locationsArr,"location")
 })
 

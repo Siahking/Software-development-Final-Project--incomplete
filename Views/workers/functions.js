@@ -16,6 +16,7 @@ const firstNameInput =  document.getElementById("first-name-input")
 const lastNameInput =  document.getElementById("last-name-input")
 const middleNameInput =  document.getElementById("middle-name-input")
 const idNumberInput = document.getElementById("id-number-input")
+export const locations = await apiFuncs.getLocations()
 
 const availabilityOptions = document.querySelectorAll('input[name="availability"]')
 const hoursOptions = document.querySelectorAll('.hours-options')
@@ -69,8 +70,6 @@ function assignHours(){
 }
 
 export async function displayLocations(){
-    const locations = await apiFuncs.getLocations();
-    
     if (!locations){
         showLocationsDiv.innerText = "No Locations Found"
     }else if(locations.error){

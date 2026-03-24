@@ -1,5 +1,6 @@
 import * as backendFuncs from "./functions.js"
 import * as frontendFuncs from "./frontend.js"
+import { displayOptions } from "../general-helper-funcs.js"
 
 const addWorkerBtn = document.getElementById("add-worker")
 const addWorkerDiv = document.getElementById('add-worker-div')
@@ -16,6 +17,8 @@ const dayCheckbox = document.getElementById("day-option")
 const nightCheckbox = document.getElementById("night-option")
 const eclipseCheckbox = document.getElementById("eclipse-option")
 const editWorkerForm = document.getElementById("edit-worker-form")
+const resultsContainer = document.getElementById("search-items")
+const newLocationInput = document.getElementById("newLocations")
 
 backendFuncs.displayLocations()
 backendFuncs.showWorkers()
@@ -54,4 +57,6 @@ editWorkerForm.addEventListener(
         backendFuncs.editWorker(event)}
 )
 
-
+newLocationInput.addEventListener("input",()=>{
+    displayOptions(newLocationInput,resultsContainer,backendFuncs.locations,"location")
+})
