@@ -119,8 +119,10 @@ function toogleEditCheckboxes(Id){
     checkbox.addEventListener("click",()=>{
         if (checkbox.checked){
             toogleItem.classList.remove("hidden")
+            toogleItem.required = true
         }else{
             toogleItem.classList.add("hidden")
+            toogleItem.required = false
             if (checkbox.id === "newAvailabilityCheckbox"){
                 hoursContainer.classList.add("hidden")
                 availabilityOptions.forEach(option=>{
@@ -129,4 +131,41 @@ function toogleEditCheckboxes(Id){
             }
         }
     })
+}
+
+export function customDisplayOption(inputTag,resultsContainer,valuesArr,key){
+    resultsContainer.innerHTML = ""
+    resultsContainer.classList.add("hidden")
+
+    const input = inputTag.value.split(",")
+    let currentQuery = input[input.length - 1].toLowerCase()
+    const selectedValues = input.slice(0,-1)
+    const matches = valuesArr.filter(obj=>{
+        if (
+            !selectedValues.includes(obj[key]) 
+            && obj[key].toLowerCase().includes(currentQuery)
+        )return obj
+    })
+
+    if (currentQuery.length > 0){
+        matches.map(result=>{
+            const item = document.createElement("p")
+            item.setAttribute("id",`${result.id}-option`)
+            item.classList.add("search-item")
+            item.innerText = result.location
+            item.addEventListener("click",()=>customSelectOption(inputTag,resultsContainer,`${result.location}`,selectedValues))
+            resultsContainer.appendChild(item)
+        })
+        if (matches.length>0)resultsContainer.classList.remove("hidden")
+    }
+}
+
+function customSelectOption(input,container,value,previousValue){
+    if (previousValue.length > 0){
+        input.value = previousValue.join(",")+`,${value},`
+    }else{
+        input.value = `${value},`
+    }
+    container.innerHTML = ""
+    container.classList.add("hidden")
 }

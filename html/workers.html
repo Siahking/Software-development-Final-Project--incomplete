@@ -50,7 +50,7 @@
         <button id="edit-worker" class="grey-btn">Edit Worker</button>
     </div>
 
-    <div class="hidden error-container" id="workers-error-container">
+    <div class="specified-hidden error-container" id="workers-error-container">
         <p id="workers-error-tag" class="error-tag"></p>
     </div>
 
@@ -187,7 +187,7 @@
         <div id="edit-worker-div" class="hidden">
             <form id="edit-worker-form">
                 <label for="target-id" class="bold">Worker ID</label>
-                <input type="text" id="target-id" autocomplete="off" placeholder="Type Here" class="text-number-input">
+                <input type="text" id="target-id" autocomplete="off" placeholder="Type Here" class="text-number-input" required>
                 <label for="newFirstname" class="bold">
                     <input type="checkbox" id="newFirstNameCheckbox">
                     New Firstname

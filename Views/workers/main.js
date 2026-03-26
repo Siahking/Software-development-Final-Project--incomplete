@@ -58,5 +58,5 @@ editWorkerForm.addEventListener(
 )
 
 newLocationInput.addEventListener("input",()=>{
-    displayOptions(newLocationInput,resultsContainer,backendFuncs.locations,"location")
+    frontendFuncs.customDisplayOption(newLocationInput,resultsContainer,backendFuncs.locations,"location")
 })

@@ -48,8 +48,6 @@ export async function editLocation(currentLocationName,newLocationName){
 
     let location = newLocationName
 
-    console.log(newLocationName)
-
     const url = `edit-location/${currentLocationName}`
     return apiRequest(url,"PATCH",{location})
 }
