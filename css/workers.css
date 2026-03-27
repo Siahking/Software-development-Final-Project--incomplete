@@ -174,3 +174,13 @@ tr:last-child td {
 #edit-worker-form label{
     margin: 0 7px;
 }
+
+#edit-checkbox-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#edit-checkbox-container input{
+    margin-right: 5px;
+}

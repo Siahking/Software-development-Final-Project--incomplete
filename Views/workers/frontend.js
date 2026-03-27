@@ -16,7 +16,7 @@ const unimportantInputArr = [firstNameInput,lastNameInput,middleNameInput]
 const fieldsArr = ['id','first-name','middle-name','last-name','id-number']
 
 const editIdArray = [
-    "newFirstName","newLastName","newMiddleName","newAddress","newContact","newIdNumber","newLocations","newAvailability","newGender"
+    "newFirstName","newLastName","newMiddleName","newAddress","newContact","newIdNumber","editLocations","newAvailability","newGender"
 ]
 
 const availabilityOptions = document.querySelectorAll('[name="edit-availability"]')
@@ -131,6 +131,24 @@ function toogleEditCheckboxes(Id){
             }
         }
     })
+}
+
+export function toogleLocationCheckboxes(boxId){
+    const newLocationCheckbox = document.getElementById("new-location-checkbox")
+    const RemoveLocationCheckbox = document.getElementById("remove-location-checkbox")
+    const newLocationContainer = document.getElementById("add-locations-container")
+    const removeLocationContainer = document.getElementById("remove-locations-container")
+
+    if (boxId === "new-location-checkbox"){
+        if (newLocationCheckbox.checked){
+            newLocationCheckbox.checked = false
+        }
+        removeLocationContainer.classList.add("hidden")
+        removeLocationContainer.innerHTML = ""
+        loadAddLocations(workerId)
+        
+        //load locations that the user doesnt work at
+    }
 }
 
 export function customDisplayOption(inputTag,resultsContainer,valuesArr,key){
