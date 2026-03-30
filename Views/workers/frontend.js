@@ -1,3 +1,6 @@
+import { workerLocationSearch,getLocations } from "../backend.js"
+import { displayError } from "../general-helper-funcs.js"
+
 const idCheckbox = document.getElementById("id")
 const firstNameCheckbox = document.getElementById("first-name")
 const lastNameCheckbox = document.getElementById("last-name")
@@ -133,57 +136,68 @@ function toogleEditCheckboxes(Id){
     })
 }
 
-export function toogleLocationCheckboxes(boxId){
-    const newLocationCheckbox = document.getElementById("new-location-checkbox")
-    const RemoveLocationCheckbox = document.getElementById("remove-location-checkbox")
-    const newLocationContainer = document.getElementById("add-locations-container")
-    const removeLocationContainer = document.getElementById("remove-locations-container")
+export async function toggleEditLocations(checkboxId){
+    const LOCATIONS = await getLocations() //add error message if no locations exist
+    const newLocationsCheckbox = document.getElementById("new-location-checkbox")
+    const newLocationsContainer = document.getElementById("add-locations-container")
+    const removeLocationsCheckbox = document.getElementById("remove-location-checkbox")
+    const removeLocationsContainer = document.getElementById("remove-locations-container")
+    const targetId = document.getElementById("target-id").value
+    const container = document.getElementById("editLocations")
+    const locationsCheckbox = document.getElementById("editLocationsCheckbox")
 
-    if (boxId === "new-location-checkbox"){
-        if (newLocationCheckbox.checked){
-            newLocationCheckbox.checked = false
+    if (!targetId){
+        displayError("workers-error","Worker Id required")
+        container.classList.add("hidden")
+        for (const checkbox of [newLocationsCheckbox,removeLocationsCheckbox,locationsCheckbox]){
+            checkbox.checked = false
         }
-        removeLocationContainer.classList.add("hidden")
-        removeLocationContainer.innerHTML = ""
-        loadAddLocations(workerId)
-        
-        //load locations that the user doesnt work at
+        return
+    }
+
+    const workerLocations = await workerLocationSearch("worker_id",targetId)
+    const workerLocationsArr = workerLocations.map(obj=>obj.location_id)
+
+    if (checkboxId === "new-location-checkbox"){
+        const displayArr = LOCATIONS.filter(obj => !workerLocationsArr.includes(obj.id))
+        populateEditContainer(
+            newLocationsCheckbox,newLocationsContainer,displayArr,
+            removeLocationsContainer,removeLocationsCheckbox
+        )
+    }else{            
+        const displayArr = LOCATIONS.filter(obj => workerLocationsArr.includes(obj.id))
+        populateEditContainer(
+            removeLocationsCheckbox,removeLocationsContainer,displayArr,
+            newLocationsContainer,newLocationsCheckbox
+        )
     }
 }
 
-export function customDisplayOption(inputTag,resultsContainer,valuesArr,key){
-    resultsContainer.innerHTML = ""
-    resultsContainer.classList.add("hidden")
+function populateEditContainer(checkbox,container,displayArr,opposingContainer,opposingCheckbox){
+    if (checkbox.checked){
+        opposingCheckbox.checked = false
+        opposingContainer.innerHTML = ""
+        opposingContainer.classList.add("hidden")
 
-    const input = inputTag.value.split(",")
-    let currentQuery = input[input.length - 1].toLowerCase()
-    const selectedValues = input.slice(0,-1)
-    const matches = valuesArr.filter(obj=>{
-        if (
-            !selectedValues.includes(obj[key]) 
-            && obj[key].toLowerCase().includes(currentQuery)
-        )return obj
-    })
+        for (const object of displayArr){
+            const label = document.createElement("label")
+            const input = document.createElement("input")
 
-    if (currentQuery.length > 0){
-        matches.map(result=>{
-            const item = document.createElement("p")
-            item.setAttribute("id",`${result.id}-option`)
-            item.classList.add("search-item")
-            item.innerText = result.location
-            item.addEventListener("click",()=>customSelectOption(inputTag,resultsContainer,`${result.location}`,selectedValues))
-            resultsContainer.appendChild(item)
-        })
-        if (matches.length>0)resultsContainer.classList.remove("hidden")
-    }
-}
+            input.setAttribute("id",`${object.id}-location`)
+            input.setAttribute("type","checkbox")
 
-function customSelectOption(input,container,value,previousValue){
-    if (previousValue.length > 0){
-        input.value = previousValue.join(",")+`,${value},`
+            label.appendChild(input)
+            label.setAttribute("for",`${object.id}-location`)
+            label.classList.add("bold")
+            label.append(object.location)
+
+            container.appendChild(label)
+        }
+
+        container.classList.remove("hidden")
     }else{
-        input.value = `${value},`
+        container.classList.add("hidden")
+        container.innerHTML = ""
+        checkbox.checked = false
     }
-    container.innerHTML = ""
-    container.classList.add("hidden")
 }

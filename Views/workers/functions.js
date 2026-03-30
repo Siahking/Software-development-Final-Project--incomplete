@@ -276,7 +276,10 @@ export async function editWorker(event){
     const newAddress = document.getElementById("newAddress").value
     const newContact = document.getElementById("newContact").value
     const newIdNumber = document.getElementById("newIdNumber").value
-    const newLocation = document.getElementById("newLocations").value
+    const newLocationsCheckbox = document.getElementById("new-location-checkbox")
+    const newLocationsContainer = document.getElementById("add-locations-container")
+    const removeLocationsCheckbox = document.getElementById("remove-location-checkbox")
+    const removeLocationsContainer = document.getElementById("remove-locations-container")
     const availabilityOptions = document.querySelectorAll('[name="edit-availability"]')
     const hourOptions = document.querySelectorAll('[name="hour-option"]')
     let newAvailability = null
@@ -313,83 +316,37 @@ export async function editWorker(event){
         }
     })
 
-    if (newLocation !== ""){
-        editWorkerLocation(newLocation)
-    }
-
     const args = [newFirstName,newLastName,newMiddleName,newGender,newAddress,newContact,newIdNumber,newAvailability,newHours]
-    if (!argsCheck(args,newLocation)){
+    if (
+        !argsCheck(args) && 
+        !editLocationsValidityCheck(newLocationsContainer) && 
+        !editLocationsValidityCheck(removeLocationsContainer)
+    ){
         displayError(errorTagId,"Nothing to update, please select values to be updated")
         return
     }
 
-    const workerLocationResults = await editWorkerLocation(idStr,newLocation)
-    return
+    // const result = await apiFuncs.editWorker(idStr,...args)
 
-    const result = await apiFuncs.editWorker(idStr,...args)
-
-    if (objectCheck(result)){
-        displayError(errorTagId,result.error)
-        return
-    }else{
-        // sessionStorage.setItem("Message",result.message)
-        // window.location.href = '/home'
-        return
-    }
+    // if (objectCheck(result)){
+    //     displayError(errorTagId,result.error)
+    //     return
+    // }else{
+    //     sessionStorage.setItem("Message",result.message)
+    //     window.location.href = '/home'
+    //     return
+    // }
 }
 
-async function editWorkerLocation(workerId,locationStr){
-    const locations = locationStr.split(",")
-    const invalidLocations = []
-    const validLocations = []
-
-    for (const location of locations) {
-        if (!location)continue
-        const result = await apiFuncs.findLocation('location', location.trim())
-        if (result.error){
-            invalidLocations.push(location)
-        }else{
-            validLocations.push(location)
-        }
-    }
-
-    console.log(validLocations)
-
-    if (invalidLocations.length > 0){
-        const message = `The locations "${[...invalidLocations]}" do not exist, would you like to proceed with the other locations?`
-        console.log("passed here")
-        return
-        if (!window.confirm(message)){
-            sessionStorage.setItem("Message","Operation Canceled")
-            window.location.href = '/get-workers'
-        }
-    }
-    if (validLocations.length > 0){
-        //check if the worker is assigned to any locations
-        let editResults
-        const locationResults = await apiFuncs.workerLocationSearch("worker_id",workerId)
-        const fetchLocation = await apiFuncs.findLocation("location",locationStr)
-        if (locationResults.error){
-            editResults = await apiFuncs.linkWorkerLocations(workerId,fetchLocation[0].id)
-        }else{
-            for (const obj of locationResults){
-                const deleteResult = await apiFuncs.removeConnections("",workerId,obj.location)
-                // check for rosters saved in the future before deleting connection and verify roster would be deleted
-            }
-        }
-            // if not assign the worker to selected locations
-        //else edit the worker locations to the selected locations
-    }
-}
-
-function argsCheck(args,newLocation){
-    let containsValues = false
+function argsCheck(args){
     for (const arg of args){
         if (arg !== "" && arg !== null && arg.length !== 0){
-            containsValues = true
-            break
+            return true
         }
     }
-    console.log(containsValues || (newLocation !== ""))
-    return containsValues || (newLocation !== "")
+    return false
+}
+
+function editLocationsValidityCheck(container){
+    return container.querySelector('input[type="checkbox"]:checked') !== null
 }

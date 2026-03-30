@@ -1,6 +1,5 @@
 import * as backendFuncs from "./functions.js"
 import * as frontendFuncs from "./frontend.js"
-import { displayOptions } from "../general-helper-funcs.js"
 
 const addWorkerBtn = document.getElementById("add-worker")
 const addWorkerDiv = document.getElementById('add-worker-div')
@@ -18,7 +17,9 @@ const nightCheckbox = document.getElementById("night-option")
 const eclipseCheckbox = document.getElementById("eclipse-option")
 const editWorkerForm = document.getElementById("edit-worker-form")
 const resultsContainer = document.getElementById("search-items")
-const newLocationInput = document.getElementById("newLocations")
+// const newLocationInput = document.getElementById("newLocations")
+const newLocationCheckbox = document.getElementById("new-location-checkbox")
+const removeLocationCheckbox = document.getElementById("remove-location-checkbox")
 
 backendFuncs.displayLocations()
 backendFuncs.showWorkers()
@@ -57,6 +58,10 @@ editWorkerForm.addEventListener(
         backendFuncs.editWorker(event)}
 )
 
-newLocationInput.addEventListener("input",()=>{
-    frontendFuncs.customDisplayOption(newLocationInput,resultsContainer,backendFuncs.locations,"location")
-})
+newLocationCheckbox.addEventListener(
+    "click",()=>frontendFuncs.toggleEditLocations("new-location-checkbox")
+)
+
+removeLocationCheckbox.addEventListener(
+    "click",()=>frontendFuncs.toggleEditLocations("remove-location-checkbox")
+)
